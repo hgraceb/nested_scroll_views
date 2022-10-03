@@ -133,6 +133,7 @@ class FirstPage extends StatefulWidget {
 
 class _FirstPageState extends State<FirstPage> {
   final _tabs = ['Tab 1.1', 'Tab 1.2', 'Tab 1.3', 'Tab 1.4', 'Tab 1.5'];
+  final _subTabs = ['1', '2', '3'];
   final _items = List<String>.generate(100, (i) => 'Item $i');
 
   @override
@@ -148,8 +149,8 @@ class _FirstPageState extends State<FirstPage> {
           ),
         ),
         body: NestedTabBarView(
-          children: _tabs.map((tab) {
-            return ListView.builder(
+          children: List.generate(_tabs.length, (index) {
+            final list = ListView.builder(
               itemCount: _items.length,
               prototypeItem: ListTile(
                 title: Text(_items.first),
@@ -160,6 +161,26 @@ class _FirstPageState extends State<FirstPage> {
                 );
               },
             );
+            if (index % 2 == 0) {
+              return DefaultTabController(
+                length: _subTabs.length,
+                child: Column(
+                  children: <Widget>[
+                    TabBar(
+                      labelColor: Colors.black,
+                      unselectedLabelColor: Colors.black45,
+                      tabs: _subTabs.map((tab) => Tab(text: tab)).toList(),
+                    ),
+                    Expanded(
+                      child: NestedTabBarView(
+                        children: _subTabs.map((_) => list).toList(),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }
+            return list;
           }).toList(),
         ),
       ),
