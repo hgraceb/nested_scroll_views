@@ -1,45 +1,30 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:nested_scroll_views/nested_scroll_views.dart';
 
-void main() {
-  runApp(const MyApp());
-}
+void main() => runApp(const MyApp());
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Nested View Demo',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(title: 'Nested View Home Page'),
+      scrollBehavior: const MaterialScrollBehavior().copyWith(
+        dragDevices: PointerDeviceKind.values.toSet(),
+      ),
+      debugShowCheckedModeBanner: false,
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
 
   final String title;
 
@@ -48,68 +33,343 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+  int _currentIndex = 0;
+  int _warpUnderwayCount = 0;
+  late List<Widget> childrenWithKey;
+  final _pageController = NestedPageController();
 
-  void _incrementCounter() {
+  Future<void> _animateToPage(int page) async {
+    if (_warpUnderwayCount > 0 || _currentIndex == page) {
+      return;
+    }
+    const duration = kTabScrollDuration;
+    if ((_currentIndex - page).abs() == 1) {
+      _warpUnderwayCount += 1;
+      await _pageController.animateToPage(
+        page,
+        duration: duration,
+        curve: Curves.ease,
+      );
+      _warpUnderwayCount -= 1;
+      return Future<void>.value();
+    }
+
+    final int initialPage = page > _currentIndex ? page - 1 : page + 1;
+    final List<Widget> originalChildren = childrenWithKey;
     setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
+      _warpUnderwayCount += 1;
+
+      childrenWithKey = List<Widget>.of(childrenWithKey, growable: false);
+      final Widget temp = childrenWithKey[initialPage];
+      childrenWithKey[initialPage] = childrenWithKey[_currentIndex];
+      childrenWithKey[_currentIndex] = temp;
+    });
+    _pageController.jumpToPage(initialPage);
+    await _pageController.animateToPage(
+      page,
+      duration: duration,
+      curve: Curves.ease,
+    );
+    setState(() {
+      _warpUnderwayCount -= 1;
+      childrenWithKey = originalChildren;
     });
   }
 
   @override
+  void initState() {
+    super.initState();
+    childrenWithKey = KeyedSubtree.ensureUniqueKeysForList(const [
+      FirstPage(),
+      SecondPage(),
+      ThirdPage(),
+    ]);
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
-      appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
+      backgroundColor: Colors.grey.shade100,
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _currentIndex,
+        onTap: (page) => _animateToPage(page),
+        items: const [
+          BottomNavigationBarItem(
+            label: '1',
+            icon: Icon(Icons.mode_night),
+          ),
+          BottomNavigationBarItem(
+            label: '2',
+            icon: Icon(Icons.cloud),
+          ),
+          BottomNavigationBarItem(
+            label: '3',
+            icon: Icon(Icons.light_mode),
+          ),
+        ],
       ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Invoke "debug painting" (press "p" in the console, choose the
-          // "Toggle Debug Paint" action from the Flutter Inspector in Android
-          // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-          // to see the wireframe for each widget.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
+      body: NestedPageView(
+        physics: const BouncingScrollPhysics(),
+        controller: _pageController,
+        onPageChanged: (index) => setState(() => _currentIndex = index),
+        children: childrenWithKey,
+      ),
+    );
+  }
+}
+
+class FirstPage extends StatefulWidget {
+  const FirstPage({super.key});
+
+  @override
+  State<StatefulWidget> createState() => _FirstPageState();
+}
+
+class _FirstPageState extends State<FirstPage> {
+  final _tabs = ['Tab 1.1', 'Tab 1.2', 'Tab 1.3', 'Tab 1.4', 'Tab 1.5'];
+  final _items = List<String>.generate(100, (i) => 'Item $i');
+
+  @override
+  Widget build(BuildContext context) {
+    return DefaultTabController(
+      length: _tabs.length,
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('First Page'),
+          bottom: TabBar(
+            isScrollable: true,
+            tabs: _tabs.map((tab) => Tab(text: tab)).toList(),
+          ),
+        ),
+        body: NestedTabBarView(
+          children: _tabs.map((tab) {
+            return ListView.builder(
+              itemCount: _items.length,
+              prototypeItem: ListTile(
+                title: Text(_items.first),
+              ),
+              itemBuilder: (context, index) {
+                return ListTile(
+                  title: Text(_items[index]),
+                );
+              },
+            );
+          }).toList(),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+    );
+  }
+}
+
+class SecondPage extends StatefulWidget {
+  const SecondPage({super.key});
+
+  @override
+  State<StatefulWidget> createState() => _SecondPageState();
+}
+
+class _SecondPageState extends State<SecondPage> {
+  final _firstPageController = NestedPageController();
+  final _secondPageController = NestedPageController();
+  final _thirdPageController = NestedPageController();
+  final _fourthPageController = NestedPageController();
+
+  @override
+  void dispose() {
+    _firstPageController.dispose();
+    _secondPageController.dispose();
+    _thirdPageController.dispose();
+    _fourthPageController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Second Page'),
+      ),
+      body: NestedPageView(
+        controller: _firstPageController,
+        children: [
+          Container(
+            width: size.width,
+            height: size.height,
+            color: Colors.red.shade200,
+            alignment: Alignment.center,
+            child: const Text("Page 2.1"),
+          ),
+          Column(
+            children: [
+              Expanded(
+                child: NestedPageView(
+                  controller: _secondPageController,
+                  children: [
+                    Container(
+                      color: Colors.orange.shade200,
+                      alignment: Alignment.center,
+                      child: const Text("Page 2.2.1"),
+                    ),
+                    NestedPageView(
+                      controller: _thirdPageController,
+                      children: [
+                        Column(
+                          children: [
+                            Expanded(
+                              child: NestedPageView(
+                                controller: _fourthPageController,
+                                children: [
+                                  Container(
+                                    color: Colors.yellow.shade200,
+                                    alignment: Alignment.center,
+                                    child: const Text("Page 2.2.2.1"),
+                                  ),
+                                  Container(
+                                    color: Colors.green.shade200,
+                                    alignment: Alignment.center,
+                                    child: const Text("Page 2.2.2.2"),
+                                  ),
+                                  Container(
+                                    color: Colors.cyan.shade200,
+                                    alignment: Alignment.center,
+                                    child: const Text("Page 2.2.2.3"),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Container(
+                              width: size.width,
+                              color: Colors.grey.shade300,
+                              alignment: Alignment.center,
+                              child: const Padding(
+                                padding: EdgeInsets.all(6),
+                                child: Text("Page 2.2.2"),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    Container(
+                      color: Colors.blue.shade200,
+                      alignment: Alignment.center,
+                      child: const Text("Page 2.2.3"),
+                    ),
+                  ],
+                ),
+              ),
+              Container(
+                width: size.width,
+                color: Colors.grey.shade200,
+                alignment: Alignment.center,
+                child: const Padding(
+                  padding: EdgeInsets.all(6),
+                  child: Text("Page 2.2"),
+                ),
+              ),
+            ],
+          ),
+          Container(
+            width: size.width,
+            height: size.height,
+            color: Colors.purple.shade200,
+            alignment: Alignment.center,
+            child: const Text("Page 2.3"),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class ThirdPage extends StatefulWidget {
+  const ThirdPage({super.key});
+
+  @override
+  State<StatefulWidget> createState() => _ThirdPageState();
+}
+
+class _ThirdPageState extends State<ThirdPage> {
+  final _pageController = NestedPageController();
+  final _scrollController = ScrollController();
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    final width = size.width / 3.5;
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Third Page'),
+      ),
+      body: NestedPageView(
+        controller: _pageController,
+        children: [
+          NestedSingleChildScrollView(
+            controller: _scrollController,
+            scrollDirection: Axis.horizontal,
+            child: Stack(
+              children: [
+                Container(
+                  width: width + 1,
+                  height: size.height,
+                  color: Colors.red.shade300,
+                  margin: EdgeInsets.fromLTRB(width * 0, 0, 0, 0),
+                ),
+                Container(
+                  width: width + 1,
+                  height: size.height,
+                  color: Colors.orange.shade300,
+                  margin: EdgeInsets.fromLTRB(width * 1, 0, 0, 0),
+                ),
+                Container(
+                  width: width + 1,
+                  height: size.height,
+                  color: Colors.yellow.shade300,
+                  margin: EdgeInsets.fromLTRB(width * 2, 0, 0, 0),
+                ),
+                Container(
+                  width: width + 1,
+                  height: size.height,
+                  color: Colors.green.shade300,
+                  margin: EdgeInsets.fromLTRB(width * 3, 0, 0, 0),
+                ),
+                Container(
+                  width: width + 1,
+                  height: size.height,
+                  color: Colors.cyan.shade300,
+                  margin: EdgeInsets.fromLTRB(width * 4, 0, 0, 0),
+                ),
+                Container(
+                  width: width + 1,
+                  height: size.height,
+                  color: Colors.blue.shade300,
+                  margin: EdgeInsets.fromLTRB(width * 5, 0, 0, 0),
+                ),
+                Container(
+                  width: width,
+                  height: size.height,
+                  color: Colors.purple.shade300,
+                  margin: EdgeInsets.fromLTRB(width * 6, 0, 0, 0),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
