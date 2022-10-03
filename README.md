@@ -2,7 +2,7 @@
 
 Flutter nested scrolling views.
 
-<img height="480" src="media/example.gif"/>
+<kbd><img height="480" src="media/example.gif"/></kbd>
 
 ## Usage
 
