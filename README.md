@@ -5,9 +5,9 @@ Flutter nested scrolling views.
 <table>
     <tbody>
     <tr>
-        <td><img src="media/NestedTabBarView.gif" alt="NestedTabBarView.gif"/></td>
-        <td><img src="media/NestedPageView.gif" alt="NestedPageView.gif"/></td>
-        <td><img src="media/NestedSingleChildScrollView.gif" alt="NestedSingleChildScrollView.gif"/></td>
+        <td><img src="https://raw.githubusercontent.com/hgraceb/nested_scroll_views/0.0.2/media/NestedTabBarView.gif" alt="NestedTabBarView.gif"/></td>
+        <td><img src="https://raw.githubusercontent.com/hgraceb/nested_scroll_views/0.0.2/media/NestedPageView.gif" alt="NestedPageView.gif"/></td>
+        <td><img src="https://raw.githubusercontent.com/hgraceb/nested_scroll_views/0.0.2/media/NestedSingleChildScrollView.gif" alt="NestedSingleChildScrollView.gif"/></td>
     </tr>
     </tbody>
 </table>
