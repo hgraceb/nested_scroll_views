@@ -1,14 +1,13 @@
 name: nested_scroll_views
-description: A starting point for Dart libraries or applications.
-version: 1.0.0
+description: Flutter nested scrolling views.
+version: 0.0.1
 # homepage: https://www.example.com
 
 environment:
-  sdk: '>=2.19.0-240.0.dev <3.0.0'
-
-# dependencies:
-#   path: ^1.8.0
+  flutter: ">=3.3.3"
+  sdk: ">=2.18.2 <3.0.0"
 
 dev_dependencies:
-  lints: ^2.0.0
-  test: ^1.16.0
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.0
