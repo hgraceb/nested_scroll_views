@@ -1,39 +1,21 @@
-<!-- 
-This README describes the package. If you publish this package to pub.dev,
-this README's contents appear on the landing page for your package.
+# Nested Scrolling Views
 
-For information about how to write a good package README, see the guide for
-[writing package pages](https://dart.dev/guides/libraries/writing-package-pages). 
+Flutter nested scrolling views.
 
-For general information about developing packages, see the Dart guide for
-[creating packages](https://dart.dev/guides/libraries/create-library-packages)
-and the Flutter guide for
-[developing packages and plugins](https://flutter.dev/developing-packages). 
--->
-
-TODO: Put a short description of the package here that helps potential users
-know whether this package might be useful for them.
-
-## Features
-
-TODO: List what your package can do. Maybe include images, gifs, or videos.
-
-## Getting started
-
-TODO: List prerequisites and provide or point to information on how to
-start using the package.
+<img height="480" src="media/example.gif"/>
 
 ## Usage
 
-TODO: Include short and useful examples for package users. Add longer examples
-to `/example` folder. 
+Replace flutter's views with the following views and use them nested.
 
-```dart
-const like = 'sample';
-```
+| View                        | Controller           | Flutter               |
+| --------------------------- | -------------------- | --------------------- |
+| NestedPageView              | NestedPageController | PageView              |
+| NestedTabBarView            | TabController        | TabBarView            |
+| NestedSingleChildScrollView | ScrollController     | SingleChildScrollView |
 
-## Additional information
+## Gotchas
 
-TODO: Tell users more about the package: where to find more information, how to 
-contribute to the package, how to file issues, what response they can expect 
-from the package authors, and more.
+1. Nested views always stay alive.
+2. NeverScrollableScrollPhysics invalid.
+3. Nested non-nested views with the same scroll direction will result in weird scrolling.
