@@ -16,14 +16,14 @@ Flutter nested scrolling views.
 
 Replace flutter's views with the following views and use them nested.
 
-| View                        | Controller           | Flutter               |
-| --------------------------- | -------------------- | --------------------- |
-| NestedPageView              | NestedPageController | PageView              |
-| NestedTabBarView            | TabController        | TabBarView            |
-| NestedSingleChildScrollView | ScrollController     | SingleChildScrollView |
-| NestedListView              | ScrollController     | ListView              |
-| NestedGridView              | ScrollController     | GridView              |
-| NestedCustomScrollView      | ScrollController     | CustomScrollView      |
+| View                            | Controller               | Flutter               |
+| ------------------------------- | ------------------------ | --------------------- |
+| **NestedPageView**              | **NestedPageController** | PageView              |
+| **NestedTabBarView**            | TabController            | TabBarView            |
+| **NestedSingleChildScrollView** | ScrollController         | SingleChildScrollView |
+| **NestedListView**              | ScrollController         | ListView              |
+| **NestedGridView**              | ScrollController         | GridView              |
+| **NestedCustomScrollView**      | ScrollController         | CustomScrollView      |
 
 ## Attention
 
