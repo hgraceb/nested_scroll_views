@@ -3,7 +3,6 @@ import 'package:flutter/widgets.dart';
 
 import 'flutter/widgets/scrollable.dart';
 import 'overscroll_gestures.dart';
-import 'overscroll_state_provider.dart';
 
 class OverscrollScrollable extends FlutterScrollable {
   const OverscrollScrollable({
@@ -60,27 +59,8 @@ class OverscrollScrollable extends FlutterScrollable {
 }
 
 class _OverscrollScrollableState extends FlutterScrollableState {
+  /// 是否已经滚动到边界
   bool _overscroll = false;
-  late OverscrollChangeNotifier _overscrollNotifier;
-
-  void _overScroll() => _overscroll = _overscrollNotifier.state;
-
-  @override
-  void didChangeDependencies() {
-    _overscrollNotifier = OverscrollStateProvider.of(context)
-      // 移除旧的监听器，避免重复添加
-      ..removeListener(_overScroll)
-      // 添加新的监听器，
-      ..addListener(_overScroll);
-    super.didChangeDependencies();
-  }
-
-  @override
-  void dispose() {
-    // 只需要移除监听器，资源回收由 Provider 处理，避免资源重复回收
-    _overscrollNotifier.removeListener(_overScroll);
-    super.dispose();
-  }
 
   /// 代理手势更新事件
   GestureDragUpdateCallback? _proxyOnUpdate(GestureDragUpdateCallback? parent) {
@@ -90,23 +70,22 @@ class _OverscrollScrollableState extends FlutterScrollableState {
 
   /// 处理手势移动事件
   _onMoveEvent(PointerMoveEvent event, Offset delta, double primaryDelta) {
-    // 如果还没滚动到边界或者没有实际移动距离
-    if (!_overscroll || primaryDelta == 0.0) {
-      return;
+    // 如果已经滚动到边界并且又继续移动
+    if (_overscroll && primaryDelta != 0.0) {
+      // 边界滚动事件通知
+      OverscrollNotification(
+        metrics: position.copyWith(),
+        context: context,
+        overscroll: primaryDelta,
+        dragDetails: DragUpdateDetails(
+          sourceTimeStamp: event.timeStamp,
+          delta: delta,
+          primaryDelta: primaryDelta,
+          globalPosition: event.position,
+          localPosition: event.localPosition,
+        ),
+      ).dispatch(context);
     }
-    // 边界滚动事件通知
-    OverscrollNotification(
-      metrics: position.copyWith(),
-      context: context,
-      overscroll: primaryDelta,
-      dragDetails: DragUpdateDetails(
-        sourceTimeStamp: event.timeStamp,
-        delta: delta,
-        primaryDelta: primaryDelta,
-        globalPosition: event.position,
-        localPosition: event.localPosition,
-      ),
-    ).dispatch(context);
   }
 
   @override
@@ -141,5 +120,22 @@ class _OverscrollScrollableState extends FlutterScrollableState {
       }
       return MapEntry(key, value);
     });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return NotificationListener<ScrollNotification>(
+      onNotification: (ScrollNotification notification) {
+        if (notification is OverscrollNotification) {
+          // 设置边界滚动状态
+          _overscroll = true;
+        } else if (notification is ScrollEndNotification) {
+          // 重置边界滚动状态
+          _overscroll = false;
+        }
+        return false;
+      },
+      child: super.build(context),
+    );
   }
 }

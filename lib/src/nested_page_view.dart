@@ -3,7 +3,6 @@ import 'package:flutter/widgets.dart';
 import 'flutter/widgets/page_view.dart';
 import 'nested_scroll_notification.dart';
 import 'overscroll_scrollable.dart';
-import 'overscroll_state_provider.dart';
 
 class NestedPageView extends FlutterPageView {
   NestedPageView({
@@ -97,8 +96,6 @@ class _PageViewState extends FlutterPageViewState {
       if (_ignoreOverscroll == true) {
         return false;
       }
-      // 根据滚动通知更新边界滚动状态
-      OverscrollStateProvider.updateState(notification);
       // 拖动被取消的回调，不需要调用 dispose 方法，不然会死循环
       void dragCancelCallback() => _dragController = null;
       // 滚动位置超出可滚动范围，自定义拖动事件控制器并保存，不要使用 ScrollStartNotification 携带的 DragStartDetails 数据作为参数
@@ -123,8 +120,6 @@ class _PageViewState extends FlutterPageViewState {
       return true;
     }
     if (notification is ScrollEndNotification) {
-      // 根据滚动通知更新边界滚动状态
-      OverscrollStateProvider.updateState(notification);
       if (notification.dragDetails != null) {
         // 滚动结束时还有额外的滚动数据，需要继续处理，如：子组件快速滑动切换到父组件
         _dragController?.end(notification.dragDetails!);
@@ -152,16 +147,13 @@ class _PageViewState extends FlutterPageViewState {
     final notificationListener =
         super.build(context) as NotificationListener<ScrollNotification>;
     final scrollable = notificationListener.child as Scrollable;
-    return OverscrollStateProvider(
-      builder: (context) => NotificationListener<ScrollNotification>(
-        onNotification: (ScrollNotification notification) =>
-            notificationListener.onNotification!(notification) ||
-            _handleNotification(context, notification),
-        // 缓存可滚动页面，不缓存可能导致页面在嵌套滚动时被销毁导致手势事件丢失
-        child: _AlwaysKeepAlive(
-          child: OverscrollScrollable.from(scrollable),
-        ),
-      ),
+    return NotificationListener<ScrollNotification>(
+      onNotification: (ScrollNotification notification) {
+        return notificationListener.onNotification!(notification) ||
+            _handleNotification(context, notification);
+      },
+      // 缓存可滚动页面，不缓存可能导致页面在嵌套滚动时被销毁导致手势事件丢失
+      child: _AlwaysKeepAlive(child: OverscrollScrollable.from(scrollable)),
     );
   }
 }
