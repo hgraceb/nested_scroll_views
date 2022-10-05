@@ -1,3 +1,8 @@
+## 0.0.4
+
+- Add wantKeepAlive argument.
+- Add NestedListView, NestedGridView, NestedCustomScrollView.
+
 ## 0.0.3
 
 - Add thanks.

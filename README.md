@@ -21,12 +21,15 @@ Replace flutter's views with the following views and use them nested.
 | NestedPageView              | NestedPageController | PageView              |
 | NestedTabBarView            | TabController        | TabBarView            |
 | NestedSingleChildScrollView | ScrollController     | SingleChildScrollView |
+| NestedListView              | ScrollController     | ListView              |
+| NestedGridView              | ScrollController     | GridView              |
+| NestedCustomScrollView      | ScrollController     | CustomScrollView      |
 
-## Gotchas
+## Attention
 
-1. Nested views always stay alive.
-2. NeverScrollableScrollPhysics invalid.
-3. Nested non-nested views with the same scroll direction will result in weird scrolling.
+1. NeverScrollableScrollPhysics is invalid.
+2. Nested non-nested views with the same scroll direction will result in weird scrolling.
+3. Nested views are kept alive by default, you can set `wantKeepAlive` to false, which may lead to loss of gesture events because the page is destroyed.
 
 ## Thanks
 
