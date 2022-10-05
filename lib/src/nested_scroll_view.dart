@@ -1,29 +1,30 @@
 import 'package:flutter/widgets.dart';
+import 'package:nested_scroll_views/src/wrapper_keep_alive.dart';
 
 import 'flutter/widgets/scroll_view.dart';
 import 'overscroll_scrollable.dart';
 
-mixin _OverscrollScrollableMixin on FlutterScrollView {
-  @override
-  Widget build(BuildContext context) {
-    final widget = super.build(context);
-    if (widget is NotificationListener<ScrollUpdateNotification>) {
-      return NotificationListener<ScrollUpdateNotification>(
-        onNotification: widget.onNotification,
-        child: OverscrollScrollable.from(widget.child as Scrollable),
-      );
-    }
-    if (widget is PrimaryScrollController) {
-      return PrimaryScrollController.none(
-        child: OverscrollScrollable.from(widget.child as Scrollable),
-      );
-    }
-    return OverscrollScrollable.from(widget as Scrollable);
+Widget _convertScrollable(Widget widget, bool wantKeepAlive) {
+  final Widget child;
+  if (widget is NotificationListener<ScrollUpdateNotification>) {
+    child = NotificationListener<ScrollUpdateNotification>(
+      onNotification: widget.onNotification,
+      child: OverscrollScrollable.from(widget.child as Scrollable),
+    );
+  } else if (widget is PrimaryScrollController) {
+    child = PrimaryScrollController.none(
+      child: OverscrollScrollable.from(widget.child as Scrollable),
+    );
+  } else {
+    child = OverscrollScrollable.from(widget as Scrollable);
   }
+  return WrapperKeepAlive(child: child, wantKeepAlive: wantKeepAlive);
 }
 
-class NestedCustomScrollView extends FlutterCustomScrollView
-    with _OverscrollScrollableMixin {
+class NestedCustomScrollView extends FlutterCustomScrollView {
+  /// 是否缓存可滚动页面，不缓存可能导致页面在嵌套滚动时被销毁导致手势事件丢失
+  final bool wantKeepAlive;
+
   const NestedCustomScrollView({
     super.key,
     super.scrollDirection,
@@ -42,10 +43,19 @@ class NestedCustomScrollView extends FlutterCustomScrollView
     super.keyboardDismissBehavior,
     super.restorationId,
     super.clipBehavior,
+    this.wantKeepAlive = true,
   });
+
+  @override
+  Widget build(BuildContext context) {
+    return _convertScrollable(super.build(context), wantKeepAlive);
+  }
 }
 
-class NestedListView extends FlutterListView with _OverscrollScrollableMixin {
+class NestedListView extends FlutterListView {
+  /// 是否缓存可滚动页面，不缓存可能导致页面在嵌套滚动时被销毁导致手势事件丢失
+  final bool wantKeepAlive;
+
   NestedListView({
     super.key,
     super.scrollDirection,
@@ -67,6 +77,7 @@ class NestedListView extends FlutterListView with _OverscrollScrollableMixin {
     super.keyboardDismissBehavior,
     super.restorationId,
     super.clipBehavior,
+    this.wantKeepAlive = true,
   });
 
   NestedListView.builder({
@@ -92,6 +103,7 @@ class NestedListView extends FlutterListView with _OverscrollScrollableMixin {
     super.keyboardDismissBehavior,
     super.restorationId,
     super.clipBehavior,
+    this.wantKeepAlive = true,
   }) : super.builder(
           itemBuilder: itemBuilder,
           findChildIndexCallback: findChildIndexCallback,
@@ -119,6 +131,7 @@ class NestedListView extends FlutterListView with _OverscrollScrollableMixin {
     super.keyboardDismissBehavior,
     super.restorationId,
     super.clipBehavior,
+    this.wantKeepAlive = true,
   }) : super.separated(
           itemBuilder: itemBuilder,
           findChildIndexCallback: findChildIndexCallback,
@@ -144,10 +157,19 @@ class NestedListView extends FlutterListView with _OverscrollScrollableMixin {
     super.keyboardDismissBehavior,
     super.restorationId,
     super.clipBehavior,
+    this.wantKeepAlive = true,
   }) : super.custom(childrenDelegate: childrenDelegate);
+
+  @override
+  Widget build(BuildContext context) {
+    return _convertScrollable(super.build(context), wantKeepAlive);
+  }
 }
 
-class NestedGridView extends FlutterGridView with _OverscrollScrollableMixin {
+class NestedGridView extends FlutterGridView {
+  /// 是否缓存可滚动页面，不缓存可能导致页面在嵌套滚动时被销毁导致手势事件丢失
+  final bool wantKeepAlive;
+
   NestedGridView({
     super.key,
     super.scrollDirection,
@@ -168,6 +190,7 @@ class NestedGridView extends FlutterGridView with _OverscrollScrollableMixin {
     super.clipBehavior,
     super.keyboardDismissBehavior,
     super.restorationId,
+    this.wantKeepAlive = true,
   });
 
   NestedGridView.builder({
@@ -192,6 +215,7 @@ class NestedGridView extends FlutterGridView with _OverscrollScrollableMixin {
     super.keyboardDismissBehavior,
     super.restorationId,
     super.clipBehavior,
+    this.wantKeepAlive = true,
   }) : super.builder(gridDelegate: gridDelegate, itemBuilder: itemBuilder);
 
   const NestedGridView.custom({
@@ -211,6 +235,7 @@ class NestedGridView extends FlutterGridView with _OverscrollScrollableMixin {
     super.keyboardDismissBehavior,
     super.restorationId,
     super.clipBehavior,
+    this.wantKeepAlive = true,
   }) : super.custom(
           gridDelegate: gridDelegate,
           childrenDelegate: childrenDelegate,
@@ -239,6 +264,7 @@ class NestedGridView extends FlutterGridView with _OverscrollScrollableMixin {
     super.keyboardDismissBehavior,
     super.restorationId,
     super.clipBehavior,
+    this.wantKeepAlive = true,
   }) : super.count(crossAxisCount: crossAxisCount);
 
   NestedGridView.extent({
@@ -264,5 +290,11 @@ class NestedGridView extends FlutterGridView with _OverscrollScrollableMixin {
     super.keyboardDismissBehavior,
     super.restorationId,
     super.clipBehavior,
+    this.wantKeepAlive = true,
   }) : super.extent(maxCrossAxisExtent: maxCrossAxisExtent);
+
+  @override
+  Widget build(BuildContext context) {
+    return _convertScrollable(super.build(context), wantKeepAlive);
+  }
 }

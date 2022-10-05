@@ -1,9 +1,13 @@
 import 'package:flutter/widgets.dart';
+import 'package:nested_scroll_views/src/wrapper_keep_alive.dart';
 
 import 'flutter/widgets/single_child_scroll_view.dart';
 import 'overscroll_scrollable.dart';
 
 class NestedSingleChildScrollView extends FlutterSingleChildScrollView {
+  /// 是否缓存可滚动页面，不缓存可能导致页面在嵌套滚动时被销毁导致手势事件丢失
+  final bool wantKeepAlive;
+
   const NestedSingleChildScrollView({
     super.key,
     super.scrollDirection,
@@ -17,22 +21,25 @@ class NestedSingleChildScrollView extends FlutterSingleChildScrollView {
     super.clipBehavior,
     super.restorationId,
     super.keyboardDismissBehavior,
+    this.wantKeepAlive = true,
   });
 
   @override
   Widget build(BuildContext context) {
-    final widget = super.build(context);
+    final Widget child;
+    final Widget widget = super.build(context);
     if (widget is NotificationListener<ScrollUpdateNotification>) {
-      return NotificationListener<ScrollUpdateNotification>(
+      child = NotificationListener<ScrollUpdateNotification>(
         onNotification: widget.onNotification,
         child: OverscrollScrollable.from(widget.child as Scrollable),
       );
-    }
-    if (widget is PrimaryScrollController) {
-      return PrimaryScrollController.none(
+    } else if (widget is PrimaryScrollController) {
+      child = PrimaryScrollController.none(
         child: OverscrollScrollable.from(widget.child as Scrollable),
       );
+    } else {
+      child = OverscrollScrollable.from(widget as Scrollable);
     }
-    return OverscrollScrollable.from(widget as Scrollable);
+    return WrapperKeepAlive(child: child, wantKeepAlive: wantKeepAlive);
   }
 }

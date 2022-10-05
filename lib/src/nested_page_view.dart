@@ -3,8 +3,12 @@ import 'package:flutter/widgets.dart';
 import 'flutter/widgets/page_view.dart';
 import 'nested_scroll_notification.dart';
 import 'overscroll_scrollable.dart';
+import 'wrapper_keep_alive.dart';
 
 class NestedPageView extends FlutterPageView {
+  /// 是否缓存可滚动页面，不缓存可能导致页面在嵌套滚动时被销毁导致手势事件丢失
+  final bool wantKeepAlive;
+
   NestedPageView({
     super.key,
     super.scrollDirection,
@@ -20,6 +24,7 @@ class NestedPageView extends FlutterPageView {
     super.clipBehavior,
     super.scrollBehavior,
     super.padEnds,
+    this.wantKeepAlive = true,
   });
 
   NestedPageView.custom({
@@ -37,6 +42,7 @@ class NestedPageView extends FlutterPageView {
     super.clipBehavior,
     super.scrollBehavior,
     super.padEnds,
+    this.wantKeepAlive = true,
   }) : super.custom(childrenDelegate: childrenDelegate);
 
   NestedPageView.builder({
@@ -56,6 +62,7 @@ class NestedPageView extends FlutterPageView {
     super.clipBehavior,
     super.scrollBehavior,
     super.padEnds,
+    this.wantKeepAlive = true,
   }) : super.builder(
           itemBuilder: itemBuilder,
           findChildIndexCallback: findChildIndexCallback,
@@ -152,30 +159,10 @@ class _PageViewState extends FlutterPageViewState {
         return notificationListener.onNotification!(notification) ||
             _handleNotification(context, notification);
       },
-      // 缓存可滚动页面，不缓存可能导致页面在嵌套滚动时被销毁导致手势事件丢失
-      child: _AlwaysKeepAlive(child: OverscrollScrollable.from(scrollable)),
+      child: WrapperKeepAlive(
+        child: OverscrollScrollable.from(scrollable),
+        wantKeepAlive: (widget as NestedPageView).wantKeepAlive,
+      ),
     );
   }
-}
-
-/// 始终缓存组件
-class _AlwaysKeepAlive extends StatefulWidget {
-  final Widget child;
-
-  const _AlwaysKeepAlive({required this.child});
-
-  @override
-  State<_AlwaysKeepAlive> createState() => _AlwaysAlwaysKeepAliveState();
-}
-
-class _AlwaysAlwaysKeepAliveState extends State<_AlwaysKeepAlive>
-    with AutomaticKeepAliveClientMixin {
-  @override
-  Widget build(BuildContext context) {
-    super.build(context);
-    return widget.child;
-  }
-
-  @override
-  bool get wantKeepAlive => true;
 }
