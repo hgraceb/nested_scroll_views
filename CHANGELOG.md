@@ -1,3 +1,7 @@
+## 0.0.5
+
+- Fix the error of scrolling the outermost view.
+
 ## 0.0.4
 
 - Add wantKeepAlive argument.
