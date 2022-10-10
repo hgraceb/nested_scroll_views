@@ -1,13 +1,17 @@
 import 'package:flutter/widgets.dart';
 
-/// 嵌套回调滚动事件通知，由子嵌套组件发送，父嵌套组件通过调用不同回调以控制子嵌套组件的具体处理逻辑
-class NestedCallbackNotification extends ScrollNotification {
-  /// 是否忽略边界滚动事件的回调
-  final Function(bool ignoreOverscroll) ignoreOverscroll;
+/// 嵌套通知事件，用于判断是否有指定的父组件
+class NestedScrollNotification<T> extends ScrollNotification {
+  /// 期望的父组件类型
+  final Type expectType;
 
-  NestedCallbackNotification({
+  /// 判断有指定类型父组件后需要调用的回调
+  final Function() callback;
+
+  NestedScrollNotification({
     required super.metrics,
     required super.context,
-    required this.ignoreOverscroll,
+    required this.expectType,
+    required this.callback,
   });
 }

@@ -86,18 +86,15 @@ class _PageViewState extends FlutterPageViewState {
       // 不处理默认滚动事件
       return false;
     }
+
     // 获取可滚动组件当前位置信息
     final position = (widget as NestedPageView).controller.position;
     // 如果当前组件与边界滚动事件的滚动方向不一致
     if (position.axis != notification.metrics.axis) {
       return false;
     }
-    if (notification is NestedCallbackNotification) {
-      // 通知子组件忽略边界滚动事件
-      notification.ignoreOverscroll(true);
-      // 消耗嵌套通知事件
-      return true;
-    }
+
+    // 处理边界滚动事件
     if (notification is OverscrollNotification) {
       // 如果被父组件通知需要忽略边界滚动事件
       if (_ignoreOverscroll == true) {
@@ -117,15 +114,18 @@ class _PageViewState extends FlutterPageViewState {
       // 判断当前组件位置是否已到达边界
       if (position.hasPixels && position.atEdge) {
         // 处理多层嵌套，到达边界后发送通知，如果还有父组件则将后续边界滚动事件全部移交给父组件
-        NestedCallbackNotification(
+        NestedScrollNotification(
           metrics: notification.metrics,
           context: notification.context,
-          ignoreOverscroll: (ignore) => _ignoreOverscroll = ignore,
+          expectType: runtimeType,
+          callback: () => _ignoreOverscroll = true,
         ).dispatch(context);
       }
       // 消耗滚动事件
       return true;
     }
+
+    // 处理滚动结束事件
     if (notification is ScrollEndNotification) {
       if (notification.dragDetails != null) {
         // 滚动结束时还有额外的滚动数据，需要继续处理，如：子组件快速滑动切换到父组件
@@ -138,6 +138,18 @@ class _PageViewState extends FlutterPageViewState {
       _dragController?.dispose();
       _dragController = _ignoreOverscroll = null;
       return false;
+    }
+
+    // 处理嵌套滚动事件
+    if (notification is NestedScrollNotification) {
+      if (runtimeType == notification.expectType) {
+        // 通知子组件忽略边界滚动事件
+        notification.callback();
+        // 消耗嵌套通知事件
+        return true;
+      } else {
+        return false;
+      }
     }
     return false;
   }
