@@ -82,13 +82,19 @@ class _PageViewState extends FlutterPageViewState {
     BuildContext context,
     ScrollNotification notification,
   ) {
+    // 不处理默认滚动事件
     if (notification.depth == 0) {
-      // 不处理默认滚动事件
       return false;
     }
 
     // 获取可滚动组件当前位置信息
     final position = (widget as NestedPageView).controller.position;
+
+    // 当前不允许滚动
+    if (!position.physics.shouldAcceptUserOffset(position)) {
+      return false;
+    }
+
     // 如果当前组件与边界滚动事件的滚动方向不一致
     if (position.axis != notification.metrics.axis) {
       return false;

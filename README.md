@@ -27,9 +27,8 @@ Replace flutter's views with the following views and use them nested.
 
 ## Attention
 
-1. NeverScrollableScrollPhysics is invalid.
-2. Nested non-nested views with the same scroll direction will result in weird scrolling.
-3. Nested views are kept alive by default, you can set `wantKeepAlive` to false, which may lead to loss of gesture events because the page is destroyed.
+1. Nested non-nested views with the same scroll direction will result in weird scrolling.
+2. Nested views are kept alive by default, you can set `wantKeepAlive` to false, which may lead to loss of gesture events because the page is destroyed.
 
 ## Thanks
 

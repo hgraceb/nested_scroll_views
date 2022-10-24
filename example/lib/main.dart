@@ -115,8 +115,8 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
       ),
       body: NestedPageView(
-        physics: const BouncingScrollPhysics(),
         controller: _pageController,
+        physics: const BouncingScrollPhysics(),
         onPageChanged: (index) => setState(() => _currentIndex = index),
         children: childrenWithKey,
       ),
