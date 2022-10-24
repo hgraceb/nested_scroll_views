@@ -1,3 +1,7 @@
+## 0.0.6
+
+- Add support for NeverScrollableScrollPhysics.
+
 ## 0.0.5
 
 - Fix the error of scrolling the outermost view.
