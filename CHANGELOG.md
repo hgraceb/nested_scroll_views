@@ -1,3 +1,8 @@
+## 0.0.7
+
+- Refactor project import and export.
+- Replace the redundant NestedPageController with PageController.
+
 ## 0.0.6
 
 - Add support for NeverScrollableScrollPhysics.
