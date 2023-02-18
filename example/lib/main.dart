@@ -36,7 +36,7 @@ class _MyHomePageState extends State<MyHomePage> {
   int _currentIndex = 0;
   int _warpUnderwayCount = 0;
   late List<Widget> childrenWithKey;
-  final _pageController = NestedPageController();
+  final _pageController = PageController();
 
   Future<void> _animateToPage(int page) async {
     if (_warpUnderwayCount > 0 || _currentIndex == page) {
@@ -196,10 +196,10 @@ class SecondPage extends StatefulWidget {
 }
 
 class _SecondPageState extends State<SecondPage> {
-  final _firstPageController = NestedPageController();
-  final _secondPageController = NestedPageController();
-  final _thirdPageController = NestedPageController();
-  final _fourthPageController = NestedPageController();
+  final _firstPageController = PageController();
+  final _secondPageController = PageController();
+  final _thirdPageController = PageController();
+  final _fourthPageController = PageController();
 
   @override
   void dispose() {
@@ -318,7 +318,7 @@ class ThirdPage extends StatefulWidget {
 }
 
 class _ThirdPageState extends State<ThirdPage> {
-  final _pageController = NestedPageController();
+  final _pageController = PageController();
   final _scrollController = ScrollController();
 
   @override

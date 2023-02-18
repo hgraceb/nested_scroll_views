@@ -77,7 +77,7 @@ class FlutterTabBarView extends StatefulWidget {
 
 class FlutterTabBarViewState extends State<FlutterTabBarView> {
   TabController? _controller;
-  late FlutterPageController _pageController;
+  late PageController _pageController;
   late List<Widget> _children;
   late List<Widget> _childrenWithKey;
   int? _currentIndex;
@@ -128,7 +128,7 @@ class FlutterTabBarViewState extends State<FlutterTabBarView> {
     super.didChangeDependencies();
     _updateTabController();
     _currentIndex = _controller!.index;
-    _pageController = FlutterPageController(
+    _pageController = PageController(
       initialPage: _currentIndex!,
       viewportFraction: widget.viewportFraction,
     );
