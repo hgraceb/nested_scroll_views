@@ -2,11 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:flutter/foundation.dart';
-import 'package:flutter/gestures.dart';
-import 'package:flutter/material.dart';
-
-import '../widgets/page_view.dart';
+part of 'package:nested_scroll_views/src/nested_tabs.dart';
 
 /// A page view that displays the widget which corresponds to the currently
 /// selected tab.
@@ -22,11 +18,11 @@ import '../widgets/page_view.dart';
 /// [children] list and the length of the [TabBar.tabs] list.
 ///
 /// To see a sample implementation, visit the [TabController] documentation.
-class FlutterTabBarView extends StatefulWidget {
+class TabBarView extends StatefulWidget {
   /// Creates a page view with one child per tab.
   ///
   /// The length of [children] must be the same as the [controller]'s length.
-  const FlutterTabBarView({
+  const TabBarView({
     super.key,
     required this.children,
     this.controller,
@@ -72,10 +68,10 @@ class FlutterTabBarView extends StatefulWidget {
   final Clip clipBehavior;
 
   @override
-  State<FlutterTabBarView> createState() => FlutterTabBarViewState();
+  State<TabBarView> createState() => _TabBarViewState();
 }
 
-class FlutterTabBarViewState extends State<FlutterTabBarView> {
+class _TabBarViewState extends State<TabBarView> {
   TabController? _controller;
   late PageController _pageController;
   late List<Widget> _children;
@@ -135,7 +131,7 @@ class FlutterTabBarViewState extends State<FlutterTabBarView> {
   }
 
   @override
-  void didUpdateWidget(FlutterTabBarView oldWidget) {
+  void didUpdateWidget(TabBarView oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.controller != oldWidget.controller) {
       _updateTabController();
@@ -290,7 +286,7 @@ class FlutterTabBarViewState extends State<FlutterTabBarView> {
 
     return NotificationListener<ScrollNotification>(
       onNotification: _handleScrollNotification,
-      child: FlutterPageView(
+      child: PageView(
         dragStartBehavior: widget.dragStartBehavior,
         clipBehavior: widget.clipBehavior,
         controller: _pageController,

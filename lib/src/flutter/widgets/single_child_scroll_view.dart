@@ -2,11 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:math' as math;
-
-import 'package:flutter/gestures.dart' show DragStartBehavior;
-import 'package:flutter/rendering.dart';
-import 'package:flutter/widgets.dart';
+part of 'package:nested_scroll_views/src/nested_single_child_scroll_view.dart';
 
 /// A box in which a single widget can be scrolled.
 ///
@@ -124,9 +120,9 @@ import 'package:flutter/widgets.dart';
 ///  * [GridView], which handles multiple children in a scrolling grid.
 ///  * [PageView], for a scrollable that works page by page.
 ///  * [Scrollable], which handles arbitrary scrolling effects.
-class FlutterSingleChildScrollView extends StatelessWidget {
+class SingleChildScrollView extends StatelessWidget {
   /// Creates a box in which a single widget can be scrolled.
-  const FlutterSingleChildScrollView({
+  const SingleChildScrollView({
     super.key,
     this.scrollDirection = Axis.vertical,
     this.reverse = false,
@@ -140,14 +136,14 @@ class FlutterSingleChildScrollView extends StatelessWidget {
     this.restorationId,
     this.keyboardDismissBehavior = ScrollViewKeyboardDismissBehavior.manual,
   }) : assert(scrollDirection != null),
-       assert(dragStartBehavior != null),
-       assert(clipBehavior != null),
-       assert(
-         !(controller != null && (primary ?? false)),
-         'Primary ScrollViews obtain their ScrollController via inheritance '
-         'from a PrimaryScrollController widget. You cannot both set primary to '
-         'true and pass an explicit controller.',
-       );
+        assert(dragStartBehavior != null),
+        assert(clipBehavior != null),
+        assert(
+        !(controller != null && (primary ?? false)),
+        'Primary ScrollViews obtain their ScrollController via inheritance '
+            'from a PrimaryScrollController widget. You cannot both set primary to '
+            'true and pass an explicit controller.',
+        );
 
   /// The axis along which the scroll view scrolls.
   ///
@@ -263,10 +259,10 @@ class FlutterSingleChildScrollView extends StatelessWidget {
     }
 
     return effectivePrimary && scrollController != null
-      // Further descendant ScrollViews will not inherit the same
-      // PrimaryScrollController
-      ? PrimaryScrollController.none(child: scrollable)
-      : scrollable;
+    // Further descendant ScrollViews will not inherit the same
+    // PrimaryScrollController
+        ? PrimaryScrollController.none(child: scrollable)
+        : scrollable;
   }
 }
 
@@ -277,7 +273,7 @@ class _SingleChildViewport extends SingleChildRenderObjectWidget {
     super.child,
     required this.clipBehavior,
   }) : assert(axisDirection != null),
-       assert(clipBehavior != null);
+        assert(clipBehavior != null);
 
   final AxisDirection axisDirection;
   final ViewportOffset offset;
@@ -319,13 +315,13 @@ class _RenderSingleChildViewport extends RenderBox with RenderObjectWithChildMix
     RenderBox? child,
     required Clip clipBehavior,
   }) : assert(axisDirection != null),
-       assert(offset != null),
-       assert(cacheExtent != null),
-       assert(clipBehavior != null),
-       _axisDirection = axisDirection,
-       _offset = offset,
-       _cacheExtent = cacheExtent,
-       _clipBehavior = clipBehavior {
+        assert(offset != null),
+        assert(cacheExtent != null),
+        assert(clipBehavior != null),
+        _axisDirection = axisDirection,
+        _offset = offset,
+        _cacheExtent = cacheExtent,
+        _clipBehavior = clipBehavior {
     this.child = child;
   }
 
@@ -536,9 +532,9 @@ class _RenderSingleChildViewport extends RenderBox with RenderObjectWithChildMix
       case Clip.antiAlias:
       case Clip.antiAliasWithSaveLayer:
         return paintOffset.dx < 0 ||
-               paintOffset.dy < 0 ||
-               paintOffset.dx + child!.size.width > size.width ||
-               paintOffset.dy + child!.size.height > size.height;
+            paintOffset.dy < 0 ||
+            paintOffset.dx + child!.size.width > size.width ||
+            paintOffset.dy + child!.size.height > size.height;
     }
   }
 

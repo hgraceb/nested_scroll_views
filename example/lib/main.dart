@@ -1,6 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:nested_scroll_views/nested_scroll_views.dart';
+import 'package:nested_scroll_views/material.dart';
 
 void main() => runApp(const MyApp());
 

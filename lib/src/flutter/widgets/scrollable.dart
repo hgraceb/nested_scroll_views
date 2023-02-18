@@ -2,17 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:async';
-import 'dart:math' as math;
-
-import 'package:flutter/foundation.dart';
-import 'package:flutter/gestures.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter/scheduler.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
-
-export 'package:flutter/physics.dart' show Tolerance;
+part of 'package:nested_scroll_views/src/overscroll_scrollable.dart';
 
 /// Signature used by [Scrollable] to build the viewport through which the
 /// scrollable content is displayed.
@@ -59,11 +49,11 @@ typedef ViewportBuilder = Widget Function(BuildContext context, ViewportOffset p
 ///    child.
 ///  * [ScrollNotification] and [NotificationListener], which can be used to watch
 ///    the scroll position without using a [ScrollController].
-class FlutterScrollable extends StatefulWidget {
+class Scrollable extends StatefulWidget {
   /// Creates a widget that scrolls.
   ///
   /// The [axisDirection] and [viewportBuilder] arguments must not be null.
-  const FlutterScrollable({
+  const Scrollable({
     super.key,
     this.axisDirection = AxisDirection.down,
     this.controller,
@@ -161,7 +151,7 @@ class FlutterScrollable extends StatefulWidget {
   /// If [incrementCalculator] is null, the default for
   /// [ScrollIncrementType.page] is 80% of the size of the scroll window, and
   /// for [ScrollIncrementType.line], 50 logical pixels.
-  final FlutterScrollIncrementCalculator? incrementCalculator;
+  final ScrollIncrementCalculator? incrementCalculator;
 
   /// Whether the scroll actions introduced by this [Scrollable] are exposed
   /// in the semantics tree.
@@ -255,7 +245,7 @@ class FlutterScrollable extends StatefulWidget {
   Axis get axis => axisDirectionToAxis(axisDirection);
 
   @override
-  FlutterScrollableState createState() => FlutterScrollableState();
+  ScrollableState createState() => ScrollableState();
 
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
@@ -275,7 +265,7 @@ class FlutterScrollable extends StatefulWidget {
   ///
   /// Calling this method will create a dependency on the closest [Scrollable]
   /// in the [context], if there is one.
-  static FlutterScrollableState? of(BuildContext context) {
+  static ScrollableState? of(BuildContext context) {
     final _ScrollableScope? widget = context.dependOnInheritedWidgetOfExactType<_ScrollableScope>();
     return widget?.scrollable;
   }
@@ -319,7 +309,7 @@ class FlutterScrollable extends StatefulWidget {
     // the `targetRenderObject` invisible.
     // Also see https://github.com/flutter/flutter/issues/65100
     RenderObject? targetRenderObject;
-    FlutterScrollableState? scrollable = FlutterScrollable.of(context);
+    ScrollableState? scrollable = Scrollable.of(context);
     while (scrollable != null) {
       futures.add(scrollable.position.ensureVisible(
         context.findRenderObject()!,
@@ -332,7 +322,7 @@ class FlutterScrollable extends StatefulWidget {
 
       targetRenderObject = targetRenderObject ?? context.findRenderObject();
       context = scrollable.context;
-      scrollable = FlutterScrollable.of(context);
+      scrollable = Scrollable.of(context);
     }
 
     if (futures.isEmpty || duration == Duration.zero) {
@@ -355,7 +345,7 @@ class _ScrollableScope extends InheritedWidget {
   }) : assert(scrollable != null),
         assert(child != null);
 
-  final FlutterScrollableState scrollable;
+  final ScrollableState scrollable;
   final ScrollPosition position;
 
   @override
@@ -374,7 +364,7 @@ class _ScrollableScope extends InheritedWidget {
 ///
 /// This class is not intended to be subclassed. To specialize the behavior of a
 /// [Scrollable], provide it with a [ScrollPhysics].
-class FlutterScrollableState extends State<FlutterScrollable> with TickerProviderStateMixin, RestorationMixin
+class ScrollableState extends State<Scrollable> with TickerProviderStateMixin, RestorationMixin
     implements ScrollContext {
   /// The manager for this [Scrollable] widget's viewport position.
   ///
@@ -389,7 +379,7 @@ class FlutterScrollableState extends State<FlutterScrollable> with TickerProvide
   @override
   AxisDirection get axisDirection => widget.axisDirection;
 
-  late ScrollBehavior configuration;
+  late ScrollBehavior _configuration;
   ScrollPhysics? _physics;
   ScrollController? _fallbackScrollController;
   MediaQueryData? _mediaQueryData;
@@ -398,8 +388,8 @@ class FlutterScrollableState extends State<FlutterScrollable> with TickerProvide
 
   // Only call this from places that will definitely trigger a rebuild.
   void _updatePosition() {
-    configuration = widget.scrollBehavior ?? ScrollConfiguration.of(context);
-    _physics = configuration.getScrollPhysics(context);
+    _configuration = widget.scrollBehavior ?? ScrollConfiguration.of(context);
+    _physics = _configuration.getScrollPhysics(context);
     if (widget.physics != null) {
       _physics = widget.physics!.applyTo(_physics);
     } else if (widget.scrollBehavior != null) {
@@ -452,7 +442,7 @@ class FlutterScrollableState extends State<FlutterScrollable> with TickerProvide
     super.didChangeDependencies();
   }
 
-  bool _shouldUpdatePosition(FlutterScrollable oldWidget) {
+  bool _shouldUpdatePosition(Scrollable oldWidget) {
     ScrollPhysics? newPhysics = widget.physics ?? widget.scrollBehavior?.getScrollPhysics(context);
     ScrollPhysics? oldPhysics = oldWidget.physics ?? oldWidget.scrollBehavior?.getScrollPhysics(context);
     do {
@@ -467,7 +457,7 @@ class FlutterScrollableState extends State<FlutterScrollable> with TickerProvide
   }
 
   @override
-  void didUpdateWidget(FlutterScrollable oldWidget) {
+  void didUpdateWidget(Scrollable oldWidget) {
     super.didUpdateWidget(oldWidget);
 
     if (widget.controller != oldWidget.controller) {
@@ -530,7 +520,7 @@ class FlutterScrollableState extends State<FlutterScrollable> with TickerProvide
   final GlobalKey _ignorePointerKey = GlobalKey();
 
   // This field is set during layout, and then reused until the next time it is set.
-  Map<Type, GestureRecognizerFactory> gestureRecognizers = const <Type, GestureRecognizerFactory>{};
+  Map<Type, GestureRecognizerFactory> _gestureRecognizers = const <Type, GestureRecognizerFactory>{};
   bool _shouldIgnorePointer = false;
 
   bool? _lastCanDrag;
@@ -543,7 +533,7 @@ class FlutterScrollableState extends State<FlutterScrollable> with TickerProvide
       return;
     }
     if (!value) {
-      gestureRecognizers = const <Type, GestureRecognizerFactory>{};
+      _gestureRecognizers = const <Type, GestureRecognizerFactory>{};
       // Cancel the active hold/drag (if any) because the gesture recognizers
       // will soon be disposed by our RawGestureDetector, and we won't be
       // receiving pointer up events to cancel the hold/drag.
@@ -551,9 +541,9 @@ class FlutterScrollableState extends State<FlutterScrollable> with TickerProvide
     } else {
       switch (widget.axis) {
         case Axis.vertical:
-          gestureRecognizers = <Type, GestureRecognizerFactory>{
+          _gestureRecognizers = <Type, GestureRecognizerFactory>{
             VerticalDragGestureRecognizer: GestureRecognizerFactoryWithHandlers<VerticalDragGestureRecognizer>(
-                  () => VerticalDragGestureRecognizer(supportedDevices: configuration.dragDevices),
+                  () => VerticalDragGestureRecognizer(supportedDevices: _configuration.dragDevices),
                   (VerticalDragGestureRecognizer instance) {
                 instance
                   ..onDown = _handleDragDown
@@ -564,7 +554,7 @@ class FlutterScrollableState extends State<FlutterScrollable> with TickerProvide
                   ..minFlingDistance = _physics?.minFlingDistance
                   ..minFlingVelocity = _physics?.minFlingVelocity
                   ..maxFlingVelocity = _physics?.maxFlingVelocity
-                  ..velocityTrackerBuilder = configuration.velocityTrackerBuilder(context)
+                  ..velocityTrackerBuilder = _configuration.velocityTrackerBuilder(context)
                   ..dragStartBehavior = widget.dragStartBehavior
                   ..gestureSettings = _mediaQueryData?.gestureSettings;
               },
@@ -572,9 +562,9 @@ class FlutterScrollableState extends State<FlutterScrollable> with TickerProvide
           };
           break;
         case Axis.horizontal:
-          gestureRecognizers = <Type, GestureRecognizerFactory>{
+          _gestureRecognizers = <Type, GestureRecognizerFactory>{
             HorizontalDragGestureRecognizer: GestureRecognizerFactoryWithHandlers<HorizontalDragGestureRecognizer>(
-                  () => HorizontalDragGestureRecognizer(supportedDevices: configuration.dragDevices),
+                  () => HorizontalDragGestureRecognizer(supportedDevices: _configuration.dragDevices),
                   (HorizontalDragGestureRecognizer instance) {
                 instance
                   ..onDown = _handleDragDown
@@ -585,7 +575,7 @@ class FlutterScrollableState extends State<FlutterScrollable> with TickerProvide
                   ..minFlingDistance = _physics?.minFlingDistance
                   ..minFlingVelocity = _physics?.minFlingVelocity
                   ..maxFlingVelocity = _physics?.maxFlingVelocity
-                  ..velocityTrackerBuilder = configuration.velocityTrackerBuilder(context)
+                  ..velocityTrackerBuilder = _configuration.velocityTrackerBuilder(context)
                   ..dragStartBehavior = widget.dragStartBehavior
                   ..gestureSettings = _mediaQueryData?.gestureSettings;
               },
@@ -597,7 +587,7 @@ class FlutterScrollableState extends State<FlutterScrollable> with TickerProvide
     _lastCanDrag = value;
     _lastAxisDirection = widget.axis;
     if (_gestureDetectorKey.currentState != null) {
-      _gestureDetectorKey.currentState!.replaceGestureRecognizers(gestureRecognizers);
+      _gestureDetectorKey.currentState!.replaceGestureRecognizers(_gestureRecognizers);
     }
   }
 
@@ -753,7 +743,7 @@ class FlutterScrollableState extends State<FlutterScrollable> with TickerProvide
         onPointerSignal: _receivedPointerSignal,
         child: RawGestureDetector(
           key: _gestureDetectorKey,
-          gestures: gestureRecognizers,
+          gestures: _gestureRecognizers,
           behavior: HitTestBehavior.opaque,
           excludeFromSemantics: widget.excludeFromSemantics,
           child: Semantics(
@@ -788,9 +778,9 @@ class FlutterScrollableState extends State<FlutterScrollable> with TickerProvide
       clipBehavior: widget.clipBehavior,
     );
 
-    result = configuration.buildScrollbar(
+    result = _configuration.buildScrollbar(
       context,
-      configuration.buildOverscrollIndicator(context, result, details),
+      _configuration.buildOverscrollIndicator(context, result, details),
       details,
     );
 
@@ -831,7 +821,7 @@ class _ScrollableSelectionHandler extends StatefulWidget {
     required this.child,
   });
 
-  final FlutterScrollableState state;
+  final ScrollableState state;
   final ScrollPosition position;
   final Widget child;
   final SelectionRegistrar registrar;
@@ -890,7 +880,7 @@ class EdgeDraggingAutoScroller {
   static const double _kDefaultAutoScrollVelocityScalar = 7;
 
   /// The [Scrollable] this auto scroller is scrolling.
-  final FlutterScrollableState scrollable;
+  final ScrollableState scrollable;
 
   /// Called when a scroll view is scrolled.
   ///
@@ -1031,7 +1021,7 @@ class _ScrollableSelectionContainerDelegate extends MultiSelectableSelectionCont
   static const double _kDefaultDragTargetSize = 200;
   static const double _kDefaultSelectToScrollVelocityScalar = 30;
 
-  final FlutterScrollableState state;
+  final ScrollableState state;
   final EdgeDraggingAutoScroller _autoScroller;
   bool _scheduledLayoutChange = false;
   Offset? _currentDragStartRelatedToOrigin;
@@ -1277,7 +1267,7 @@ class _ScrollableSelectionContainerDelegate extends MultiSelectableSelectionCont
   }
 }
 
-Offset _getDeltaToScrollOrigin(FlutterScrollableState scrollableState) {
+Offset _getDeltaToScrollOrigin(ScrollableState scrollableState) {
   switch (scrollableState.axisDirection) {
     case AxisDirection.down:
       return Offset(0, scrollableState.position.pixels);
@@ -1288,41 +1278,6 @@ Offset _getDeltaToScrollOrigin(FlutterScrollableState scrollableState) {
     case AxisDirection.right:
       return Offset(scrollableState.position.pixels, 0);
   }
-}
-
-/// Describes the aspects of a Scrollable widget to inform inherited widgets
-/// like [ScrollBehavior] for decorating.
-///
-/// Decorations like [GlowingOverscrollIndicator]s and [Scrollbar]s require
-/// information about the Scrollable in order to be initialized.
-@immutable
-class FlutterScrollableDetails {
-  /// Creates a set of details describing the [Scrollable]. The [direction]
-  /// cannot be null.
-  const FlutterScrollableDetails({
-    required this.direction,
-    required this.controller,
-    this.clipBehavior,
-  });
-
-  /// The direction in which this widget scrolls.
-  ///
-  /// Cannot be null.
-  final AxisDirection direction;
-
-  /// A [ScrollController] that can be used to control the position of the
-  /// [Scrollable] widget.
-  ///
-  /// This can be used by [ScrollBehavior] to apply a [Scrollbar] to the associated
-  /// [Scrollable].
-  final ScrollController controller;
-
-  /// {@macro flutter.material.Material.clipBehavior}
-  ///
-  /// This can be used by [MaterialScrollBehavior] to clip [StretchingOverscrollIndicator].
-  ///
-  /// Defaults to null.
-  final Clip? clipBehavior;
 }
 
 /// With [_ScrollSemantics] certain child [SemanticsNode]s can be
@@ -1479,7 +1434,7 @@ class _RenderScrollSemantics extends RenderProxyBox {
 ///
 /// This function is used as the type for [Scrollable.incrementCalculator],
 /// which is called from a [ScrollAction].
-typedef FlutterScrollIncrementCalculator = double Function(FlutterScrollIncrementDetails details);
+typedef ScrollIncrementCalculator = double Function(ScrollIncrementDetails details);
 
 /// Describes the type of scroll increment that will be performed by a
 /// [ScrollAction] on a [Scrollable].
@@ -1496,7 +1451,7 @@ typedef FlutterScrollIncrementCalculator = double Function(FlutterScrollIncremen
 /// recommended that at least the relative magnitudes of the scrolls match
 /// expectations.
 /// {@endtemplate}
-enum FlutterScrollIncrementType {
+enum ScrollIncrementType {
   /// Indicates that the [ScrollIncrementCalculator] should return the scroll
   /// distance it should move when the user requests to scroll by a "line".
   ///
@@ -1519,11 +1474,11 @@ enum FlutterScrollIncrementType {
 /// A details object that describes the type of scroll increment being requested
 /// of a [ScrollIncrementCalculator] function, as well as the current metrics
 /// for the scrollable.
-class FlutterScrollIncrementDetails {
+class ScrollIncrementDetails {
   /// A const constructor for a [ScrollIncrementDetails].
   ///
   /// All of the arguments must not be null, and are required.
-  const FlutterScrollIncrementDetails({
+  const ScrollIncrementDetails({
     required this.type,
     required this.metrics,
   })  : assert(type != null),
@@ -1532,7 +1487,7 @@ class FlutterScrollIncrementDetails {
   /// The type of scroll this is (e.g. line, page, etc.).
   ///
   /// {@macro flutter.widgets.ScrollIncrementType.intent}
-  final FlutterScrollIncrementType type;
+  final ScrollIncrementType type;
 
   /// The current metrics of the scrollable that is being scrolled.
   final ScrollMetrics metrics;
@@ -1544,12 +1499,12 @@ class FlutterScrollIncrementDetails {
 /// The actual amount of the scroll is determined by the
 /// [Scrollable.incrementCalculator], or by its defaults if that is not
 /// specified.
-class FlutterScrollIntent extends Intent {
+class ScrollIntent extends Intent {
   /// Creates a const [ScrollIntent] that requests scrolling in the given
   /// [direction], with the given [type].
-  const FlutterScrollIntent({
+  const ScrollIntent({
     required this.direction,
-    this.type = FlutterScrollIncrementType.line,
+    this.type = ScrollIncrementType.line,
   })  : assert(direction != null),
         assert(type != null);
 
@@ -1558,7 +1513,7 @@ class FlutterScrollIntent extends Intent {
   final AxisDirection direction;
 
   /// The type of scrolling that is intended.
-  final FlutterScrollIncrementType type;
+  final ScrollIncrementType type;
 }
 
 /// An [Action] that scrolls the [Scrollable] that encloses the current
@@ -1572,9 +1527,9 @@ class FlutterScrollIntent extends Intent {
 /// for a [ScrollIntent.type] set to [ScrollIncrementType.page] is 80% of the
 /// size of the scroll window, and for [ScrollIncrementType.line], 50 logical
 /// pixels.
-class ScrollAction extends Action<FlutterScrollIntent> {
+class ScrollAction extends Action<ScrollIntent> {
   @override
-  bool isEnabled(FlutterScrollIntent intent) {
+  bool isEnabled(ScrollIntent intent) {
     final FocusNode? focus = primaryFocus;
     final bool contextIsValid = focus != null && focus.context != null;
     if (contextIsValid) {
@@ -1596,7 +1551,7 @@ class ScrollAction extends Action<FlutterScrollIntent> {
   // metrics (pixels, viewportDimension, maxScrollExtent, minScrollExtent) are
   // null. The type and state arguments must not be null, and the widget must
   // have already been laid out so that the position fields are valid.
-  double _calculateScrollIncrement(FlutterScrollableState state, { FlutterScrollIncrementType type = FlutterScrollIncrementType.line }) {
+  double _calculateScrollIncrement(ScrollableState state, { ScrollIncrementType type = ScrollIncrementType.line }) {
     assert(type != null);
     assert(state.position != null);
     assert(state.position.hasPixels);
@@ -1606,23 +1561,23 @@ class ScrollAction extends Action<FlutterScrollIntent> {
     assert(state._physics == null || state._physics!.shouldAcceptUserOffset(state.position));
     if (state.widget.incrementCalculator != null) {
       return state.widget.incrementCalculator!(
-        FlutterScrollIncrementDetails(
+        ScrollIncrementDetails(
           type: type,
           metrics: state.position,
         ),
       );
     }
     switch (type) {
-      case FlutterScrollIncrementType.line:
+      case ScrollIncrementType.line:
         return 50.0;
-      case FlutterScrollIncrementType.page:
+      case ScrollIncrementType.page:
         return 0.8 * state.position.viewportDimension;
     }
   }
 
   // Find out how much of an increment to move by, taking the different
   // directions into account.
-  double _getIncrement(FlutterScrollableState state, FlutterScrollIntent intent) {
+  double _getIncrement(ScrollableState state, ScrollIntent intent) {
     final double increment = _calculateScrollIncrement(state, type: intent.type);
     switch (intent.direction) {
       case AxisDirection.down:
@@ -1669,8 +1624,8 @@ class ScrollAction extends Action<FlutterScrollIntent> {
   }
 
   @override
-  void invoke(FlutterScrollIntent intent) {
-    FlutterScrollableState? state = FlutterScrollable.of(primaryFocus!.context!);
+  void invoke(ScrollIntent intent) {
+    ScrollableState? state = Scrollable.of(primaryFocus!.context!);
     if (state == null) {
       final ScrollController? primaryScrollController = PrimaryScrollController.of(primaryFocus!.context!);
       assert (() {
@@ -1697,10 +1652,10 @@ class ScrollAction extends Action<FlutterScrollIntent> {
       }());
 
       if (primaryScrollController!.position.context.notificationContext == null
-          && FlutterScrollable.of(primaryScrollController.position.context.notificationContext!) == null) {
+          && Scrollable.of(primaryScrollController.position.context.notificationContext!) == null) {
         return;
       }
-      state = FlutterScrollable.of(primaryScrollController.position.context.notificationContext!);
+      state = Scrollable.of(primaryScrollController.position.context.notificationContext!);
     }
     assert(state != null, '$ScrollAction was invoked on a context that has no scrollable parent');
     assert(state!.position.hasPixels, 'Scrollable must be laid out before it can be scrolled via a ScrollAction');

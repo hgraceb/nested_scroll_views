@@ -2,9 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:flutter/gestures.dart' show DragStartBehavior;
-import 'package:flutter/rendering.dart';
-import 'package:flutter/widgets.dart';
+part of 'package:nested_scroll_views/src/nested_page_view.dart';
 
 class _ForceImplicitScrollPhysics extends ScrollPhysics {
   const _ForceImplicitScrollPhysics({
@@ -62,7 +60,7 @@ const PageScrollPhysics _kPagePhysics = PageScrollPhysics();
 ///  * [GridView], for a scrollable grid of boxes.
 ///  * [ScrollNotification] and [NotificationListener], which can be used to watch
 ///    the scroll position without using a [ScrollController].
-class FlutterPageView extends StatefulWidget {
+class PageView extends StatefulWidget {
   /// Creates a scrollable list that works page by page from an explicit [List]
   /// of widgets.
   ///
@@ -81,7 +79,7 @@ class FlutterPageView extends StatefulWidget {
   /// [ListView], where implicit scroll actions will move to the next page
   /// rather than into the contents of the [PageView].
   /// {@endtemplate}
-  FlutterPageView({
+  PageView({
     super.key,
     this.scrollDirection = Axis.horizontal,
     this.reverse = false,
@@ -124,7 +122,7 @@ class FlutterPageView extends StatefulWidget {
   /// {@endtemplate}
   ///
   /// {@macro flutter.widgets.PageView.allowImplicitScrolling}
-  FlutterPageView.builder({
+  PageView.builder({
     super.key,
     this.scrollDirection = Axis.horizontal,
     this.reverse = false,
@@ -234,7 +232,7 @@ class FlutterPageView extends StatefulWidget {
   /// {@end-tool}
   ///
   /// {@macro flutter.widgets.PageView.allowImplicitScrolling}
-  FlutterPageView.custom({
+  PageView.custom({
     super.key,
     this.scrollDirection = Axis.horizontal,
     this.reverse = false,
@@ -357,10 +355,10 @@ class FlutterPageView extends StatefulWidget {
   final bool padEnds;
 
   @override
-  State<FlutterPageView> createState() => FlutterPageViewState();
+  State<PageView> createState() => _PageViewState();
 }
 
-class FlutterPageViewState extends State<FlutterPageView> {
+class _PageViewState extends State<PageView> {
   int _lastReportedPage = 0;
 
   @override

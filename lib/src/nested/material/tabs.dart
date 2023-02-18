@@ -1,10 +1,6 @@
-import 'package:flutter/material.dart';
+part of 'package:nested_scroll_views/src/nested_tabs.dart';
 
-import 'flutter/material/tabs.dart';
-import 'flutter/widgets/page_view.dart';
-import 'nested_page_view.dart';
-
-class NestedTabBarView extends FlutterTabBarView {
+class NestedTabBarView extends TabBarView {
   /// 是否缓存可滚动页面，不缓存可能导致页面在嵌套滚动时被销毁导致手势事件丢失
   final bool wantKeepAlive;
 
@@ -20,15 +16,15 @@ class NestedTabBarView extends FlutterTabBarView {
   });
 
   @override
-  State<FlutterTabBarView> createState() => _NestedTabBarViewState();
+  State<TabBarView> createState() => _NestedTabBarViewState();
 }
 
-class _NestedTabBarViewState extends FlutterTabBarViewState {
+class _NestedTabBarViewState extends _TabBarViewState {
   @override
   Widget build(BuildContext context) {
     final notificationListener =
         super.build(context) as NotificationListener<ScrollNotification>;
-    final flutterPageView = notificationListener.child as FlutterPageView;
+    final flutterPageView = notificationListener.child as PageView;
     return NotificationListener<ScrollNotification>(
       onNotification: notificationListener.onNotification,
       child: NestedPageView.custom(

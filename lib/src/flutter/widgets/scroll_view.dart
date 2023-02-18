@@ -2,11 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:math' as math;
-
-import 'package:flutter/gestures.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter/widgets.dart';
+part of 'package:nested_scroll_views/src/nested_scroll_view.dart';
 
 // Examples can assume:
 // late int itemCount;
@@ -52,7 +48,7 @@ enum ScrollViewKeyboardDismissBehavior {
 ///    effects using slivers.
 ///  * [ScrollNotification] and [NotificationListener], which can be used to watch
 ///    the scroll position without using a [ScrollController].
-abstract class FlutterScrollView extends StatelessWidget {
+abstract class ScrollView extends StatelessWidget {
   /// Creates a widget that scrolls.
   ///
   /// The [ScrollView.primary] argument defaults to true for vertical
@@ -66,7 +62,7 @@ abstract class FlutterScrollView extends StatelessWidget {
   /// The [scrollDirection], [reverse], and [shrinkWrap] arguments must not be null.
   ///
   /// The [anchor] argument must be non-null and in the range 0.0 to 1.0.
-  const FlutterScrollView({
+  const ScrollView({
     super.key,
     this.scrollDirection = Axis.vertical,
     this.reverse = false,
@@ -84,21 +80,21 @@ abstract class FlutterScrollView extends StatelessWidget {
     this.restorationId,
     this.clipBehavior = Clip.hardEdge,
   }) : assert(scrollDirection != null),
-       assert(reverse != null),
-       assert(shrinkWrap != null),
-       assert(dragStartBehavior != null),
-       assert(clipBehavior != null),
-       assert(
-         !(controller != null && (primary ?? false)),
-         'Primary ScrollViews obtain their ScrollController via inheritance '
-         'from a PrimaryScrollController widget. You cannot both set primary to '
-         'true and pass an explicit controller.',
-       ),
-       assert(!shrinkWrap || center == null),
-       assert(anchor != null),
-       assert(anchor >= 0.0 && anchor <= 1.0),
-       assert(semanticChildCount == null || semanticChildCount >= 0),
-       physics = physics ?? ((primary ?? false) || (primary == null && controller == null && identical(scrollDirection, Axis.vertical)) ? const AlwaysScrollableScrollPhysics() : null);
+        assert(reverse != null),
+        assert(shrinkWrap != null),
+        assert(dragStartBehavior != null),
+        assert(clipBehavior != null),
+        assert(
+        !(controller != null && (primary ?? false)),
+        'Primary ScrollViews obtain their ScrollController via inheritance '
+            'from a PrimaryScrollController widget. You cannot both set primary to '
+            'true and pass an explicit controller.',
+        ),
+        assert(!shrinkWrap || center == null),
+        assert(anchor != null),
+        assert(anchor >= 0.0 && anchor <= 1.0),
+        assert(semanticChildCount == null || semanticChildCount >= 0),
+        physics = physics ?? ((primary ?? false) || (primary == null && controller == null && identical(scrollDirection, Axis.vertical)) ? const AlwaysScrollableScrollPhysics() : null);
 
   /// {@template flutter.widgets.scroll_view.scrollDirection}
   /// The axis along which the scroll view scrolls.
@@ -347,11 +343,11 @@ abstract class FlutterScrollView extends StatelessWidget {
   /// The `slivers` argument is the value obtained from [buildSlivers].
   @protected
   Widget buildViewport(
-    BuildContext context,
-    ViewportOffset offset,
-    AxisDirection axisDirection,
-    List<Widget> slivers,
-  ) {
+      BuildContext context,
+      ViewportOffset offset,
+      AxisDirection axisDirection,
+      List<Widget> slivers,
+      ) {
     assert(() {
       switch (axisDirection) {
         case AxisDirection.up:
@@ -360,7 +356,7 @@ abstract class FlutterScrollView extends StatelessWidget {
             context,
             why: 'to determine the cross-axis direction of the scroll view',
             hint: 'Vertical scroll views create Viewport widgets that try to determine their cross axis direction '
-                  'from the ambient Directionality.',
+                'from the ambient Directionality.',
           );
         case AxisDirection.left:
         case AxisDirection.right:
@@ -413,7 +409,7 @@ abstract class FlutterScrollView extends StatelessWidget {
     );
 
     final Widget scrollableResult = effectivePrimary && scrollController != null
-        // Further descendant ScrollViews will not inherit the same PrimaryScrollController
+    // Further descendant ScrollViews will not inherit the same PrimaryScrollController
         ? PrimaryScrollController.none(child: scrollable)
         : scrollable;
 
@@ -571,11 +567,11 @@ abstract class FlutterScrollView extends StatelessWidget {
 ///    the scroll position without using a [ScrollController].
 ///  * [IndexedSemantics], which allows annotating child lists with an index
 ///    for scroll announcements.
-class FlutterCustomScrollView extends FlutterScrollView {
+class CustomScrollView extends ScrollView {
   /// Creates a [ScrollView] that creates custom scroll effects using slivers.
   ///
   /// See the [ScrollView] constructor for more details on these arguments.
-  const FlutterCustomScrollView({
+  const CustomScrollView({
     super.key,
     super.scrollDirection,
     super.reverse,
@@ -610,11 +606,11 @@ class FlutterCustomScrollView extends FlutterScrollView {
 ///  * [GridView], which is a [BoxScrollView] that uses a 2D layout model.
 ///  * [CustomScrollView], which can combine multiple child layout models into a
 ///    single scroll view.
-abstract class FlutterBoxScrollView extends FlutterScrollView {
+abstract class BoxScrollView extends ScrollView {
   /// Creates a [ScrollView] uses a single child layout model.
   ///
   /// If the [primary] argument is true, the [controller] must be null.
-  const FlutterBoxScrollView({
+  const BoxScrollView({
     super.key,
     super.scrollDirection,
     super.reverse,
@@ -643,9 +639,9 @@ abstract class FlutterBoxScrollView extends FlutterScrollView {
       if (mediaQuery != null) {
         // Automatically pad sliver with padding from MediaQuery.
         final EdgeInsets mediaQueryHorizontalPadding =
-            mediaQuery.padding.copyWith(top: 0.0, bottom: 0.0);
+        mediaQuery.padding.copyWith(top: 0.0, bottom: 0.0);
         final EdgeInsets mediaQueryVerticalPadding =
-            mediaQuery.padding.copyWith(left: 0.0, right: 0.0);
+        mediaQuery.padding.copyWith(left: 0.0, right: 0.0);
         // Consume the main axis padding with SliverPadding.
         effectivePadding = scrollDirection == Axis.vertical
             ? mediaQueryVerticalPadding
@@ -1015,7 +1011,7 @@ abstract class FlutterBoxScrollView extends FlutterScrollView {
 ///  * Cookbook: [Create a horizontal list](https://flutter.dev/docs/cookbook/lists/horizontal-list)
 ///  * Cookbook: [Create lists with different types of items](https://flutter.dev/docs/cookbook/lists/mixed-list)
 ///  * Cookbook: [Implement swipe to dismiss](https://flutter.dev/docs/cookbook/gestures/dismissible)
-class FlutterListView extends FlutterBoxScrollView {
+class ListView extends BoxScrollView {
   /// Creates a scrollable, linear array of widgets from an explicit [List].
   ///
   /// This constructor is appropriate for list views with a small number of
@@ -1037,7 +1033,7 @@ class FlutterListView extends FlutterBoxScrollView {
   /// `addSemanticIndexes` argument corresponds to the
   /// [SliverChildListDelegate.addSemanticIndexes] property. None
   /// may be null.
-  FlutterListView({
+  ListView({
     super.key,
     super.scrollDirection,
     super.reverse,
@@ -1059,18 +1055,18 @@ class FlutterListView extends FlutterBoxScrollView {
     super.restorationId,
     super.clipBehavior,
   }) : assert(
-         itemExtent == null || prototypeItem == null,
-         'You can only pass itemExtent or prototypeItem, not both.',
-       ),
-       childrenDelegate = SliverChildListDelegate(
-         children,
-         addAutomaticKeepAlives: addAutomaticKeepAlives,
-         addRepaintBoundaries: addRepaintBoundaries,
-         addSemanticIndexes: addSemanticIndexes,
-       ),
-       super(
-         semanticChildCount: semanticChildCount ?? children.length,
-       );
+  itemExtent == null || prototypeItem == null,
+  'You can only pass itemExtent or prototypeItem, not both.',
+  ),
+        childrenDelegate = SliverChildListDelegate(
+          children,
+          addAutomaticKeepAlives: addAutomaticKeepAlives,
+          addRepaintBoundaries: addRepaintBoundaries,
+          addSemanticIndexes: addSemanticIndexes,
+        ),
+        super(
+        semanticChildCount: semanticChildCount ?? children.length,
+      );
 
   /// Creates a scrollable, linear array of widgets that are created on demand.
   ///
@@ -1101,7 +1097,7 @@ class FlutterListView extends FlutterBoxScrollView {
   /// `addSemanticIndexes` argument corresponds to the
   /// [SliverChildBuilderDelegate.addSemanticIndexes] property. None may be
   /// null.
-  FlutterListView.builder({
+  ListView.builder({
     super.key,
     super.scrollDirection,
     super.reverse,
@@ -1125,22 +1121,22 @@ class FlutterListView extends FlutterBoxScrollView {
     super.restorationId,
     super.clipBehavior,
   }) : assert(itemCount == null || itemCount >= 0),
-       assert(semanticChildCount == null || semanticChildCount <= itemCount!),
-       assert(
-         itemExtent == null || prototypeItem == null,
-         'You can only pass itemExtent or prototypeItem, not both.',
-       ),
-       childrenDelegate = SliverChildBuilderDelegate(
-         itemBuilder,
-         findChildIndexCallback: findChildIndexCallback,
-         childCount: itemCount,
-         addAutomaticKeepAlives: addAutomaticKeepAlives,
-         addRepaintBoundaries: addRepaintBoundaries,
-         addSemanticIndexes: addSemanticIndexes,
-       ),
-       super(
-         semanticChildCount: semanticChildCount ?? itemCount,
-       );
+        assert(semanticChildCount == null || semanticChildCount <= itemCount!),
+        assert(
+        itemExtent == null || prototypeItem == null,
+        'You can only pass itemExtent or prototypeItem, not both.',
+        ),
+        childrenDelegate = SliverChildBuilderDelegate(
+          itemBuilder,
+          findChildIndexCallback: findChildIndexCallback,
+          childCount: itemCount,
+          addAutomaticKeepAlives: addAutomaticKeepAlives,
+          addRepaintBoundaries: addRepaintBoundaries,
+          addSemanticIndexes: addSemanticIndexes,
+        ),
+        super(
+        semanticChildCount: semanticChildCount ?? itemCount,
+      );
 
   /// Creates a fixed-length scrollable linear array of list "items" separated
   /// by list item "separators".
@@ -1191,7 +1187,7 @@ class FlutterListView extends FlutterBoxScrollView {
   /// `addSemanticIndexes` argument corresponds to the
   /// [SliverChildBuilderDelegate.addSemanticIndexes] property. None may be
   /// null.
-  FlutterListView.separated({
+  ListView.separated({
     super.key,
     super.scrollDirection,
     super.reverse,
@@ -1213,39 +1209,39 @@ class FlutterListView extends FlutterBoxScrollView {
     super.restorationId,
     super.clipBehavior,
   }) : assert(itemBuilder != null),
-       assert(separatorBuilder != null),
-       assert(itemCount != null && itemCount >= 0),
-       itemExtent = null,
-       prototypeItem = null,
-       childrenDelegate = SliverChildBuilderDelegate(
-         (BuildContext context, int index) {
-           final int itemIndex = index ~/ 2;
-           final Widget widget;
-           if (index.isEven) {
-             widget = itemBuilder(context, itemIndex);
-           } else {
-             widget = separatorBuilder(context, itemIndex);
-             assert(() {
-               if (widget == null) {
-                 throw FlutterError('separatorBuilder cannot return null.');
-               }
-               return true;
-             }());
-           }
-           return widget;
-         },
-         findChildIndexCallback: findChildIndexCallback,
-         childCount: _computeActualChildCount(itemCount),
-         addAutomaticKeepAlives: addAutomaticKeepAlives,
-         addRepaintBoundaries: addRepaintBoundaries,
-         addSemanticIndexes: addSemanticIndexes,
-         semanticIndexCallback: (Widget _, int index) {
-           return index.isEven ? index ~/ 2 : null;
-         },
-       ),
-       super(
-         semanticChildCount: itemCount,
-       );
+        assert(separatorBuilder != null),
+        assert(itemCount != null && itemCount >= 0),
+        itemExtent = null,
+        prototypeItem = null,
+        childrenDelegate = SliverChildBuilderDelegate(
+              (BuildContext context, int index) {
+            final int itemIndex = index ~/ 2;
+            final Widget widget;
+            if (index.isEven) {
+              widget = itemBuilder(context, itemIndex);
+            } else {
+              widget = separatorBuilder(context, itemIndex);
+              assert(() {
+                if (widget == null) {
+                  throw FlutterError('separatorBuilder cannot return null.');
+                }
+                return true;
+              }());
+            }
+            return widget;
+          },
+          findChildIndexCallback: findChildIndexCallback,
+          childCount: _computeActualChildCount(itemCount),
+          addAutomaticKeepAlives: addAutomaticKeepAlives,
+          addRepaintBoundaries: addRepaintBoundaries,
+          addSemanticIndexes: addSemanticIndexes,
+          semanticIndexCallback: (Widget _, int index) {
+            return index.isEven ? index ~/ 2 : null;
+          },
+        ),
+        super(
+        semanticChildCount: itemCount,
+      );
 
   /// Creates a scrollable, linear array of widgets with a custom child model.
   ///
@@ -1334,7 +1330,7 @@ class FlutterListView extends FlutterBoxScrollView {
   /// }
   /// ```
   /// {@end-tool}
-  const FlutterListView.custom({
+  const ListView.custom({
     super.key,
     super.scrollDirection,
     super.reverse,
@@ -1353,10 +1349,10 @@ class FlutterListView extends FlutterBoxScrollView {
     super.restorationId,
     super.clipBehavior,
   }) : assert(childrenDelegate != null),
-       assert(
-         itemExtent == null || prototypeItem == null,
-         'You can only pass itemExtent or prototypeItem, not both',
-       );
+        assert(
+        itemExtent == null || prototypeItem == null,
+        'You can only pass itemExtent or prototypeItem, not both',
+        );
 
   /// {@template flutter.widgets.list_view.itemExtent}
   /// If non-null, forces the children to have the given extent in the scroll
@@ -1658,7 +1654,7 @@ class FlutterListView extends FlutterBoxScrollView {
 ///  * [ScrollNotification] and [NotificationListener], which can be used to watch
 ///    the scroll position without using a [ScrollController].
 ///  * The [catalog of layout widgets](https://flutter.dev/widgets/layout/).
-class FlutterGridView extends FlutterBoxScrollView {
+class GridView extends BoxScrollView {
   /// Creates a scrollable, 2D array of widgets with a custom
   /// [SliverGridDelegate].
   ///
@@ -1669,7 +1665,7 @@ class FlutterGridView extends FlutterBoxScrollView {
   /// `addRepaintBoundaries` argument corresponds to the
   /// [SliverChildListDelegate.addRepaintBoundaries] property. Both must not be
   /// null.
-  FlutterGridView({
+  GridView({
     super.key,
     super.scrollDirection,
     super.reverse,
@@ -1690,15 +1686,15 @@ class FlutterGridView extends FlutterBoxScrollView {
     super.keyboardDismissBehavior,
     super.restorationId,
   }) : assert(gridDelegate != null),
-       childrenDelegate = SliverChildListDelegate(
-         children,
-         addAutomaticKeepAlives: addAutomaticKeepAlives,
-         addRepaintBoundaries: addRepaintBoundaries,
-         addSemanticIndexes: addSemanticIndexes,
-       ),
-       super(
-         semanticChildCount: semanticChildCount ?? children.length,
-       );
+        childrenDelegate = SliverChildListDelegate(
+          children,
+          addAutomaticKeepAlives: addAutomaticKeepAlives,
+          addRepaintBoundaries: addRepaintBoundaries,
+          addSemanticIndexes: addSemanticIndexes,
+        ),
+        super(
+        semanticChildCount: semanticChildCount ?? children.length,
+      );
 
   /// Creates a scrollable, 2D array of widgets that are created on demand.
   ///
@@ -1721,7 +1717,7 @@ class FlutterGridView extends FlutterBoxScrollView {
   /// `addRepaintBoundaries` argument corresponds to the
   /// [SliverChildBuilderDelegate.addRepaintBoundaries] property. Both must not
   /// be null.
-  FlutterGridView.builder({
+  GridView.builder({
     super.key,
     super.scrollDirection,
     super.reverse,
@@ -1744,17 +1740,17 @@ class FlutterGridView extends FlutterBoxScrollView {
     super.restorationId,
     super.clipBehavior,
   }) : assert(gridDelegate != null),
-       childrenDelegate = SliverChildBuilderDelegate(
-         itemBuilder,
-         findChildIndexCallback: findChildIndexCallback,
-         childCount: itemCount,
-         addAutomaticKeepAlives: addAutomaticKeepAlives,
-         addRepaintBoundaries: addRepaintBoundaries,
-         addSemanticIndexes: addSemanticIndexes,
-       ),
-       super(
-         semanticChildCount: semanticChildCount ?? itemCount,
-       );
+        childrenDelegate = SliverChildBuilderDelegate(
+          itemBuilder,
+          findChildIndexCallback: findChildIndexCallback,
+          childCount: itemCount,
+          addAutomaticKeepAlives: addAutomaticKeepAlives,
+          addRepaintBoundaries: addRepaintBoundaries,
+          addSemanticIndexes: addSemanticIndexes,
+        ),
+        super(
+        semanticChildCount: semanticChildCount ?? itemCount,
+      );
 
   /// Creates a scrollable, 2D array of widgets with both a custom
   /// [SliverGridDelegate] and a custom [SliverChildDelegate].
@@ -1763,7 +1759,7 @@ class FlutterGridView extends FlutterBoxScrollView {
   /// a [SliverChildBuilderDelegate] or use the [GridView.builder] constructor.
   ///
   /// The [gridDelegate] and [childrenDelegate] arguments must not be null.
-  const FlutterGridView.custom({
+  const GridView.custom({
     super.key,
     super.scrollDirection,
     super.reverse,
@@ -1781,7 +1777,7 @@ class FlutterGridView extends FlutterBoxScrollView {
     super.restorationId,
     super.clipBehavior,
   }) : assert(gridDelegate != null),
-       assert(childrenDelegate != null);
+        assert(childrenDelegate != null);
 
   /// Creates a scrollable, 2D array of widgets with a fixed number of tiles in
   /// the cross axis.
@@ -1797,7 +1793,7 @@ class FlutterGridView extends FlutterBoxScrollView {
   /// See also:
   ///
   ///  * [SliverGrid.count], the equivalent constructor for [SliverGrid].
-  FlutterGridView.count({
+  GridView.count({
     super.key,
     super.scrollDirection,
     super.reverse,
@@ -1821,20 +1817,20 @@ class FlutterGridView extends FlutterBoxScrollView {
     super.restorationId,
     super.clipBehavior,
   }) : gridDelegate = SliverGridDelegateWithFixedCrossAxisCount(
-         crossAxisCount: crossAxisCount,
-         mainAxisSpacing: mainAxisSpacing,
-         crossAxisSpacing: crossAxisSpacing,
-         childAspectRatio: childAspectRatio,
-       ),
-       childrenDelegate = SliverChildListDelegate(
-         children,
-         addAutomaticKeepAlives: addAutomaticKeepAlives,
-         addRepaintBoundaries: addRepaintBoundaries,
-         addSemanticIndexes: addSemanticIndexes,
-       ),
-       super(
-         semanticChildCount: semanticChildCount ?? children.length,
-       );
+    crossAxisCount: crossAxisCount,
+    mainAxisSpacing: mainAxisSpacing,
+    crossAxisSpacing: crossAxisSpacing,
+    childAspectRatio: childAspectRatio,
+  ),
+        childrenDelegate = SliverChildListDelegate(
+          children,
+          addAutomaticKeepAlives: addAutomaticKeepAlives,
+          addRepaintBoundaries: addRepaintBoundaries,
+          addSemanticIndexes: addSemanticIndexes,
+        ),
+        super(
+        semanticChildCount: semanticChildCount ?? children.length,
+      );
 
   /// Creates a scrollable, 2D array of widgets with tiles that each have a
   /// maximum cross-axis extent.
@@ -1850,7 +1846,7 @@ class FlutterGridView extends FlutterBoxScrollView {
   /// See also:
   ///
   ///  * [SliverGrid.extent], the equivalent constructor for [SliverGrid].
-  FlutterGridView.extent({
+  GridView.extent({
     super.key,
     super.scrollDirection,
     super.reverse,
@@ -1874,20 +1870,20 @@ class FlutterGridView extends FlutterBoxScrollView {
     super.restorationId,
     super.clipBehavior,
   }) : gridDelegate = SliverGridDelegateWithMaxCrossAxisExtent(
-         maxCrossAxisExtent: maxCrossAxisExtent,
-         mainAxisSpacing: mainAxisSpacing,
-         crossAxisSpacing: crossAxisSpacing,
-         childAspectRatio: childAspectRatio,
-       ),
-       childrenDelegate = SliverChildListDelegate(
-         children,
-         addAutomaticKeepAlives: addAutomaticKeepAlives,
-         addRepaintBoundaries: addRepaintBoundaries,
-         addSemanticIndexes: addSemanticIndexes,
-       ),
-       super(
-         semanticChildCount: semanticChildCount ?? children.length,
-       );
+    maxCrossAxisExtent: maxCrossAxisExtent,
+    mainAxisSpacing: mainAxisSpacing,
+    crossAxisSpacing: crossAxisSpacing,
+    childAspectRatio: childAspectRatio,
+  ),
+        childrenDelegate = SliverChildListDelegate(
+          children,
+          addAutomaticKeepAlives: addAutomaticKeepAlives,
+          addRepaintBoundaries: addRepaintBoundaries,
+          addSemanticIndexes: addSemanticIndexes,
+        ),
+        super(
+        semanticChildCount: semanticChildCount ?? children.length,
+      );
 
   /// A delegate that controls the layout of the children within the [GridView].
   ///
