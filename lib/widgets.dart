@@ -1,7 +1,7 @@
 library widgets;
 
-export 'src/nested_page_view.dart' show NestedPageView;
-export 'src/nested_scroll_view.dart'
+export 'src/assembly/widgets/page_view.dart' show NestedPageView;
+export 'src/assembly/widgets/scroll_view.dart'
     show NestedCustomScrollView, NestedListView, NestedGridView;
-export 'src/nested_single_child_scroll_view.dart'
+export 'src/assembly/widgets/single_child_scroll_view.dart'
     show NestedSingleChildScrollView;

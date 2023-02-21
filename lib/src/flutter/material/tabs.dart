@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-part of 'package:nested_scroll_views/src/nested_tabs.dart';
+part of 'package:nested_scroll_views/src/assembly/material/tabs.dart';
 
 /// A page view that displays the widget which corresponds to the currently
 /// selected tab.

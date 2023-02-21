@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-part of 'package:nested_scroll_views/src/nested_single_child_scroll_view.dart';
+part of 'package:nested_scroll_views/src/assembly/widgets/single_child_scroll_view.dart';
 
 /// A box in which a single widget can be scrolled.
 ///

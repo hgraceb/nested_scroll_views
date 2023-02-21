@@ -1,4 +1,4 @@
-part of 'package:nested_scroll_views/src/overscroll_scrollable.dart';
+part of 'package:nested_scroll_views/src/assembly/widgets/scrollable.dart';
 
 class OverscrollScrollable extends Scrollable {
   const OverscrollScrollable({

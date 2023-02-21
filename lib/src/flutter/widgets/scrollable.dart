@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-part of 'package:nested_scroll_views/src/overscroll_scrollable.dart';
+part of 'package:nested_scroll_views/src/assembly/widgets/scrollable.dart';
 
 /// Signature used by [Scrollable] to build the viewport through which the
 /// scrollable content is displayed.

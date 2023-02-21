@@ -1,4 +1,4 @@
-part of 'package:nested_scroll_views/src/nested_page_view.dart';
+part of 'package:nested_scroll_views/src/assembly/widgets/page_view.dart';
 
 class NestedPageView extends PageView {
   /// 是否缓存可滚动页面，不缓存可能导致页面在嵌套滚动时被销毁导致手势事件丢失

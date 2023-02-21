@@ -1,4 +1,4 @@
-part of 'package:nested_scroll_views/src/nested_scroll_view.dart';
+part of 'package:nested_scroll_views/src/assembly/widgets/scroll_view.dart';
 
 Widget _convertScrollable(Widget widget, bool wantKeepAlive) {
   final Widget child;

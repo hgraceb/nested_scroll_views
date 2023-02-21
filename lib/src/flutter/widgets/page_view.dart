@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-part of 'package:nested_scroll_views/src/nested_page_view.dart';
+part of 'package:nested_scroll_views/src/assembly/widgets/page_view.dart';
 
 class _ForceImplicitScrollPhysics extends ScrollPhysics {
   const _ForceImplicitScrollPhysics({

@@ -7,10 +7,9 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart' hide Scrollable;
+import 'package:nested_scroll_views/src/nested_scroll_notification.dart';
+import 'package:nested_scroll_views/src/overscroll_gestures.dart';
 
-import 'nested_scroll_notification.dart';
-import 'overscroll_gestures.dart';
+part 'package:nested_scroll_views/src/component/widgets/scrollable.dart';
 
 part 'package:nested_scroll_views/src/flutter/widgets/scrollable.dart';
-
-part 'package:nested_scroll_views/src/nested/widgets/scrollable.dart';
