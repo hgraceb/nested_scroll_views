@@ -12,7 +12,6 @@ typedef OnPointerMoveEvent = Function(
 class OverscrollVerticalDragGestureRecognizer
     extends VerticalDragGestureRecognizer {
   OverscrollVerticalDragGestureRecognizer({
-    required super.supportedDevices,
     required this.proxyOnUpdate,
     required this.onPointerMoveEvent,
   });
@@ -40,7 +39,6 @@ class OverscrollVerticalDragGestureRecognizer
 class OverscrollHorizontalDragGestureRecognizer
     extends HorizontalDragGestureRecognizer {
   OverscrollHorizontalDragGestureRecognizer({
-    required super.supportedDevices,
     required this.proxyOnUpdate,
     required this.onPointerMoveEvent,
   });

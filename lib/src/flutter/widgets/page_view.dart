@@ -8,7 +8,7 @@ class _ForceImplicitScrollPhysics extends ScrollPhysics {
   const _ForceImplicitScrollPhysics({
     required this.allowImplicitScrolling,
     super.parent,
-  }) : assert(allowImplicitScrolling != null);
+  });
 
   @override
   _ForceImplicitScrollPhysics applyTo(ScrollPhysics? ancestor) {
@@ -94,10 +94,8 @@ class PageView extends StatefulWidget {
     this.clipBehavior = Clip.hardEdge,
     this.scrollBehavior,
     this.padEnds = true,
-  }) : assert(allowImplicitScrolling != null),
-        assert(clipBehavior != null),
-        controller = controller ?? _defaultPageController,
-        childrenDelegate = SliverChildListDelegate(children);
+  }) : controller = controller ?? _defaultPageController,
+       childrenDelegate = SliverChildListDelegate(children);
 
   /// Creates a scrollable list that works page by page using widgets that are
   /// created on demand.
@@ -111,6 +109,8 @@ class PageView extends StatefulWidget {
   ///
   /// [itemBuilder] will be called only with indices greater than or equal to
   /// zero and less than [itemCount].
+  ///
+  /// {@macro flutter.widgets.ListView.builder.itemBuilder}
   ///
   /// {@template flutter.widgets.PageView.findChildIndexCallback}
   /// The [findChildIndexCallback] corresponds to the
@@ -130,7 +130,7 @@ class PageView extends StatefulWidget {
     this.physics,
     this.pageSnapping = true,
     this.onPageChanged,
-    required IndexedWidgetBuilder itemBuilder,
+    required NullableIndexedWidgetBuilder itemBuilder,
     ChildIndexGetter? findChildIndexCallback,
     int? itemCount,
     this.dragStartBehavior = DragStartBehavior.start,
@@ -139,14 +139,12 @@ class PageView extends StatefulWidget {
     this.clipBehavior = Clip.hardEdge,
     this.scrollBehavior,
     this.padEnds = true,
-  }) : assert(allowImplicitScrolling != null),
-        assert(clipBehavior != null),
-        controller = controller ?? _defaultPageController,
-        childrenDelegate = SliverChildBuilderDelegate(
-          itemBuilder,
-          findChildIndexCallback: findChildIndexCallback,
-          childCount: itemCount,
-        );
+  }) : controller = controller ?? _defaultPageController,
+       childrenDelegate = SliverChildBuilderDelegate(
+         itemBuilder,
+         findChildIndexCallback: findChildIndexCallback,
+         childCount: itemCount,
+       );
 
   /// Creates a scrollable list that works page by page with a custom child
   /// model.
@@ -247,10 +245,7 @@ class PageView extends StatefulWidget {
     this.clipBehavior = Clip.hardEdge,
     this.scrollBehavior,
     this.padEnds = true,
-  }) : assert(childrenDelegate != null),
-        assert(allowImplicitScrolling != null),
-        assert(clipBehavior != null),
-        controller = controller ?? _defaultPageController;
+  }) : controller = controller ?? _defaultPageController;
 
   /// Controls whether the widget's pages will respond to
   /// [RenderObject.showOnScreen], which will allow for implicit accessibility
@@ -268,7 +263,10 @@ class PageView extends StatefulWidget {
   /// {@macro flutter.widgets.scrollable.restorationId}
   final String? restorationId;
 
-  /// The axis along which the page view scrolls.
+  /// The [Axis] along which the scroll view's offset increases with each page.
+  ///
+  /// For the direction in which active scrolling may be occurring, see
+  /// [ScrollDirection].
   ///
   /// Defaults to [Axis.horizontal].
   final Axis scrollDirection;
@@ -386,8 +384,8 @@ class _PageViewState extends State<PageView> {
       allowImplicitScrolling: widget.allowImplicitScrolling,
     ).applyTo(
       widget.pageSnapping
-          ? _kPagePhysics.applyTo(widget.physics ?? widget.scrollBehavior?.getScrollPhysics(context))
-          : widget.physics ?? widget.scrollBehavior?.getScrollPhysics(context),
+        ? _kPagePhysics.applyTo(widget.physics ?? widget.scrollBehavior?.getScrollPhysics(context))
+        : widget.physics ?? widget.scrollBehavior?.getScrollPhysics(context),
     );
 
     return NotificationListener<ScrollNotification>(

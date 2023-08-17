@@ -22,6 +22,30 @@ class NestedPageView extends PageView {
     this.wantKeepAlive = true,
   });
 
+  NestedPageView.builder({
+    super.key,
+    super.scrollDirection,
+    super.reverse,
+    super.controller,
+    super.physics,
+    super.pageSnapping,
+    super.onPageChanged,
+    required NullableIndexedWidgetBuilder itemBuilder,
+    ChildIndexGetter? findChildIndexCallback,
+    int? itemCount,
+    super.dragStartBehavior,
+    super.allowImplicitScrolling,
+    super.restorationId,
+    super.clipBehavior,
+    super.scrollBehavior,
+    super.padEnds,
+    this.wantKeepAlive = true,
+  }) : super.builder(
+          itemBuilder: itemBuilder,
+          findChildIndexCallback: findChildIndexCallback,
+          itemCount: itemCount,
+        );
+
   NestedPageView.custom({
     super.key,
     super.scrollDirection,
@@ -39,30 +63,6 @@ class NestedPageView extends PageView {
     super.padEnds,
     this.wantKeepAlive = true,
   }) : super.custom(childrenDelegate: childrenDelegate);
-
-  NestedPageView.builder({
-    super.key,
-    super.scrollDirection,
-    super.reverse,
-    super.controller,
-    super.physics,
-    super.pageSnapping,
-    super.onPageChanged,
-    required IndexedWidgetBuilder itemBuilder,
-    ChildIndexGetter? findChildIndexCallback,
-    int? itemCount,
-    super.dragStartBehavior,
-    super.allowImplicitScrolling,
-    super.restorationId,
-    super.clipBehavior,
-    super.scrollBehavior,
-    super.padEnds,
-    this.wantKeepAlive = true,
-  }) : super.builder(
-          itemBuilder: itemBuilder,
-          findChildIndexCallback: findChildIndexCallback,
-          itemCount: itemCount,
-        );
 
   @override
   State<PageView> createState() => _NestedPageViewState();

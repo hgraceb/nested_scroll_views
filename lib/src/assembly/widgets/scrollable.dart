@@ -13,3 +13,5 @@ import 'package:nested_scroll_views/src/overscroll_gestures.dart';
 part 'package:nested_scroll_views/src/component/widgets/scrollable.dart';
 
 part 'package:nested_scroll_views/src/flutter/widgets/scrollable.dart';
+
+part 'package:nested_scroll_views/src/flutter/widgets/scrollable_helpers.dart';

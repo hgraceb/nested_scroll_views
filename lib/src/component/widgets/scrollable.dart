@@ -93,7 +93,6 @@ class _OverscrollScrollableState extends ScrollableState {
           GestureRecognizerFactoryWithHandlers<
               OverscrollVerticalDragGestureRecognizer>(
             () => OverscrollVerticalDragGestureRecognizer(
-              supportedDevices: _configuration.dragDevices,
               proxyOnUpdate: _proxyOnUpdate,
               onPointerMoveEvent: _onMoveEvent,
             ),
@@ -106,7 +105,6 @@ class _OverscrollScrollableState extends ScrollableState {
           GestureRecognizerFactoryWithHandlers<
               OverscrollHorizontalDragGestureRecognizer>(
             () => OverscrollHorizontalDragGestureRecognizer(
-              supportedDevices: _configuration.dragDevices,
               proxyOnUpdate: _proxyOnUpdate,
               onPointerMoveEvent: _onMoveEvent,
             ),

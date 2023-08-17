@@ -87,7 +87,7 @@ class NestedListView extends ListView {
     super.padding,
     super.itemExtent,
     super.prototypeItem,
-    required IndexedWidgetBuilder itemBuilder,
+    required NullableIndexedWidgetBuilder itemBuilder,
     ChildIndexGetter? findChildIndexCallback,
     int? itemCount,
     super.addAutomaticKeepAlives,
@@ -115,7 +115,7 @@ class NestedListView extends ListView {
     super.physics,
     super.shrinkWrap,
     super.padding,
-    required IndexedWidgetBuilder itemBuilder,
+    required NullableIndexedWidgetBuilder itemBuilder,
     ChildIndexGetter? findChildIndexCallback,
     required IndexedWidgetBuilder separatorBuilder,
     required int itemCount,
@@ -198,8 +198,8 @@ class NestedGridView extends GridView {
     super.physics,
     super.shrinkWrap,
     super.padding,
-    required SliverGridDelegate gridDelegate,
-    required IndexedWidgetBuilder itemBuilder,
+    required super.gridDelegate,
+    required NullableIndexedWidgetBuilder itemBuilder,
     super.findChildIndexCallback,
     super.itemCount,
     super.addAutomaticKeepAlives,
@@ -212,7 +212,7 @@ class NestedGridView extends GridView {
     super.restorationId,
     super.clipBehavior,
     this.wantKeepAlive = true,
-  }) : super.builder(gridDelegate: gridDelegate, itemBuilder: itemBuilder);
+  }) : super.builder(itemBuilder: itemBuilder);
 
   const NestedGridView.custom({
     super.key,
