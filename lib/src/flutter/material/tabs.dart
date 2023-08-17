@@ -30,8 +30,7 @@ class TabBarView extends StatefulWidget {
     this.dragStartBehavior = DragStartBehavior.start,
     this.viewportFraction = 1.0,
     this.clipBehavior = Clip.hardEdge,
-  }) : assert(children != null),
-        assert(dragStartBehavior != null);
+  });
 
   /// This widget's selection and animation state.
   ///
@@ -86,19 +85,7 @@ class _TabBarViewState extends State<TabBarView> {
   bool get _controllerIsValid => _controller?.animation != null;
 
   void _updateTabController() {
-    final TabController? newController = widget.controller ?? DefaultTabController.of(context);
-    assert(() {
-      if (newController == null) {
-        throw FlutterError(
-          'No TabController for ${widget.runtimeType}.\n'
-              'When creating a ${widget.runtimeType}, you must either provide an explicit '
-              'TabController using the "controller" property, or you must ensure that there '
-              'is a DefaultTabController above the ${widget.runtimeType}.\n'
-              'In this case, there was neither an explicit controller nor a default controller.',
-        );
-      }
-      return true;
-    }());
+    final TabController newController = widget.controller ?? DefaultTabController.of(context);
 
     if (newController == _controller) {
       return;
@@ -195,9 +182,7 @@ class _TabBarViewState extends State<TabBarView> {
     }
 
     assert((_currentIndex! - previousIndex).abs() > 1);
-    final int initialPage = _currentIndex! > previousIndex
-        ? _currentIndex! - 1
-        : _currentIndex! + 1;
+    final int initialPage = _currentIndex! > previousIndex ? _currentIndex! - 1 : _currentIndex! + 1;
     final List<Widget> originalChildren = _childrenWithKey;
     setState(() {
       _warpUnderwayCount += 1;
@@ -242,7 +227,7 @@ class _TabBarViewState extends State<TabBarView> {
     if (notification is ScrollUpdateNotification && !_controller!.indexIsChanging) {
       if ((_pageController.page! - _controller!.index).abs() > 1.0) {
         _controller!.index = _pageController.page!.round();
-        _currentIndex =_controller!.index;
+        _currentIndex = _controller!.index;
       }
       _controller!.offset = clampDouble(_pageController.page! - _controller!.index, -1.0, 1.0);
     } else if (notification is ScrollEndNotification) {
@@ -270,7 +255,7 @@ class _TabBarViewState extends State<TabBarView> {
         if (_controller!.length != widget.children.length) {
           throw FlutterError(
             "Controller's length property (${_controller!.length}) does not match the "
-                "number of children (${widget.children.length}) present in TabBarView's children property.",
+            "number of children (${widget.children.length}) present in TabBarView's children property.",
           );
         }
         return true;
@@ -290,9 +275,7 @@ class _TabBarViewState extends State<TabBarView> {
         dragStartBehavior: widget.dragStartBehavior,
         clipBehavior: widget.clipBehavior,
         controller: _pageController,
-        physics: widget.physics == null
-            ? const PageScrollPhysics().applyTo(const ClampingScrollPhysics())
-            : const PageScrollPhysics().applyTo(widget.physics),
+        physics: widget.physics == null ? const PageScrollPhysics().applyTo(const ClampingScrollPhysics()) : const PageScrollPhysics().applyTo(widget.physics),
         children: _childrenWithKey,
       ),
     );
