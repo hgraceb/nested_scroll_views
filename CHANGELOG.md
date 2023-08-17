@@ -1,3 +1,7 @@
+## 0.0.8
+
+- Adapt for Flutter 3.13.0 and Dart 3.1.0.
+
 ## 0.0.7
 
 - Refactor project import and export.

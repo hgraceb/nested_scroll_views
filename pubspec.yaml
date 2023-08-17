@@ -1,11 +1,11 @@
 name: nested_scroll_views
 description: Flutter nested scrolling views.
-version: 0.0.7
+version: 0.0.8
 homepage: https://github.com/hgraceb/nested_scroll_views
 
 environment:
   flutter: '>=3.12.0'
-  sdk: '>=3.0.0-0 <4.0.0'
+  sdk: '>=3.0.0 <4.0.0'
 
 dependencies:
   flutter:
