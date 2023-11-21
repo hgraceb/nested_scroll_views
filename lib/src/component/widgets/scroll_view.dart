@@ -62,6 +62,7 @@ class NestedListView extends ListView {
     super.shrinkWrap,
     super.padding,
     super.itemExtent,
+    super.itemExtentBuilder,
     super.prototypeItem,
     super.addAutomaticKeepAlives,
     super.addRepaintBoundaries,
@@ -86,10 +87,11 @@ class NestedListView extends ListView {
     super.shrinkWrap,
     super.padding,
     super.itemExtent,
+    super.itemExtentBuilder,
     super.prototypeItem,
-    required NullableIndexedWidgetBuilder itemBuilder,
-    ChildIndexGetter? findChildIndexCallback,
-    int? itemCount,
+    required super.itemBuilder,
+    super.findChildIndexCallback,
+    super.itemCount,
     super.addAutomaticKeepAlives,
     super.addRepaintBoundaries,
     super.addSemanticIndexes,
@@ -100,11 +102,7 @@ class NestedListView extends ListView {
     super.restorationId,
     super.clipBehavior,
     this.wantKeepAlive = true,
-  }) : super.builder(
-          itemBuilder: itemBuilder,
-          findChildIndexCallback: findChildIndexCallback,
-          itemCount: itemCount,
-        );
+  }) : super.builder();
 
   NestedListView.separated({
     super.key,
@@ -115,10 +113,10 @@ class NestedListView extends ListView {
     super.physics,
     super.shrinkWrap,
     super.padding,
-    required NullableIndexedWidgetBuilder itemBuilder,
-    ChildIndexGetter? findChildIndexCallback,
-    required IndexedWidgetBuilder separatorBuilder,
-    required int itemCount,
+    required super.itemBuilder,
+    super.findChildIndexCallback,
+    required super.separatorBuilder,
+    required super.itemCount,
     super.addAutomaticKeepAlives,
     super.addRepaintBoundaries,
     super.addSemanticIndexes,
@@ -128,12 +126,7 @@ class NestedListView extends ListView {
     super.restorationId,
     super.clipBehavior,
     this.wantKeepAlive = true,
-  }) : super.separated(
-          itemBuilder: itemBuilder,
-          findChildIndexCallback: findChildIndexCallback,
-          separatorBuilder: separatorBuilder,
-          itemCount: itemCount,
-        );
+  }) : super.separated();
 
   const NestedListView.custom({
     super.key,
@@ -145,8 +138,9 @@ class NestedListView extends ListView {
     super.shrinkWrap,
     super.padding,
     super.itemExtent,
+    super.itemExtentBuilder,
     super.prototypeItem,
-    required SliverChildDelegate childrenDelegate,
+    required super.childrenDelegate,
     super.cacheExtent,
     super.semanticChildCount,
     super.dragStartBehavior,
@@ -154,7 +148,7 @@ class NestedListView extends ListView {
     super.restorationId,
     super.clipBehavior,
     this.wantKeepAlive = true,
-  }) : super.custom(childrenDelegate: childrenDelegate);
+  }) : super.custom();
 
   @override
   Widget build(BuildContext context) {
@@ -199,7 +193,7 @@ class NestedGridView extends GridView {
     super.shrinkWrap,
     super.padding,
     required super.gridDelegate,
-    required NullableIndexedWidgetBuilder itemBuilder,
+    required super.itemBuilder,
     super.findChildIndexCallback,
     super.itemCount,
     super.addAutomaticKeepAlives,
@@ -212,7 +206,7 @@ class NestedGridView extends GridView {
     super.restorationId,
     super.clipBehavior,
     this.wantKeepAlive = true,
-  }) : super.builder(itemBuilder: itemBuilder);
+  }) : super.builder();
 
   const NestedGridView.custom({
     super.key,
@@ -223,8 +217,8 @@ class NestedGridView extends GridView {
     super.physics,
     super.shrinkWrap,
     super.padding,
-    required SliverGridDelegate gridDelegate,
-    required SliverChildDelegate childrenDelegate,
+    required super.gridDelegate,
+    required super.childrenDelegate,
     super.cacheExtent,
     super.semanticChildCount,
     super.dragStartBehavior,
@@ -232,10 +226,7 @@ class NestedGridView extends GridView {
     super.restorationId,
     super.clipBehavior,
     this.wantKeepAlive = true,
-  }) : super.custom(
-          gridDelegate: gridDelegate,
-          childrenDelegate: childrenDelegate,
-        );
+  }) : super.custom();
 
   NestedGridView.count({
     super.key,
@@ -246,7 +237,7 @@ class NestedGridView extends GridView {
     super.physics,
     super.shrinkWrap,
     super.padding,
-    required int crossAxisCount,
+    required super.crossAxisCount,
     super.mainAxisSpacing,
     super.crossAxisSpacing,
     super.childAspectRatio,
@@ -261,7 +252,7 @@ class NestedGridView extends GridView {
     super.restorationId,
     super.clipBehavior,
     this.wantKeepAlive = true,
-  }) : super.count(crossAxisCount: crossAxisCount);
+  }) : super.count();
 
   NestedGridView.extent({
     super.key,
@@ -272,7 +263,7 @@ class NestedGridView extends GridView {
     super.physics,
     super.shrinkWrap,
     super.padding,
-    required double maxCrossAxisExtent,
+    required super.maxCrossAxisExtent,
     super.mainAxisSpacing,
     super.crossAxisSpacing,
     super.childAspectRatio,
@@ -287,7 +278,7 @@ class NestedGridView extends GridView {
     super.restorationId,
     super.clipBehavior,
     this.wantKeepAlive = true,
-  }) : super.extent(maxCrossAxisExtent: maxCrossAxisExtent);
+  }) : super.extent();
 
   @override
   Widget build(BuildContext context) {

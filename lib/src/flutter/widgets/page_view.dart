@@ -52,6 +52,14 @@ const PageScrollPhysics _kPagePhysics = PageScrollPhysics();
 /// ** See code in examples/api/lib/widgets/page_view/page_view.0.dart **
 /// {@end-tool}
 ///
+/// ## Persisting the scroll position during a session
+///
+/// Scroll views attempt to persist their scroll position using [PageStorage].
+/// For a [PageView], this can be disabled by setting [PageController.keepPage]
+/// to false on the [controller]. If it is enabled, using a [PageStorageKey] for
+/// the [key] of this widget is recommended to help disambiguate different
+/// scroll views from each other.
+///
 /// See also:
 ///
 ///  * [PageController], which controls which page is visible in the view.
@@ -74,10 +82,10 @@ class PageView extends StatefulWidget {
   /// See the documentation at [SliverChildListDelegate.children] for more details.
   ///
   /// {@template flutter.widgets.PageView.allowImplicitScrolling}
-  /// The [allowImplicitScrolling] parameter must not be null. If true, the
-  /// [PageView] will participate in accessibility scrolling more like a
-  /// [ListView], where implicit scroll actions will move to the next page
-  /// rather than into the contents of the [PageView].
+  /// If [allowImplicitScrolling] is true, the [PageView] will participate in
+  /// accessibility scrolling more like a [ListView], where implicit scroll
+  /// actions will move to the next page rather than into the contents of the
+  /// [PageView].
   /// {@endtemplate}
   PageView({
     super.key,
@@ -349,7 +357,7 @@ class PageView extends StatefulWidget {
   ///
   /// If [PageController.viewportFraction] >= 1.0, this property has no effect.
   ///
-  /// This property defaults to true and must not be null.
+  /// This property defaults to true.
   final bool padEnds;
 
   @override

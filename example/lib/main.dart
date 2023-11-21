@@ -145,6 +145,7 @@ class _FirstPageState extends State<FirstPage> {
           title: const Text('First Page'),
           bottom: TabBar(
             isScrollable: true,
+            tabAlignment: TabAlignment.center,
             tabs: _tabs.map((tab) => Tab(text: tab)).toList(),
           ),
         ),
