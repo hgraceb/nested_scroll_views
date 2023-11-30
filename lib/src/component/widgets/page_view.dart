@@ -30,9 +30,9 @@ class NestedPageView extends PageView {
     super.physics,
     super.pageSnapping,
     super.onPageChanged,
-    required NullableIndexedWidgetBuilder itemBuilder,
-    ChildIndexGetter? findChildIndexCallback,
-    int? itemCount,
+    required super.itemBuilder,
+    super.findChildIndexCallback,
+    super.itemCount,
     super.dragStartBehavior,
     super.allowImplicitScrolling,
     super.restorationId,
@@ -40,11 +40,7 @@ class NestedPageView extends PageView {
     super.scrollBehavior,
     super.padEnds,
     this.wantKeepAlive = true,
-  }) : super.builder(
-          itemBuilder: itemBuilder,
-          findChildIndexCallback: findChildIndexCallback,
-          itemCount: itemCount,
-        );
+  }) : super.builder();
 
   NestedPageView.custom({
     super.key,
@@ -54,7 +50,7 @@ class NestedPageView extends PageView {
     super.physics,
     super.pageSnapping,
     super.onPageChanged,
-    required SliverChildDelegate childrenDelegate,
+    required super.childrenDelegate,
     super.dragStartBehavior,
     super.allowImplicitScrolling,
     super.restorationId,
@@ -62,7 +58,7 @@ class NestedPageView extends PageView {
     super.scrollBehavior,
     super.padEnds,
     this.wantKeepAlive = true,
-  }) : super.custom(childrenDelegate: childrenDelegate);
+  }) : super.custom();
 
   @override
   State<PageView> createState() => _NestedPageViewState();
@@ -173,8 +169,8 @@ class _NestedPageViewState extends _PageViewState {
             _handleNotification(context, notification);
       },
       child: WrapperKeepAlive(
-        child: OverscrollScrollable.from(scrollable),
         wantKeepAlive: (widget as NestedPageView).wantKeepAlive,
+        child: OverscrollScrollable.from(scrollable),
       ),
     );
   }
