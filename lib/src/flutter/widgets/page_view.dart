@@ -94,6 +94,7 @@ class PageView extends StatefulWidget {
     PageController? controller,
     this.physics,
     this.pageSnapping = true,
+    this.onPageChanging,
     this.onPageChanged,
     List<Widget> children = const <Widget>[],
     this.dragStartBehavior = DragStartBehavior.start,
@@ -137,6 +138,7 @@ class PageView extends StatefulWidget {
     PageController? controller,
     this.physics,
     this.pageSnapping = true,
+    this.onPageChanging,
     this.onPageChanged,
     required NullableIndexedWidgetBuilder itemBuilder,
     ChildIndexGetter? findChildIndexCallback,
@@ -245,6 +247,7 @@ class PageView extends StatefulWidget {
     PageController? controller,
     this.physics,
     this.pageSnapping = true,
+    this.onPageChanging,
     this.onPageChanged,
     required this.childrenDelegate,
     this.dragStartBehavior = DragStartBehavior.start,
@@ -318,6 +321,9 @@ class PageView extends StatefulWidget {
   /// the page will snap to the beginning of the viewport; otherwise, the page
   /// will snap to the center of the viewport.
   final bool pageSnapping;
+
+  /// Called whenever the viewport changes.
+  final ValueChanged<double>? onPageChanging;
 
   /// Called whenever the page in the center of the viewport changes.
   final ValueChanged<int>? onPageChanged;
@@ -398,10 +404,11 @@ class _PageViewState extends State<PageView> {
 
     return NotificationListener<ScrollNotification>(
       onNotification: (ScrollNotification notification) {
-        if (notification.depth == 0 && widget.onPageChanged != null && notification is ScrollUpdateNotification) {
+        if (notification.depth == 0 && (widget.onPageChanged != null || widget.onPageChanging != null) && notification is ScrollUpdateNotification) {
           final PageMetrics metrics = notification.metrics as PageMetrics;
+          widget.onPageChanging?.call(metrics.page!);
           final int currentPage = metrics.page!.round();
-          if (currentPage != _lastReportedPage) {
+          if (widget.onPageChanged != null && currentPage != _lastReportedPage) {
             _lastReportedPage = currentPage;
             widget.onPageChanged!(currentPage);
           }
