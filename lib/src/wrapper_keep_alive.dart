@@ -4,7 +4,7 @@ class WrapperKeepAlive extends StatefulWidget {
   final Widget child;
   final bool wantKeepAlive;
 
-  WrapperKeepAlive({
+  const WrapperKeepAlive({
     super.key,
     required this.child,
     required this.wantKeepAlive,

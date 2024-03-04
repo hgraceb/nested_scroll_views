@@ -36,6 +36,6 @@ class NestedSingleChildScrollView extends SingleChildScrollView {
     } else {
       child = OverscrollScrollable.from(widget as Scrollable);
     }
-    return WrapperKeepAlive(child: child, wantKeepAlive: wantKeepAlive);
+    return WrapperKeepAlive(wantKeepAlive: wantKeepAlive, child: child);
   }
 }
