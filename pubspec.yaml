@@ -1,5 +1,5 @@
 name: nested_scroll_views
-description: 'Flutter nested scrolling views. A plugin that allows you to make a scrolling view that scrolls a certain number of pages based on the scroll velocity, and then snaps to the nearest scrolling view .'
+description: 'Flutter nested scrolling views.'
 version: 0.0.9
 homepage: https://github.com/hgraceb/nested_scroll_views
 
