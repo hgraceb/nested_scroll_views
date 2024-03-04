@@ -1,3 +1,7 @@
+## 0.0.10
+
+- Adapt for Flutter 3.19.2 and Dart 3.3.0.
+
 ## 0.0.9
 
 - Adapt for Flutter 3.16.0 and Dart 3.2.0.
