@@ -42,7 +42,7 @@ class NestedPageView extends PageView {
     this.wantKeepAlive = true,
   }) : super.builder();
 
-  NestedPageView.custom({
+  const NestedPageView.custom({
     super.key,
     super.scrollDirection,
     super.reverse,
@@ -79,7 +79,7 @@ class _NestedPageViewState extends _PageViewState {
     }
 
     // 获取可滚动组件当前位置信息
-    final position = (widget as NestedPageView).controller.position;
+    final position = _controller.position;
 
     // 当前不允许滚动
     if (!position.physics.shouldAcceptUserOffset(position)) {
