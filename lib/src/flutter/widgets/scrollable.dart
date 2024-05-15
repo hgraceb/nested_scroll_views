@@ -730,7 +730,7 @@ class ScrollableState extends State<Scrollable> with TickerProviderStateMixin, R
                   ..maxFlingVelocity = _physics?.maxFlingVelocity
                   ..velocityTrackerBuilder = _configuration.velocityTrackerBuilder(context)
                   ..dragStartBehavior = widget.dragStartBehavior
-                  ..multitouchDragStrategy = _configuration.multitouchDragStrategy
+                  ..multitouchDragStrategy = _configuration.getMultitouchDragStrategy(context)
                   ..gestureSettings = _mediaQueryGestureSettings
                   ..supportedDevices = _configuration.dragDevices;
               },
@@ -752,7 +752,7 @@ class ScrollableState extends State<Scrollable> with TickerProviderStateMixin, R
                   ..maxFlingVelocity = _physics?.maxFlingVelocity
                   ..velocityTrackerBuilder = _configuration.velocityTrackerBuilder(context)
                   ..dragStartBehavior = widget.dragStartBehavior
-                  ..multitouchDragStrategy = _configuration.multitouchDragStrategy
+                  ..multitouchDragStrategy = _configuration.getMultitouchDragStrategy(context)
                   ..gestureSettings = _mediaQueryGestureSettings
                   ..supportedDevices = _configuration.dragDevices;
               },
