@@ -516,16 +516,12 @@ class ScrollableState extends State<Scrollable> with TickerProviderStateMixin, R
   /// Used by [EdgeDraggingAutoScroller] to progress the position forward when a
   /// drag gesture reaches the edge of the [Viewport].
   Offset get deltaToScrollOrigin {
-    switch (axisDirection) {
-      case AxisDirection.down:
-        return Offset(0, position.pixels);
-      case AxisDirection.up:
-        return Offset(0, -position.pixels);
-      case AxisDirection.left:
-        return Offset(-position.pixels, 0);
-      case AxisDirection.right:
-        return Offset(position.pixels, 0);
-    }
+    return switch (axisDirection) {
+      AxisDirection.up    => Offset(0, -position.pixels),
+      AxisDirection.down  => Offset(0, position.pixels),
+      AxisDirection.left  => Offset(-position.pixels, 0),
+      AxisDirection.right => Offset(position.pixels, 0),
+    };
   }
 
   ScrollController get _effectiveScrollController => widget.controller ?? _fallbackScrollController!;
@@ -730,7 +726,7 @@ class ScrollableState extends State<Scrollable> with TickerProviderStateMixin, R
                   ..maxFlingVelocity = _physics?.maxFlingVelocity
                   ..velocityTrackerBuilder = _configuration.velocityTrackerBuilder(context)
                   ..dragStartBehavior = widget.dragStartBehavior
-                  ..multitouchDragStrategy = _configuration.multitouchDragStrategy
+                  ..multitouchDragStrategy = _configuration.getMultitouchDragStrategy(context)
                   ..gestureSettings = _mediaQueryGestureSettings
                   ..supportedDevices = _configuration.dragDevices;
               },
@@ -752,7 +748,7 @@ class ScrollableState extends State<Scrollable> with TickerProviderStateMixin, R
                   ..maxFlingVelocity = _physics?.maxFlingVelocity
                   ..velocityTrackerBuilder = _configuration.velocityTrackerBuilder(context)
                   ..dragStartBehavior = widget.dragStartBehavior
-                  ..multitouchDragStrategy = _configuration.multitouchDragStrategy
+                  ..multitouchDragStrategy = _configuration.getMultitouchDragStrategy(context)
                   ..gestureSettings = _mediaQueryGestureSettings
                   ..supportedDevices = _configuration.dragDevices;
               },
@@ -853,7 +849,6 @@ class ScrollableState extends State<Scrollable> with TickerProviderStateMixin, R
   // direction, and any modifiers specified by the ScrollBehavior taken into
   // account.
   double _pointerSignalEventDelta(PointerScrollEvent event) {
-    late double delta;
     final Set<LogicalKeyboardKey> pressed = HardwareKeyboard.instance.logicalKeysPressed;
     final bool flipAxes = pressed.any(_configuration.pointerAxisModifiers.contains) &&
       // Axes are only flipped for physical mouse wheel input.
@@ -864,21 +859,13 @@ class ScrollableState extends State<Scrollable> with TickerProviderStateMixin, R
       // axis.
       event.kind == PointerDeviceKind.mouse;
 
-    switch (widget.axis) {
-      case Axis.horizontal:
-        delta = flipAxes
-          ? event.scrollDelta.dy
-          : event.scrollDelta.dx;
-      case Axis.vertical:
-        delta = flipAxes
-          ? event.scrollDelta.dx
-          : event.scrollDelta.dy;
-    }
+    final Axis axis = flipAxes ? flipAxis(widget.axis) : widget.axis;
+    final double delta = switch (axis) {
+      Axis.horizontal => event.scrollDelta.dx,
+      Axis.vertical   => event.scrollDelta.dy,
+    };
 
-    if (axisDirectionIsReversed(widget.axisDirection)) {
-      delta *= -1;
-    }
-    return delta;
+    return axisDirectionIsReversed(widget.axisDirection) ? -delta : delta;
   }
 
   void _receivedPointerSignal(PointerSignalEvent event) {
@@ -1468,16 +1455,12 @@ class _ScrollableSelectionContainerDelegate extends MultiSelectableSelectionCont
 }
 
 Offset _getDeltaToScrollOrigin(ScrollableState scrollableState) {
-  switch (scrollableState.axisDirection) {
-    case AxisDirection.down:
-      return Offset(0, scrollableState.position.pixels);
-    case AxisDirection.up:
-      return Offset(0, -scrollableState.position.pixels);
-    case AxisDirection.left:
-      return Offset(-scrollableState.position.pixels, 0);
-    case AxisDirection.right:
-      return Offset(scrollableState.position.pixels, 0);
-  }
+  return switch (scrollableState.axisDirection) {
+    AxisDirection.up    => Offset(0, -scrollableState.position.pixels),
+    AxisDirection.down  => Offset(0, scrollableState.position.pixels),
+    AxisDirection.left  => Offset(-scrollableState.position.pixels, 0),
+    AxisDirection.right => Offset(scrollableState.position.pixels, 0),
+  };
 }
 
 /// With [_ScrollSemantics] certain child [SemanticsNode]s can be
@@ -1967,6 +1950,7 @@ class TwoDimensionalScrollableState extends State<TwoDimensionalScrollable> {
         viewportBuilder: (BuildContext context, ViewportOffset verticalOffset) {
           return _HorizontalInnerDimension(
             key: _horizontalInnerScrollableKey,
+            verticalOuterKey: _verticalOuterScrollableKey,
             axisDirection: widget.horizontalDetails.direction,
             controller: widget.horizontalDetails.controller
               ?? _horizontalFallbackController!,
@@ -2235,9 +2219,9 @@ class _VerticalOuterDimensionState extends ScrollableState {
         if (value) {
           // Replaces the typical vertical/horizontal drag gesture recognizers
           // with a pan gesture recognizer to allow bidirectional scrolling.
-          // Based on the diagonalDragBehavior, valid horizontal deltas are
-          // applied to this scrollable, while vertical deltas are routed to
-          // the vertical scrollable.
+          // Based on the diagonalDragBehavior, valid vertical deltas are
+          // applied to this scrollable, while horizontal deltas are routed to
+          // the horizontal scrollable.
           _gestureRecognizers = <Type, GestureRecognizerFactory>{
             PanGestureRecognizer: GestureRecognizerFactoryWithHandlers<PanGestureRecognizer>(
               () => PanGestureRecognizer(supportedDevices: _configuration.dragDevices),
@@ -2288,6 +2272,7 @@ class _VerticalOuterDimensionState extends ScrollableState {
 class _HorizontalInnerDimension extends Scrollable {
   const _HorizontalInnerDimension({
     super.key,
+    required this.verticalOuterKey,
     required super.viewportBuilder,
     required super.axisDirection,
     super.controller,
@@ -2300,6 +2285,7 @@ class _HorizontalInnerDimension extends Scrollable {
     this.diagonalDragBehavior = DiagonalDragBehavior.none,
   }) : assert(axisDirection == AxisDirection.left || axisDirection == AxisDirection.right);
 
+  final GlobalKey<ScrollableState> verticalOuterKey;
   final DiagonalDragBehavior diagonalDragBehavior;
 
   @override
@@ -2309,6 +2295,7 @@ class _HorizontalInnerDimension extends Scrollable {
 class _HorizontalInnerDimensionState extends ScrollableState {
   late ScrollableState verticalScrollable;
 
+  GlobalKey<ScrollableState> get verticalOuterKey => (widget as _HorizontalInnerDimension).verticalOuterKey;
   DiagonalDragBehavior get diagonalDragBehavior => (widget as _HorizontalInnerDimension).diagonalDragBehavior;
 
   @override
@@ -2364,9 +2351,12 @@ class _HorizontalInnerDimensionState extends ScrollableState {
       case DiagonalDragBehavior.free:
         if (value) {
           // If a type of diagonal scrolling is enabled, a panning gesture
-          // recognizer will be created for the _InnerDimension. So in this
-          // case, the _OuterDimension does not require a gesture recognizer.
+          // recognizer will be created for the _VerticalOuterDimension. So in
+          // this case, the _HorizontalInnerDimension does not require a gesture
+          // recognizer, meanwhile we should ensure the outer dimension has
+          // updated in case it did not have enough content to enable dragging.
           _gestureRecognizers = const <Type, GestureRecognizerFactory>{};
+          verticalOuterKey.currentState!.setCanDrag(value);
           // Cancel the active hold/drag (if any) because the gesture recognizers
           // will soon be disposed by our RawGestureDetector, and we won't be
           // receiving pointer up events to cancel the hold/drag.
