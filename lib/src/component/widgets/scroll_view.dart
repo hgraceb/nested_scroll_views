@@ -39,6 +39,7 @@ class NestedCustomScrollView extends CustomScrollView {
     super.keyboardDismissBehavior,
     super.restorationId,
     super.clipBehavior,
+    super.hitTestBehavior,
     this.wantKeepAlive = true,
   });
 
@@ -74,6 +75,7 @@ class NestedListView extends ListView {
     super.keyboardDismissBehavior,
     super.restorationId,
     super.clipBehavior,
+    super.hitTestBehavior,
     this.wantKeepAlive = true,
   });
 
@@ -101,6 +103,7 @@ class NestedListView extends ListView {
     super.keyboardDismissBehavior,
     super.restorationId,
     super.clipBehavior,
+    super.hitTestBehavior,
     this.wantKeepAlive = true,
   }) : super.builder();
 
@@ -125,6 +128,7 @@ class NestedListView extends ListView {
     super.keyboardDismissBehavior,
     super.restorationId,
     super.clipBehavior,
+    super.hitTestBehavior,
     this.wantKeepAlive = true,
   }) : super.separated();
 
@@ -147,6 +151,7 @@ class NestedListView extends ListView {
     super.keyboardDismissBehavior,
     super.restorationId,
     super.clipBehavior,
+    super.hitTestBehavior,
     this.wantKeepAlive = true,
   }) : super.custom();
 
@@ -180,6 +185,7 @@ class NestedGridView extends GridView {
     super.clipBehavior,
     super.keyboardDismissBehavior,
     super.restorationId,
+    super.hitTestBehavior,
     this.wantKeepAlive = true,
   });
 
@@ -205,6 +211,7 @@ class NestedGridView extends GridView {
     super.keyboardDismissBehavior,
     super.restorationId,
     super.clipBehavior,
+    super.hitTestBehavior,
     this.wantKeepAlive = true,
   }) : super.builder();
 
@@ -225,6 +232,7 @@ class NestedGridView extends GridView {
     super.keyboardDismissBehavior,
     super.restorationId,
     super.clipBehavior,
+    super.hitTestBehavior,
     this.wantKeepAlive = true,
   }) : super.custom();
 
@@ -251,6 +259,7 @@ class NestedGridView extends GridView {
     super.keyboardDismissBehavior,
     super.restorationId,
     super.clipBehavior,
+    super.hitTestBehavior,
     this.wantKeepAlive = true,
   }) : super.count();
 
@@ -277,6 +286,7 @@ class NestedGridView extends GridView {
     super.keyboardDismissBehavior,
     super.restorationId,
     super.clipBehavior,
+    super.hitTestBehavior,
     this.wantKeepAlive = true,
   }) : super.extent();
 

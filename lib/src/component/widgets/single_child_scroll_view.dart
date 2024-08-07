@@ -15,6 +15,7 @@ class NestedSingleChildScrollView extends SingleChildScrollView {
     super.child,
     super.dragStartBehavior,
     super.clipBehavior,
+    super.hitTestBehavior,
     super.restorationId,
     super.keyboardDismissBehavior,
     this.wantKeepAlive = true,

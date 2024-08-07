@@ -14,6 +14,7 @@ class OverscrollScrollable extends Scrollable {
     super.restorationId,
     super.scrollBehavior,
     super.clipBehavior,
+    super.hitTestBehavior,
   });
 
   static ScrollIncrementCalculator? _getScrollIncrementCalculator(
