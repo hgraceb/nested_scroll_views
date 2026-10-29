@@ -132,4 +132,102 @@ void main() {
       await tester.pumpWidget(const SizedBox());
     });
   }
+
+  testWidgets('mixed page and default tab views keep vertical scrolling independent and hand off horizontally', (tester) async {
+    final outer = PageController();
+    final list = ScrollController();
+    late TabController middle;
+    late TabController inner;
+    addTearDown(outer.dispose);
+    addTearDown(list.dispose);
+    const listKey = ValueKey('inner list');
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Material(
+          child: Center(
+            child: SizedBox.square(
+              dimension: 400.0,
+              child: NestedPageView(
+                controller: outer,
+                physics: const BouncingScrollPhysics(),
+                children: [
+                  DefaultTabController(
+                    length: 2,
+                    initialIndex: 1,
+                    child: Builder(builder: (context) {
+                      middle = DefaultTabController.of(context);
+                      return Column(
+                        children: [
+                          const TabBar(tabs: [Tab(text: 'middle first'), Tab(text: 'middle last')]),
+                          Expanded(
+                            child: NestedTabBarView(
+                              physics: const ClampingScrollPhysics(),
+                              children: [
+                                const SizedBox.expand(),
+                                DefaultTabController(
+                                  length: 2,
+                                  child: Builder(builder: (context) {
+                                    inner = DefaultTabController.of(context);
+                                    return Column(
+                                      children: [
+                                        const TabBar(tabs: [Tab(text: 'inner first'), Tab(text: 'inner last')]),
+                                        Expanded(
+                                          child: NestedTabBarView(
+                                            physics: const ClampingScrollPhysics(),
+                                            children: [
+                                              const SizedBox.expand(),
+                                              ListView.builder(
+                                                key: listKey,
+                                                controller: list,
+                                                itemExtent: 100.0,
+                                                itemCount: 20,
+                                                itemBuilder: (context, index) => Text('row $index'),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    );
+                                  }),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      );
+                    }),
+                  ),
+                  const Center(child: Text('outer last')),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    expect(inner, isNot(same(middle)));
+    await tester.tap(find.text('inner last'));
+    await tester.pumpAndSettle();
+    expect(inner.index, 1);
+    expect(middle.index, 1);
+    expect(outer.page, closeTo(0.0, 0.001));
+
+    await tester.drag(find.byKey(listKey), const Offset(0.0, -150.0));
+    await tester.pumpAndSettle();
+    expect(list.offset, greaterThan(0.0));
+    expect(inner.index, 1);
+    expect(middle.index, 1);
+    expect(outer.page, closeTo(0.0, 0.001));
+
+    await tester.fling(find.byKey(listKey), const Offset(-500.0, 0.0), 1000.0);
+    await tester.pumpAndSettle();
+    expect(inner.index, 1);
+    expect(middle.index, 1);
+    expect(outer.page, closeTo(1.0, 0.001));
+    expect(find.text('outer last').hitTestable(), findsOneWidget);
+    expect(tester.takeException(), isNull);
+    await tester.pumpWidget(const SizedBox());
+  });
 }

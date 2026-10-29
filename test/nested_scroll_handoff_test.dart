@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:nested_scroll_views/material.dart';
+import 'package:nested_scroll_views/src/assembly/widgets/scroll_view.dart' as copied;
 
 void main() {
   final scrollViews = <String, Widget Function(Axis, ScrollController)>{
@@ -88,6 +89,67 @@ void main() {
         await tester.pumpAndSettle();
         expect(inner.offset, closeTo(0.0, 0.001));
         expect(outer.page, closeTo(0.0, 0.001));
+        expect(tester.takeException(), isNull);
+        await tester.pumpWidget(const SizedBox());
+      });
+    }
+  }
+
+  for (final singleChild in [false, true]) {
+    for (final (primary, dismissOnDrag) in [(true, false), (false, true)]) {
+      testWidgets('${singleChild ? 'single child' : 'list'} primary=$primary dismissOnDrag=$dismissOnDrag', (tester) async {
+        final controller = ScrollController();
+        final focus = FocusNode();
+        addTearDown(controller.dispose);
+        addTearDown(focus.dispose);
+        const scrollKey = ValueKey('scroll view');
+        final content = Column(children: [TextField(focusNode: focus), const SizedBox(height: 2000.0)]);
+        final Widget scrollView;
+        if (singleChild) {
+          scrollView = NestedSingleChildScrollView(
+            key: scrollKey,
+            primary: primary,
+            controller: primary ? null : controller,
+            keyboardDismissBehavior: dismissOnDrag ? ScrollViewKeyboardDismissBehavior.onDrag : ScrollViewKeyboardDismissBehavior.manual,
+            child: content,
+          );
+        } else {
+          // Flutter 3.24 基线的列表构造函数仍接收副本枚举
+          scrollView = NestedListView(
+            key: scrollKey,
+            primary: primary,
+            controller: primary ? null : controller,
+            keyboardDismissBehavior:
+                dismissOnDrag ? copied.ScrollViewKeyboardDismissBehavior.onDrag : copied.ScrollViewKeyboardDismissBehavior.manual,
+            children: [content],
+          );
+        }
+
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(
+              body: Center(
+                child: SizedBox.square(
+                  dimension: 400.0,
+                  child: PrimaryScrollController(controller: controller, child: scrollView),
+                ),
+              ),
+            ),
+          ),
+        );
+
+        expect(controller.hasClients, isTrue);
+        await tester.tap(find.byType(TextField));
+        await tester.pumpAndSettle();
+        expect(focus.hasFocus, isTrue);
+        expect(tester.testTextInput.isVisible, isTrue);
+
+        await tester.drag(find.byKey(scrollKey), const Offset(0.0, -150.0));
+        await tester.pumpAndSettle();
+        expect(controller.offset, greaterThan(0.0));
+        final keyboardStaysOpen = !dismissOnDrag;
+        expect(focus.hasFocus, keyboardStaysOpen);
+        expect(tester.testTextInput.isVisible, keyboardStaysOpen);
         expect(tester.takeException(), isNull);
         await tester.pumpWidget(const SizedBox());
       });
