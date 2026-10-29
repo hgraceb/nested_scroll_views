@@ -104,8 +104,7 @@ class _NestedPageViewState extends _PageViewState {
       void dragCancelCallback() => _dragController = null;
       // 滚动位置超出可滚动范围，自定义拖动事件控制器并保存，不要使用 ScrollStartNotification 携带的 DragStartDetails 数据作为参数
       // 如从可滚动 TabBar 的第三项开始滚动到第一项并结束滚动，依次接收到的滚动事件的序列可能如下： Start, End, Start, End
-      _dragController ??= position.drag(DragStartDetails(), dragCancelCallback)
-          as ScrollDragController;
+      _dragController ??= position.drag(DragStartDetails(), dragCancelCallback) as ScrollDragController;
       // 如果存在滚动数据
       if (notification.dragDetails != null) {
         // 开始处理拖动事件
@@ -163,13 +162,11 @@ class _NestedPageViewState extends _PageViewState {
 
   @override
   Widget build(BuildContext context) {
-    final notificationListener =
-        super.build(context) as NotificationListener<ScrollNotification>;
+    final notificationListener = super.build(context) as NotificationListener<ScrollNotification>;
     final scrollable = notificationListener.child as Scrollable;
     return NotificationListener<ScrollNotification>(
       onNotification: (ScrollNotification notification) {
-        return notificationListener.onNotification!(notification) ||
-            _handleNotification(context, notification);
+        return notificationListener.onNotification!(notification) || _handleNotification(context, notification);
       },
       child: WrapperKeepAlive(
         wantKeepAlive: (widget as NestedPageView).wantKeepAlive,

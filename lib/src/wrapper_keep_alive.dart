@@ -14,8 +14,7 @@ class WrapperKeepAlive extends StatefulWidget {
   State<WrapperKeepAlive> createState() => _WrapperKeepAliveState();
 }
 
-class _WrapperKeepAliveState extends State<WrapperKeepAlive>
-    with AutomaticKeepAliveClientMixin {
+class _WrapperKeepAliveState extends State<WrapperKeepAlive> with AutomaticKeepAliveClientMixin {
   @override
   Widget build(BuildContext context) {
     super.build(context);

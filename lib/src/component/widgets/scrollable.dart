@@ -91,8 +91,7 @@ class _OverscrollScrollableState extends ScrollableState {
       if (key == VerticalDragGestureRecognizer) {
         return MapEntry(
           OverscrollVerticalDragGestureRecognizer,
-          GestureRecognizerFactoryWithHandlers<
-              OverscrollVerticalDragGestureRecognizer>(
+          GestureRecognizerFactoryWithHandlers<OverscrollVerticalDragGestureRecognizer>(
             () => OverscrollVerticalDragGestureRecognizer(
               proxyOnUpdate: _proxyOnUpdate,
               onPointerMoveEvent: _onMoveEvent,
@@ -103,8 +102,7 @@ class _OverscrollScrollableState extends ScrollableState {
       } else if (key == HorizontalDragGestureRecognizer) {
         return MapEntry(
           OverscrollHorizontalDragGestureRecognizer,
-          GestureRecognizerFactoryWithHandlers<
-              OverscrollHorizontalDragGestureRecognizer>(
+          GestureRecognizerFactoryWithHandlers<OverscrollHorizontalDragGestureRecognizer>(
             () => OverscrollHorizontalDragGestureRecognizer(
               proxyOnUpdate: _proxyOnUpdate,
               onPointerMoveEvent: _onMoveEvent,

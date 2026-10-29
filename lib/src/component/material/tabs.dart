@@ -22,8 +22,7 @@ class NestedTabBarView extends TabBarView {
 class _NestedTabBarViewState extends _TabBarViewState {
   @override
   Widget build(BuildContext context) {
-    final notificationListener =
-        super.build(context) as NotificationListener<ScrollNotification>;
+    final notificationListener = super.build(context) as NotificationListener<ScrollNotification>;
     final flutterPageView = notificationListener.child as PageView;
     return NotificationListener<ScrollNotification>(
       onNotification: notificationListener.onNotification,

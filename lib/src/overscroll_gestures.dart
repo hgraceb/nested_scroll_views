@@ -9,8 +9,7 @@ typedef OnPointerMoveEvent = Function(
   double primaryDelta,
 );
 
-class OverscrollVerticalDragGestureRecognizer
-    extends VerticalDragGestureRecognizer {
+class OverscrollVerticalDragGestureRecognizer extends VerticalDragGestureRecognizer {
   OverscrollVerticalDragGestureRecognizer({
     required this.proxyOnUpdate,
     required this.onPointerMoveEvent,
@@ -36,8 +35,7 @@ class OverscrollVerticalDragGestureRecognizer
   }
 }
 
-class OverscrollHorizontalDragGestureRecognizer
-    extends HorizontalDragGestureRecognizer {
+class OverscrollHorizontalDragGestureRecognizer extends HorizontalDragGestureRecognizer {
   OverscrollHorizontalDragGestureRecognizer({
     required this.proxyOnUpdate,
     required this.onPointerMoveEvent,
