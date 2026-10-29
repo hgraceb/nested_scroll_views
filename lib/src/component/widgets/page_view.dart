@@ -72,10 +72,7 @@ class _NestedPageViewState extends _PageViewState {
   ScrollDragController? _dragController;
 
   /// 处理滚动事件通知
-  bool _handleNotification(
-    BuildContext context,
-    ScrollNotification notification,
-  ) {
+  bool _handleNotification(BuildContext context, ScrollNotification notification) {
     // 不处理默认滚动事件
     if (notification.depth == 0) {
       return false;
