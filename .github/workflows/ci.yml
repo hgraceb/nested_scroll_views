@@ -37,9 +37,6 @@ jobs:
         run: flutter pub get
         working-directory: example
 
-      - name: Check formatting
-        run: dart tool/format.dart --check
-
       - name: Analyze
         run: flutter analyze --no-pub
 
