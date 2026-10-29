@@ -8,6 +8,7 @@ class OverscrollVerticalDragGestureRecognizer extends VerticalDragGestureRecogni
   OverscrollVerticalDragGestureRecognizer({required this.proxyOnUpdate, required this.onPointerMoveEvent});
 
   final ProxyOnUpdate proxyOnUpdate;
+
   final OnPointerMoveEvent onPointerMoveEvent;
 
   @override
@@ -27,6 +28,7 @@ class OverscrollHorizontalDragGestureRecognizer extends HorizontalDragGestureRec
   OverscrollHorizontalDragGestureRecognizer({required this.proxyOnUpdate, required this.onPointerMoveEvent});
 
   final ProxyOnUpdate proxyOnUpdate;
+
   final OnPointerMoveEvent onPointerMoveEvent;
 
   @override
