@@ -96,7 +96,9 @@ void main() {
   }
 
   for (final singleChild in [false, true]) {
-    for (final (primary, dismissOnDrag) in [(true, false), (false, true)]) {
+    for (final (primary, dismissOnDrag) in [(true, false), (false, true), (true, true)]) {
+      // TODO: 迁移为递归转换后移除 skip，旧代码会把 PrimaryScrollController 错当成 Scrollable
+      final skip = primary && dismissOnDrag;
       testWidgets('${singleChild ? 'single child' : 'list'} primary=$primary dismissOnDrag=$dismissOnDrag', (tester) async {
         final controller = ScrollController();
         final focus = FocusNode();
@@ -152,7 +154,7 @@ void main() {
         expect(tester.testTextInput.isVisible, keyboardStaysOpen);
         expect(tester.takeException(), isNull);
         await tester.pumpWidget(const SizedBox());
-      });
+      }, skip: skip);
     }
   }
 }
