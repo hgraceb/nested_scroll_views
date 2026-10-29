@@ -12,5 +12,5 @@ linter:
 
 analyzer:
   exclude:
-    - lib/src/flutter/**
     - build/**
+    - lib/src/flutter/**

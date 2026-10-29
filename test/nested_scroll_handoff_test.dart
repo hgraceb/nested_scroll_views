@@ -113,21 +113,19 @@ void main() {
         final content = Column(children: [TextField(focusNode: focus), const SizedBox(height: 2000.0)]);
         final Widget scrollView;
         if (singleChild) {
-          final mode = dismissOnDrag ? ScrollViewKeyboardDismissBehavior.onDrag : ScrollViewKeyboardDismissBehavior.manual;
           scrollView = NestedSingleChildScrollView(
             key: scrollKey,
             primary: primary,
             controller: primary ? null : controller,
-            keyboardDismissBehavior: mode,
+            keyboardDismissBehavior: dismissOnDrag ? ScrollViewKeyboardDismissBehavior.onDrag : ScrollViewKeyboardDismissBehavior.manual,
             child: content,
           );
         } else {
-          final mode = dismissOnDrag ? ScrollViewKeyboardDismissBehavior.onDrag : ScrollViewKeyboardDismissBehavior.manual;
           scrollView = NestedListView(
             key: scrollKey,
             primary: primary,
             controller: primary ? null : controller,
-            keyboardDismissBehavior: mode,
+            keyboardDismissBehavior: dismissOnDrag ? ScrollViewKeyboardDismissBehavior.onDrag : ScrollViewKeyboardDismissBehavior.manual,
             children: [content],
           );
         }
