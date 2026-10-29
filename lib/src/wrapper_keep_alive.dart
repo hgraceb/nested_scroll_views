@@ -1,21 +1,17 @@
 import 'package:flutter/widgets.dart';
 
 class WrapperKeepAlive extends StatefulWidget {
-  final Widget child;
-  final bool wantKeepAlive;
+  const WrapperKeepAlive({super.key, required this.child, required this.wantKeepAlive});
 
-  const WrapperKeepAlive({
-    super.key,
-    required this.child,
-    required this.wantKeepAlive,
-  });
+  final Widget child;
+
+  final bool wantKeepAlive;
 
   @override
   State<WrapperKeepAlive> createState() => _WrapperKeepAliveState();
 }
 
-class _WrapperKeepAliveState extends State<WrapperKeepAlive>
-    with AutomaticKeepAliveClientMixin {
+class _WrapperKeepAliveState extends State<WrapperKeepAlive> with AutomaticKeepAliveClientMixin {
   @override
   Widget build(BuildContext context) {
     super.build(context);

@@ -1,26 +1,10 @@
 part of 'package:nested_scroll_views/src/assembly/widgets/scroll_view.dart';
 
 Widget _convertScrollable(Widget widget, bool wantKeepAlive) {
-  final Widget child;
-  if (widget is NotificationListener<ScrollUpdateNotification>) {
-    child = NotificationListener<ScrollUpdateNotification>(
-      onNotification: widget.onNotification,
-      child: OverscrollScrollable.from(widget.child as Scrollable),
-    );
-  } else if (widget is PrimaryScrollController) {
-    child = PrimaryScrollController.none(
-      child: OverscrollScrollable.from(widget.child as Scrollable),
-    );
-  } else {
-    child = OverscrollScrollable.from(widget as Scrollable);
-  }
-  return WrapperKeepAlive(wantKeepAlive: wantKeepAlive, child: child);
+  return WrapperKeepAlive(wantKeepAlive: wantKeepAlive, child: OverscrollScrollable.replace(widget));
 }
 
 class NestedCustomScrollView extends CustomScrollView {
-  /// 是否缓存可滚动页面，不缓存可能导致页面在嵌套滚动时被销毁导致手势事件丢失
-  final bool wantKeepAlive;
-
   const NestedCustomScrollView({
     super.key,
     super.scrollDirection,
@@ -43,16 +27,14 @@ class NestedCustomScrollView extends CustomScrollView {
     this.wantKeepAlive = true,
   });
 
-  @override
-  Widget build(BuildContext context) {
-    return _convertScrollable(super.build(context), wantKeepAlive);
-  }
-}
-
-class NestedListView extends ListView {
   /// 是否缓存可滚动页面，不缓存可能导致页面在嵌套滚动时被销毁导致手势事件丢失
   final bool wantKeepAlive;
 
+  @override
+  Widget build(BuildContext context) => _convertScrollable(super.build(context), wantKeepAlive);
+}
+
+class NestedListView extends ListView {
   NestedListView({
     super.key,
     super.scrollDirection,
@@ -155,16 +137,14 @@ class NestedListView extends ListView {
     this.wantKeepAlive = true,
   }) : super.custom();
 
-  @override
-  Widget build(BuildContext context) {
-    return _convertScrollable(super.build(context), wantKeepAlive);
-  }
-}
-
-class NestedGridView extends GridView {
   /// 是否缓存可滚动页面，不缓存可能导致页面在嵌套滚动时被销毁导致手势事件丢失
   final bool wantKeepAlive;
 
+  @override
+  Widget build(BuildContext context) => _convertScrollable(super.build(context), wantKeepAlive);
+}
+
+class NestedGridView extends GridView {
   NestedGridView({
     super.key,
     super.scrollDirection,
@@ -290,8 +270,9 @@ class NestedGridView extends GridView {
     this.wantKeepAlive = true,
   }) : super.extent();
 
+  /// 是否缓存可滚动页面，不缓存可能导致页面在嵌套滚动时被销毁导致手势事件丢失
+  final bool wantKeepAlive;
+
   @override
-  Widget build(BuildContext context) {
-    return _convertScrollable(super.build(context), wantKeepAlive);
-  }
+  Widget build(BuildContext context) => _convertScrollable(super.build(context), wantKeepAlive);
 }

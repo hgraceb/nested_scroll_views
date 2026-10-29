@@ -17,23 +17,6 @@ class OverscrollScrollable extends Scrollable {
     super.hitTestBehavior,
   });
 
-  static ScrollIncrementCalculator? _getScrollIncrementCalculator(
-    Scrollable scrollable,
-  ) {
-    final incrementCalculator = scrollable.incrementCalculator;
-    if (incrementCalculator == null) {
-      return null;
-    }
-    return (details) {
-      return incrementCalculator(
-        ScrollIncrementDetails(
-          metrics: details.metrics,
-          type: ScrollIncrementType.values[details.type.index],
-        ),
-      );
-    };
-  }
-
   /// 将 Scrollable 转换为 OverscrollScrollable
   OverscrollScrollable.from(Scrollable scrollable)
       : super(
@@ -50,6 +33,31 @@ class OverscrollScrollable extends Scrollable {
           scrollBehavior: scrollable.scrollBehavior,
           clipBehavior: scrollable.clipBehavior,
         );
+
+  static ScrollIncrementCalculator? _getScrollIncrementCalculator(Scrollable scrollable) {
+    final incrementCalculator = scrollable.incrementCalculator;
+    if (incrementCalculator == null) {
+      return null;
+    }
+    return (details) {
+      return incrementCalculator(ScrollIncrementDetails(metrics: details.metrics, type: ScrollIncrementType.values[details.type.index]));
+    };
+  }
+
+  /// 沿 ScrollView 和 SingleChildScrollView 的已知包装层替换 Scrollable
+  static Widget replace(Widget widget) {
+    if (widget is NotificationListener<ScrollUpdateNotification>) {
+      return NotificationListener<ScrollUpdateNotification>(
+        key: widget.key,
+        onNotification: widget.onNotification,
+        child: replace(widget.child),
+      );
+    }
+    if (widget is PrimaryScrollController) {
+      return PrimaryScrollController.none(key: widget.key, child: replace(widget.child));
+    }
+    return OverscrollScrollable.from(widget as Scrollable);
+  }
 
   @override
   ScrollableState createState() => _OverscrollScrollableState();
@@ -91,24 +99,16 @@ class _OverscrollScrollableState extends ScrollableState {
       if (key == VerticalDragGestureRecognizer) {
         return MapEntry(
           OverscrollVerticalDragGestureRecognizer,
-          GestureRecognizerFactoryWithHandlers<
-              OverscrollVerticalDragGestureRecognizer>(
-            () => OverscrollVerticalDragGestureRecognizer(
-              proxyOnUpdate: _proxyOnUpdate,
-              onPointerMoveEvent: _onMoveEvent,
-            ),
+          GestureRecognizerFactoryWithHandlers<OverscrollVerticalDragGestureRecognizer>(
+            () => OverscrollVerticalDragGestureRecognizer(proxyOnUpdate: _proxyOnUpdate, onPointerMoveEvent: _onMoveEvent),
             (instance) => value.initializer(instance),
           ),
         );
       } else if (key == HorizontalDragGestureRecognizer) {
         return MapEntry(
           OverscrollHorizontalDragGestureRecognizer,
-          GestureRecognizerFactoryWithHandlers<
-              OverscrollHorizontalDragGestureRecognizer>(
-            () => OverscrollHorizontalDragGestureRecognizer(
-              proxyOnUpdate: _proxyOnUpdate,
-              onPointerMoveEvent: _onMoveEvent,
-            ),
+          GestureRecognizerFactoryWithHandlers<OverscrollHorizontalDragGestureRecognizer>(
+            () => OverscrollHorizontalDragGestureRecognizer(proxyOnUpdate: _proxyOnUpdate, onPointerMoveEvent: _onMoveEvent),
             (instance) => value.initializer(instance),
           ),
         );

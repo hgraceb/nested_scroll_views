@@ -11,13 +11,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Nested View Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
+      theme: ThemeData(primarySwatch: Colors.blue),
       home: const MyHomePage(title: 'Nested View Home Page'),
-      scrollBehavior: const MaterialScrollBehavior().copyWith(
-        dragDevices: PointerDeviceKind.values.toSet(),
-      ),
+      scrollBehavior: const MaterialScrollBehavior().copyWith(dragDevices: PointerDeviceKind.values.toSet()),
       debugShowCheckedModeBanner: false,
     );
   }
@@ -45,11 +41,7 @@ class _MyHomePageState extends State<MyHomePage> {
     const duration = kTabScrollDuration;
     if ((_currentIndex - page).abs() == 1) {
       _warpUnderwayCount += 1;
-      await _pageController.animateToPage(
-        page,
-        duration: duration,
-        curve: Curves.ease,
-      );
+      await _pageController.animateToPage(page, duration: duration, curve: Curves.ease);
       _warpUnderwayCount -= 1;
       return Future<void>.value();
     }
@@ -65,11 +57,7 @@ class _MyHomePageState extends State<MyHomePage> {
       childrenWithKey[_currentIndex] = temp;
     });
     _pageController.jumpToPage(initialPage);
-    await _pageController.animateToPage(
-      page,
-      duration: duration,
-      curve: Curves.ease,
-    );
+    await _pageController.animateToPage(page, duration: duration, curve: Curves.ease);
     setState(() {
       _warpUnderwayCount -= 1;
       childrenWithKey = originalChildren;
@@ -79,11 +67,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    childrenWithKey = KeyedSubtree.ensureUniqueKeysForList(const [
-      FirstPage(),
-      SecondPage(),
-      ThirdPage(),
-    ]);
+    childrenWithKey = KeyedSubtree.ensureUniqueKeysForList(const [FirstPage(), SecondPage(), ThirdPage()]);
   }
 
   @override
@@ -100,18 +84,9 @@ class _MyHomePageState extends State<MyHomePage> {
         currentIndex: _currentIndex,
         onTap: (page) => _animateToPage(page),
         items: const [
-          BottomNavigationBarItem(
-            label: '1',
-            icon: Icon(Icons.mode_night),
-          ),
-          BottomNavigationBarItem(
-            label: '2',
-            icon: Icon(Icons.cloud),
-          ),
-          BottomNavigationBarItem(
-            label: '3',
-            icon: Icon(Icons.light_mode),
-          ),
+          BottomNavigationBarItem(label: '1', icon: Icon(Icons.mode_night)),
+          BottomNavigationBarItem(label: '2', icon: Icon(Icons.cloud)),
+          BottomNavigationBarItem(label: '3', icon: Icon(Icons.light_mode)),
         ],
       ),
       body: NestedPageView(
@@ -143,23 +118,15 @@ class _FirstPageState extends State<FirstPage> {
       child: Scaffold(
         appBar: AppBar(
           title: const Text('First Page'),
-          bottom: TabBar(
-            isScrollable: true,
-            tabAlignment: TabAlignment.center,
-            tabs: _tabs.map((tab) => Tab(text: tab)).toList(),
-          ),
+          bottom: TabBar(isScrollable: true, tabAlignment: TabAlignment.center, tabs: _tabs.map((tab) => Tab(text: tab)).toList()),
         ),
         body: NestedTabBarView(
           children: List.generate(_tabs.length, (index) {
             final list = ListView.builder(
               itemCount: _items.length,
-              prototypeItem: ListTile(
-                title: Text(_items.first),
-              ),
+              prototypeItem: ListTile(title: Text(_items.first)),
               itemBuilder: (context, index) {
-                return ListTile(
-                  title: Text(_items[index]),
-                );
+                return ListTile(title: Text(_items[index]));
               },
             );
             if (index % 2 == 0) {
@@ -172,11 +139,7 @@ class _FirstPageState extends State<FirstPage> {
                       unselectedLabelColor: Colors.black45,
                       tabs: _subTabs.map((tab) => Tab(text: tab)).toList(),
                     ),
-                    Expanded(
-                      child: NestedTabBarView(
-                        children: _subTabs.map((_) => list).toList(),
-                      ),
-                    ),
+                    Expanded(child: NestedTabBarView(children: _subTabs.map((_) => list).toList())),
                   ],
                 ),
               );
@@ -215,9 +178,7 @@ class _SecondPageState extends State<SecondPage> {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Second Page'),
-      ),
+      appBar: AppBar(title: const Text('Second Page')),
       body: NestedPageView(
         controller: _firstPageController,
         children: [
@@ -234,11 +195,7 @@ class _SecondPageState extends State<SecondPage> {
                 child: NestedPageView(
                   controller: _secondPageController,
                   children: [
-                    Container(
-                      color: Colors.orange.shade200,
-                      alignment: Alignment.center,
-                      child: const Text("Page 2.2.1"),
-                    ),
+                    Container(color: Colors.orange.shade200, alignment: Alignment.center, child: const Text("Page 2.2.1")),
                     NestedPageView(
                       controller: _thirdPageController,
                       children: [
@@ -248,21 +205,9 @@ class _SecondPageState extends State<SecondPage> {
                               child: NestedPageView(
                                 controller: _fourthPageController,
                                 children: [
-                                  Container(
-                                    color: Colors.yellow.shade200,
-                                    alignment: Alignment.center,
-                                    child: const Text("Page 2.2.2.1"),
-                                  ),
-                                  Container(
-                                    color: Colors.green.shade200,
-                                    alignment: Alignment.center,
-                                    child: const Text("Page 2.2.2.2"),
-                                  ),
-                                  Container(
-                                    color: Colors.cyan.shade200,
-                                    alignment: Alignment.center,
-                                    child: const Text("Page 2.2.2.3"),
-                                  ),
+                                  Container(color: Colors.yellow.shade200, alignment: Alignment.center, child: const Text("Page 2.2.2.1")),
+                                  Container(color: Colors.green.shade200, alignment: Alignment.center, child: const Text("Page 2.2.2.2")),
+                                  Container(color: Colors.cyan.shade200, alignment: Alignment.center, child: const Text("Page 2.2.2.3")),
                                 ],
                               ),
                             ),
@@ -270,20 +215,13 @@ class _SecondPageState extends State<SecondPage> {
                               width: size.width,
                               color: Colors.grey.shade300,
                               alignment: Alignment.center,
-                              child: const Padding(
-                                padding: EdgeInsets.all(6),
-                                child: Text("Page 2.2.2"),
-                              ),
+                              child: const Padding(padding: EdgeInsets.all(6), child: Text("Page 2.2.2")),
                             ),
                           ],
                         ),
                       ],
                     ),
-                    Container(
-                      color: Colors.blue.shade200,
-                      alignment: Alignment.center,
-                      child: const Text("Page 2.2.3"),
-                    ),
+                    Container(color: Colors.blue.shade200, alignment: Alignment.center, child: const Text("Page 2.2.3")),
                   ],
                 ),
               ),
@@ -291,10 +229,7 @@ class _SecondPageState extends State<SecondPage> {
                 width: size.width,
                 color: Colors.grey.shade200,
                 alignment: Alignment.center,
-                child: const Padding(
-                  padding: EdgeInsets.all(6),
-                  child: Text("Page 2.2"),
-                ),
+                child: const Padding(padding: EdgeInsets.all(6), child: Text("Page 2.2")),
               ),
             ],
           ),
@@ -334,9 +269,7 @@ class _ThirdPageState extends State<ThirdPage> {
     final size = MediaQuery.of(context).size;
     final width = size.width / 3.5;
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Third Page'),
-      ),
+      appBar: AppBar(title: const Text('Third Page')),
       body: NestedPageView(
         controller: _pageController,
         children: [
