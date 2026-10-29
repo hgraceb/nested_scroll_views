@@ -341,4 +341,3 @@ class _TabBarViewState extends State<TabBarView> {
     );
   }
 }
-

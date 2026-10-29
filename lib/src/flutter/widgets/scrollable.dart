@@ -1729,4 +1729,3 @@ class _RestorableScrollOffset extends RestorableValue<double?> {
   @override
   bool get enabled => value != null;
 }
-

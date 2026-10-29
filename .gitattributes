@@ -1,2 +1,2 @@
-# Keep upstream line endings and the blank lines between copied source blocks.
-lib/src/flutter/** text eol=lf whitespace=-blank-at-eof
+# Keep copied source files on LF line endings.
+lib/src/flutter/** text eol=lf

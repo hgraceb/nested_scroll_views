@@ -5,7 +5,7 @@ import 'dart:isolate';
 const _revision = '737ba8f885dc774b53b442759999a312c9461e4e';
 const _materialVersion = '1.8.0';
 
-// Boundaries include the upstream comments and whitespace of each whole block.
+// Preserve the upstream comments and whitespace within each copied block.
 const _blocks = <String, List<(String, String?)>>{
   'widgets/page_view.dart': [
     ('class _ForceImplicitScrollPhysics', '/// Scroll physics used by a [PageView].'),
@@ -80,7 +80,8 @@ Future<void> main(List<String> arguments) async {
       previousEnd = to;
     }
 
-    final bytes = utf8.encode(expected.toString());
+    // Omit the upstream separator after the final block; end with one newline.
+    final bytes = utf8.encode('${expected.toString().trimRight()}\n');
     final actual = File.fromUri(root.resolve('lib/src/flutter/${entry.key}')).readAsBytesSync();
     var index = 0;
     while (index < bytes.length && index < actual.length && bytes[index] == actual[index]) {

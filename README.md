@@ -23,7 +23,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:nested_scroll_views/material.dart';
 ```
 
-Replace Flutter's scroll views with their nested versions:
+Replace Flutter's views with the following views and use them nested.
 
 | Flutter               | Nested                      |
 | --------------------- | --------------------------- |
