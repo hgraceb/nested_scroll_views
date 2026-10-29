@@ -1,6 +1,7 @@
 import 'package:flutter/gestures.dart';
 
 typedef ProxyOnUpdate = GestureDragUpdateCallback? Function(GestureDragUpdateCallback? parent);
+
 typedef OnPointerMoveEvent = Function(PointerMoveEvent event, Offset delta, double primaryDelta);
 
 class OverscrollVerticalDragGestureRecognizer extends VerticalDragGestureRecognizer {
