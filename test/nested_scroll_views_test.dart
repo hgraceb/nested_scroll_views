@@ -1,3 +1,5 @@
+import 'dart:ui' show SemanticsRole;
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:nested_scroll_views/material.dart';
@@ -91,6 +93,61 @@ void main() {
     expect(tester.takeException(), isNull);
     await tester.pumpWidget(const SizedBox());
   });
+
+  for (final globalKeys in [false, true]) {
+    testWidgets('reordering tab panels preserves state with ${globalKeys ? 'global' : 'value'} keys', (tester) async {
+      final controller = TabController(length: 2, vsync: const TestVSync());
+      addTearDown(controller.dispose);
+      final keys = <Key>[for (final label in ['first', 'second']) globalKeys ? GlobalKey(debugLabel: label) : ValueKey(label)];
+      var reversed = false;
+      late StateSetter rebuild;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Material(
+            child: StatefulBuilder(
+              builder: (context, setState) {
+                rebuild = setState;
+                return NestedTabBarView(
+                  controller: controller,
+                  viewportFraction: 0.5,
+                  children: [for (final index in reversed ? [1, 0] : [0, 1]) _TabPanel(key: keys[index], label: 'panel $index')],
+                );
+              },
+            ),
+          ),
+        ),
+      );
+
+      final first = find.byKey(keys[0]);
+      final second = find.byKey(keys[1]);
+      final firstState = tester.state<_TabPanelState>(first);
+      final secondState = tester.state<_TabPanelState>(second);
+      await tester.tap(find.text('panel 0: 0'));
+      await tester.pump();
+      expect(find.text('panel 0: 1'), findsOneWidget);
+
+      rebuild(() => reversed = true);
+      await tester.pumpAndSettle();
+      expect(firstState.mounted, isTrue);
+      expect(secondState.mounted, isTrue);
+      expect(tester.state(first), same(firstState));
+      expect(tester.state(second), same(secondState));
+      expect(find.text('panel 0: 1'), findsOneWidget);
+      expect(tester.getTopLeft(second).dx, lessThan(tester.getTopLeft(first).dx));
+      for (final panel in [first, second]) {
+        expect(
+          find.ancestor(
+            of: panel,
+            matching: find.byWidgetPredicate((widget) => widget is Semantics && widget.properties.role == SemanticsRole.tabPanel),
+          ),
+          findsOneWidget,
+        );
+      }
+      expect(tester.takeException(), isNull);
+      await tester.pumpWidget(const SizedBox());
+    });
+  }
 
   for (final forward in [false, true]) {
     testWidgets('nested tab view hands off at the ${forward ? 'last' : 'first'} tab', (tester) async {
@@ -230,4 +287,22 @@ void main() {
     expect(tester.takeException(), isNull);
     await tester.pumpWidget(const SizedBox());
   });
+}
+
+class _TabPanel extends StatefulWidget {
+  const _TabPanel({super.key, required this.label});
+
+  final String label;
+
+  @override
+  State<_TabPanel> createState() => _TabPanelState();
+}
+
+class _TabPanelState extends State<_TabPanel> {
+  var count = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(child: TextButton(onPressed: () => setState(() => count++), child: Text('${widget.label}: $count')));
+  }
 }
