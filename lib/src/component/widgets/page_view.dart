@@ -69,7 +69,6 @@ class NestedPageView extends PageView {
 
 class _NestedPageViewState extends _PageViewState {
   bool? _ignoreOverscroll;
-
   ScrollDragController? _dragController;
 
   /// 处理滚动事件通知

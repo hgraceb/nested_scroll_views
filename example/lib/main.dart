@@ -30,11 +30,8 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _currentIndex = 0;
-
   int _warpUnderwayCount = 0;
-
   late List<Widget> childrenWithKey;
-
   final _pageController = PageController();
 
   Future<void> _animateToPage(int page) async {
@@ -111,9 +108,7 @@ class FirstPage extends StatefulWidget {
 
 class _FirstPageState extends State<FirstPage> {
   final _tabs = ['Tab 1.1', 'Tab 1.2', 'Tab 1.3', 'Tab 1.4', 'Tab 1.5'];
-
   final _subTabs = ['1', '2', '3'];
-
   final _items = List<String>.generate(100, (i) => 'Item $i');
 
   @override
@@ -166,11 +161,8 @@ class SecondPage extends StatefulWidget {
 
 class _SecondPageState extends State<SecondPage> {
   final _firstPageController = PageController();
-
   final _secondPageController = PageController();
-
   final _thirdPageController = PageController();
-
   final _fourthPageController = PageController();
 
   @override
@@ -263,7 +255,6 @@ class ThirdPage extends StatefulWidget {
 
 class _ThirdPageState extends State<ThirdPage> {
   final _pageController = PageController();
-
   final _scrollController = ScrollController();
 
   @override
