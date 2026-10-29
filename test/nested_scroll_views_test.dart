@@ -91,4 +91,45 @@ void main() {
     expect(tester.takeException(), isNull);
     await tester.pumpWidget(const SizedBox());
   });
+
+  for (final forward in [false, true]) {
+    testWidgets('nested tab view hands off at the ${forward ? 'last' : 'first'} tab', (tester) async {
+      final outer = TabController(length: 3, initialIndex: 1, vsync: const TestVSync());
+      final inner = TabController(length: 2, initialIndex: forward ? 1 : 0, vsync: const TestVSync());
+      addTearDown(outer.dispose);
+      addTearDown(inner.dispose);
+      const innerKey = ValueKey('inner tabs');
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Center(
+            child: SizedBox.square(
+              dimension: 400.0,
+              child: NestedTabBarView(
+                controller: outer,
+                children: [
+                  const Center(child: Text('outer first')),
+                  NestedTabBarView(
+                    key: innerKey,
+                    controller: inner,
+                    physics: const ClampingScrollPhysics(),
+                    children: const [Center(child: Text('inner first')), Center(child: Text('inner last'))],
+                  ),
+                  const Center(child: Text('outer last')),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+
+      await tester.fling(find.byKey(innerKey), Offset(forward ? -500.0 : 500.0, 0.0), 1000.0);
+      await tester.pumpAndSettle();
+      expect(inner.index, forward ? 1 : 0);
+      expect(outer.index, forward ? 2 : 0);
+      expect(find.text(forward ? 'outer last' : 'outer first').hitTestable(), findsOneWidget);
+      expect(tester.takeException(), isNull);
+      await tester.pumpWidget(const SizedBox());
+    });
+  }
 }
