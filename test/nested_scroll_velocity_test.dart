@@ -69,6 +69,11 @@ void main() {
               expect(outer.page, closeTo(expectedPage.toDouble(), 0.001));
               expect(changedPages, fast ? [expectedPage] : isEmpty);
               expect(inner.offset, closeTo(boundary, 0.001));
+              if (!fast) {
+                await _slowLongDrag(tester, find.byKey(innerKey), step, kind);
+                expect(outer.page, closeTo(forward ? 2.0 : 0.0, 0.001));
+                expect(changedPages, [forward ? 2 : 0]);
+              }
               expect(tester.takeException(), isNull);
               await tester.pumpWidget(const SizedBox());
             });
@@ -169,6 +174,11 @@ void main() {
               expect(outer.page, closeTo(expectedPage.toDouble(), 0.001));
               expect(changedPages, fast ? [expectedPage] : isEmpty);
               expect(innerIndex(), initialIndex);
+              if (!fast) {
+                await _slowLongDrag(tester, find.byKey(innerKey), step, kind);
+                expect(outer.page, closeTo(forward ? 2.0 : 0.0, 0.001));
+                expect(changedPages, [forward ? 2 : 0]);
+              }
               expect(tester.takeException(), isNull);
               await tester.pumpWidget(const SizedBox());
             });
@@ -180,6 +190,17 @@ void main() {
 }
 
 Offset _offset(Axis axis, double distance) => axis == Axis.horizontal ? Offset(distance, 0.0) : Offset(0.0, distance);
+
+Future<void> _slowLongDrag(WidgetTester tester, Finder finder, Offset step, PointerDeviceKind kind) async {
+  const interval = Duration(milliseconds: 500);
+  final gesture = await tester.startGesture(tester.getCenter(finder), kind: kind);
+  for (var i = 1; i <= 14; i++) {
+    await gesture.moveBy(step, timeStamp: interval * i);
+    await tester.pump(interval);
+  }
+  await gesture.up(timeStamp: interval * 14 + const Duration(milliseconds: 1));
+  await tester.pumpAndSettle();
+}
 
 Future<void> _pumpViews(WidgetTester tester, PageController outer, Axis axis, List<int> changedPages, Widget inner) {
   return tester.pumpWidget(
