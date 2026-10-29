@@ -106,21 +106,21 @@ void main() {
         final content = Column(children: [TextField(focusNode: focus), const SizedBox(height: 2000.0)]);
         final Widget scrollView;
         if (singleChild) {
+          final mode = dismissOnDrag ? ScrollViewKeyboardDismissBehavior.onDrag : ScrollViewKeyboardDismissBehavior.manual;
           scrollView = NestedSingleChildScrollView(
             key: scrollKey,
             primary: primary,
             controller: primary ? null : controller,
-            keyboardDismissBehavior: dismissOnDrag ? ScrollViewKeyboardDismissBehavior.onDrag : ScrollViewKeyboardDismissBehavior.manual,
+            keyboardDismissBehavior: mode,
             child: content,
           );
         } else {
-          // Flutter 3.24 基线的列表构造函数仍接收副本枚举
+          final mode = dismissOnDrag ? copied.ScrollViewKeyboardDismissBehavior.onDrag : copied.ScrollViewKeyboardDismissBehavior.manual;
           scrollView = NestedListView(
             key: scrollKey,
             primary: primary,
             controller: primary ? null : controller,
-            keyboardDismissBehavior:
-                dismissOnDrag ? copied.ScrollViewKeyboardDismissBehavior.onDrag : copied.ScrollViewKeyboardDismissBehavior.manual,
+            keyboardDismissBehavior: mode,
             children: [content],
           );
         }
