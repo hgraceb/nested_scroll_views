@@ -44,6 +44,21 @@ class OverscrollScrollable extends Scrollable {
     };
   }
 
+  /// 沿 ScrollView 和 SingleChildScrollView 的已知包装层替换 Scrollable
+  static Widget replace(Widget widget) {
+    if (widget is NotificationListener<ScrollUpdateNotification>) {
+      return NotificationListener<ScrollUpdateNotification>(
+        key: widget.key,
+        onNotification: widget.onNotification,
+        child: replace(widget.child),
+      );
+    }
+    if (widget is PrimaryScrollController) {
+      return PrimaryScrollController.none(key: widget.key, child: replace(widget.child));
+    }
+    return OverscrollScrollable.from(widget as Scrollable);
+  }
+
   @override
   ScrollableState createState() => _OverscrollScrollableState();
 }

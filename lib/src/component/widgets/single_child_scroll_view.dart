@@ -23,18 +23,6 @@ class NestedSingleChildScrollView extends SingleChildScrollView {
 
   @override
   Widget build(BuildContext context) {
-    final Widget child;
-    final Widget widget = super.build(context);
-    if (widget is NotificationListener<ScrollUpdateNotification>) {
-      child = NotificationListener<ScrollUpdateNotification>(
-        onNotification: widget.onNotification,
-        child: OverscrollScrollable.from(widget.child as Scrollable),
-      );
-    } else if (widget is PrimaryScrollController) {
-      child = PrimaryScrollController.none(child: OverscrollScrollable.from(widget.child as Scrollable));
-    } else {
-      child = OverscrollScrollable.from(widget as Scrollable);
-    }
-    return WrapperKeepAlive(wantKeepAlive: wantKeepAlive, child: child);
+    return WrapperKeepAlive(wantKeepAlive: wantKeepAlive, child: OverscrollScrollable.replace(super.build(context)));
   }
 }

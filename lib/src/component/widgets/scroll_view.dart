@@ -1,18 +1,7 @@
 part of 'package:nested_scroll_views/src/assembly/widgets/scroll_view.dart';
 
 Widget _convertScrollable(Widget widget, bool wantKeepAlive) {
-  final Widget child;
-  if (widget is NotificationListener<ScrollUpdateNotification>) {
-    child = NotificationListener<ScrollUpdateNotification>(
-      onNotification: widget.onNotification,
-      child: OverscrollScrollable.from(widget.child as Scrollable),
-    );
-  } else if (widget is PrimaryScrollController) {
-    child = PrimaryScrollController.none(child: OverscrollScrollable.from(widget.child as Scrollable));
-  } else {
-    child = OverscrollScrollable.from(widget as Scrollable);
-  }
-  return WrapperKeepAlive(wantKeepAlive: wantKeepAlive, child: child);
+  return WrapperKeepAlive(wantKeepAlive: wantKeepAlive, child: OverscrollScrollable.replace(widget));
 }
 
 class NestedCustomScrollView extends CustomScrollView {
