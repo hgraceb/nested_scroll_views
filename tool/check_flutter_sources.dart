@@ -68,8 +68,7 @@ Future<void> main(List<String> arguments) async {
       throw StateError('Missing copyright boundary: ${entry.key}');
     }
     final assembly = entry.key == 'widgets/scrollable_helpers.dart' ? 'widgets/scrollable.dart' : entry.key;
-    final expected = StringBuffer(source.substring(0, headerEnd))
-      ..write("part of 'package:nested_scroll_views/src/assembly/$assembly';\n\n");
+    final expected = StringBuffer("${source.substring(0, headerEnd)}part of 'package:nested_scroll_views/src/assembly/$assembly';\n\n");
     var previousEnd = headerEnd;
     for (final (start, end) in entry.value) {
       final from = source.indexOf(start, previousEnd);

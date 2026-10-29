@@ -36,12 +36,11 @@ Replace Flutter's scroll views with their nested versions:
 
 ## Attention
 
-1. Use nested views consistently when nesting scroll views along the same axis.
-2. Views are kept alive by default. Setting `wantKeepAlive: false` can interrupt gestures when pages are disposed.
+1. Nested non-nested views with the same scroll direction will result in weird scrolling.
+2. Nested views are kept alive by default, you can set `wantKeepAlive` to false, which may lead to loss of gesture events because the page is destroyed.
 
 ## Thanks
 
-- [Flutter](https://github.com/flutter/flutter)：Flutter makes it easy and fast to build beautiful apps for mobile and beyond
-
+- [flutter](https://github.com/flutter/flutter)：Flutter makes it easy and fast to build beautiful apps for mobile and beyond
 - [union_tabs](https://github.com/wilin52/union_tabs)：A nested TabBarView overscroll unites outer TabBarView scroll event
 - [primary_page_view](https://gist.github.com/lwlizhe/558ee91b691a7d9e6873f16d9abccf78)：Flutter Nested Primary PageView
