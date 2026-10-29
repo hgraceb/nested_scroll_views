@@ -1,7 +1,6 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:nested_scroll_views/material.dart';
-import 'package:nested_scroll_views/src/assembly/widgets/scroll_view.dart' as copied;
 
 void main() {
   final scrollViews = <String, Widget Function(Axis, ScrollController)>{
@@ -123,7 +122,7 @@ void main() {
             child: content,
           );
         } else {
-          final mode = dismissOnDrag ? copied.ScrollViewKeyboardDismissBehavior.onDrag : copied.ScrollViewKeyboardDismissBehavior.manual;
+          final mode = dismissOnDrag ? ScrollViewKeyboardDismissBehavior.onDrag : ScrollViewKeyboardDismissBehavior.manual;
           scrollView = NestedListView(
             key: scrollKey,
             primary: primary,

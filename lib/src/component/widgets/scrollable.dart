@@ -19,30 +19,21 @@ class OverscrollScrollable extends Scrollable {
 
   /// 将 Scrollable 转换为 OverscrollScrollable
   OverscrollScrollable.from(Scrollable scrollable)
-      : super(
-          key: scrollable.key,
-          axisDirection: scrollable.axisDirection,
-          controller: scrollable.controller,
-          physics: scrollable.physics,
-          viewportBuilder: scrollable.viewportBuilder,
-          incrementCalculator: _getScrollIncrementCalculator(scrollable),
-          excludeFromSemantics: scrollable.excludeFromSemantics,
-          semanticChildCount: scrollable.semanticChildCount,
-          dragStartBehavior: scrollable.dragStartBehavior,
-          restorationId: scrollable.restorationId,
-          scrollBehavior: scrollable.scrollBehavior,
-          clipBehavior: scrollable.clipBehavior,
-        );
-
-  static ScrollIncrementCalculator? _getScrollIncrementCalculator(Scrollable scrollable) {
-    final incrementCalculator = scrollable.incrementCalculator;
-    if (incrementCalculator == null) {
-      return null;
-    }
-    return (details) {
-      return incrementCalculator(ScrollIncrementDetails(metrics: details.metrics, type: ScrollIncrementType.values[details.type.index]));
-    };
-  }
+    : super(
+        key: scrollable.key,
+        axisDirection: scrollable.axisDirection,
+        controller: scrollable.controller,
+        physics: scrollable.physics,
+        viewportBuilder: scrollable.viewportBuilder,
+        incrementCalculator: scrollable.incrementCalculator,
+        excludeFromSemantics: scrollable.excludeFromSemantics,
+        semanticChildCount: scrollable.semanticChildCount,
+        dragStartBehavior: scrollable.dragStartBehavior,
+        restorationId: scrollable.restorationId,
+        scrollBehavior: scrollable.scrollBehavior,
+        clipBehavior: scrollable.clipBehavior,
+        hitTestBehavior: scrollable.hitTestBehavior,
+      );
 
   /// 沿 ScrollView 和 SingleChildScrollView 的已知包装层替换 Scrollable
   static Widget replace(Widget widget) {

@@ -1,3 +1,17 @@
+## Unreleased
+
+- Sync the required widget source blocks with Flutter stable 3.47.8
+  (`737ba8f885dc`), while supporting Flutter 3.47.0 and later.
+- Migrate Material imports and tab controllers to `material_ui` 1.8.0, and sync
+  the tab view source blocks from that package. Applications should import
+  `package:material_ui/material_ui.dart` for Material widgets and controllers.
+- Reuse Flutter's public keyboard-dismiss and scroll-increment types, and remove
+  unused two-dimensional scrolling and keyboard-action copies.
+- Expose `scrollCacheExtent`, `paintOrder`, and `findItemIndexCallback`.
+- Preserve hit testing, primary controllers, and inherited keyboard dismissal
+  when replacing scrollables.
+- `NestedPageView.custom` is no longer const, matching Flutter's `PageView.custom`.
+
 ## 0.0.12
 
 - Adapt for Flutter 3.24.0 and Dart 3.5.0.

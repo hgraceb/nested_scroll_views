@@ -16,6 +16,22 @@ Flutter nested scrolling views.
 
 Replace flutter's views with the following views and use them nested.
 
+Requires Flutter 3.47.0 or later and Dart 3.13.0 or later. For Material widgets
+and tab controllers, use `material_ui` 1.8.0 or later:
+
+```dart
+import 'package:material_ui/material_ui.dart';
+import 'package:nested_scroll_views/material.dart';
+```
+
+Add `material_ui: ^1.8.0` to your application's dependencies when importing it
+directly. Replace `package:flutter/material.dart` imports and use the
+`material_ui` versions of `TabController` and `DefaultTabController` with
+`NestedTabBarView`.
+
+`NestedPageView.custom` now follows Flutter's non-const constructor. Use Flutter's
+public `ScrollViewKeyboardDismissBehavior` for the nested scroll views.
+
 | Flutter               | Nested                      |
 | --------------------- | --------------------------- |
 | PageView              | NestedPageView              |

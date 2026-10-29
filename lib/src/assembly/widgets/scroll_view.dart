@@ -2,7 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter/widgets.dart' hide ScrollAction, Scrollable;
+import 'package:flutter/widgets.dart' hide Scrollable;
 import 'package:nested_scroll_views/src/assembly/widgets/scrollable.dart';
 import 'package:nested_scroll_views/src/wrapper_keep_alive.dart';
 

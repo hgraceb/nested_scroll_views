@@ -12,6 +12,7 @@ class NestedPageView extends PageView {
     super.children,
     super.dragStartBehavior,
     super.allowImplicitScrolling,
+    super.scrollCacheExtent,
     super.restorationId,
     super.clipBehavior,
     super.hitTestBehavior,
@@ -33,6 +34,7 @@ class NestedPageView extends PageView {
     super.itemCount,
     super.dragStartBehavior,
     super.allowImplicitScrolling,
+    super.scrollCacheExtent,
     super.restorationId,
     super.clipBehavior,
     super.hitTestBehavior,
@@ -41,7 +43,7 @@ class NestedPageView extends PageView {
     this.wantKeepAlive = true,
   }) : super.builder();
 
-  const NestedPageView.custom({
+  NestedPageView.custom({
     super.key,
     super.scrollDirection,
     super.reverse,
@@ -52,6 +54,7 @@ class NestedPageView extends PageView {
     required super.childrenDelegate,
     super.dragStartBehavior,
     super.allowImplicitScrolling,
+    super.scrollCacheExtent,
     super.restorationId,
     super.clipBehavior,
     super.hitTestBehavior,
