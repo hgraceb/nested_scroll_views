@@ -1,10 +1,10 @@
 import 'package:flutter/widgets.dart';
 
 class WrapperKeepAlive extends StatefulWidget {
+  const WrapperKeepAlive({super.key, required this.child, required this.wantKeepAlive});
+
   final Widget child;
   final bool wantKeepAlive;
-
-  const WrapperKeepAlive({super.key, required this.child, required this.wantKeepAlive});
 
   @override
   State<WrapperKeepAlive> createState() => _WrapperKeepAliveState();

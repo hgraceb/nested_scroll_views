@@ -1,9 +1,6 @@
 part of 'package:nested_scroll_views/src/assembly/widgets/page_view.dart';
 
 class NestedPageView extends PageView {
-  /// 是否缓存可滚动页面，不缓存可能导致页面在嵌套滚动时被销毁导致手势事件丢失
-  final bool wantKeepAlive;
-
   NestedPageView({
     super.key,
     super.scrollDirection,
@@ -62,6 +59,9 @@ class NestedPageView extends PageView {
     super.padEnds,
     this.wantKeepAlive = true,
   }) : super.custom();
+
+  /// 是否缓存可滚动页面，不缓存可能导致页面在嵌套滚动时被销毁导致手势事件丢失
+  final bool wantKeepAlive;
 
   @override
   State<PageView> createState() => _NestedPageViewState();

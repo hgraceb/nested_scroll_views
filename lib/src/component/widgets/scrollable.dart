@@ -17,16 +17,6 @@ class OverscrollScrollable extends Scrollable {
     super.hitTestBehavior,
   });
 
-  static ScrollIncrementCalculator? _getScrollIncrementCalculator(Scrollable scrollable) {
-    final incrementCalculator = scrollable.incrementCalculator;
-    if (incrementCalculator == null) {
-      return null;
-    }
-    return (details) {
-      return incrementCalculator(ScrollIncrementDetails(metrics: details.metrics, type: ScrollIncrementType.values[details.type.index]));
-    };
-  }
-
   /// 将 Scrollable 转换为 OverscrollScrollable
   OverscrollScrollable.from(Scrollable scrollable)
       : super(
@@ -43,6 +33,16 @@ class OverscrollScrollable extends Scrollable {
           scrollBehavior: scrollable.scrollBehavior,
           clipBehavior: scrollable.clipBehavior,
         );
+
+  static ScrollIncrementCalculator? _getScrollIncrementCalculator(Scrollable scrollable) {
+    final incrementCalculator = scrollable.incrementCalculator;
+    if (incrementCalculator == null) {
+      return null;
+    }
+    return (details) {
+      return incrementCalculator(ScrollIncrementDetails(metrics: details.metrics, type: ScrollIncrementType.values[details.type.index]));
+    };
+  }
 
   @override
   ScrollableState createState() => _OverscrollScrollableState();

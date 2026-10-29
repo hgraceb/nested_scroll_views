@@ -16,9 +16,6 @@ Widget _convertScrollable(Widget widget, bool wantKeepAlive) {
 }
 
 class NestedCustomScrollView extends CustomScrollView {
-  /// 是否缓存可滚动页面，不缓存可能导致页面在嵌套滚动时被销毁导致手势事件丢失
-  final bool wantKeepAlive;
-
   const NestedCustomScrollView({
     super.key,
     super.scrollDirection,
@@ -41,14 +38,14 @@ class NestedCustomScrollView extends CustomScrollView {
     this.wantKeepAlive = true,
   });
 
+  /// 是否缓存可滚动页面，不缓存可能导致页面在嵌套滚动时被销毁导致手势事件丢失
+  final bool wantKeepAlive;
+
   @override
   Widget build(BuildContext context) => _convertScrollable(super.build(context), wantKeepAlive);
 }
 
 class NestedListView extends ListView {
-  /// 是否缓存可滚动页面，不缓存可能导致页面在嵌套滚动时被销毁导致手势事件丢失
-  final bool wantKeepAlive;
-
   NestedListView({
     super.key,
     super.scrollDirection,
@@ -151,14 +148,14 @@ class NestedListView extends ListView {
     this.wantKeepAlive = true,
   }) : super.custom();
 
+  /// 是否缓存可滚动页面，不缓存可能导致页面在嵌套滚动时被销毁导致手势事件丢失
+  final bool wantKeepAlive;
+
   @override
   Widget build(BuildContext context) => _convertScrollable(super.build(context), wantKeepAlive);
 }
 
 class NestedGridView extends GridView {
-  /// 是否缓存可滚动页面，不缓存可能导致页面在嵌套滚动时被销毁导致手势事件丢失
-  final bool wantKeepAlive;
-
   NestedGridView({
     super.key,
     super.scrollDirection,
@@ -283,6 +280,9 @@ class NestedGridView extends GridView {
     super.hitTestBehavior,
     this.wantKeepAlive = true,
   }) : super.extent();
+
+  /// 是否缓存可滚动页面，不缓存可能导致页面在嵌套滚动时被销毁导致手势事件丢失
+  final bool wantKeepAlive;
 
   @override
   Widget build(BuildContext context) => _convertScrollable(super.build(context), wantKeepAlive);

@@ -1,9 +1,6 @@
 part of 'package:nested_scroll_views/src/assembly/widgets/single_child_scroll_view.dart';
 
 class NestedSingleChildScrollView extends SingleChildScrollView {
-  /// 是否缓存可滚动页面，不缓存可能导致页面在嵌套滚动时被销毁导致手势事件丢失
-  final bool wantKeepAlive;
-
   const NestedSingleChildScrollView({
     super.key,
     super.scrollDirection,
@@ -20,6 +17,9 @@ class NestedSingleChildScrollView extends SingleChildScrollView {
     super.keyboardDismissBehavior,
     this.wantKeepAlive = true,
   });
+
+  /// 是否缓存可滚动页面，不缓存可能导致页面在嵌套滚动时被销毁导致手势事件丢失
+  final bool wantKeepAlive;
 
   @override
   Widget build(BuildContext context) {

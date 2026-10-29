@@ -1,9 +1,6 @@
 part of 'package:nested_scroll_views/src/assembly/material/tabs.dart';
 
 class NestedTabBarView extends TabBarView {
-  /// 是否缓存可滚动页面，不缓存可能导致页面在嵌套滚动时被销毁导致手势事件丢失
-  final bool wantKeepAlive;
-
   const NestedTabBarView({
     super.key,
     required super.children,
@@ -14,6 +11,9 @@ class NestedTabBarView extends TabBarView {
     super.clipBehavior,
     this.wantKeepAlive = true,
   });
+
+  /// 是否缓存可滚动页面，不缓存可能导致页面在嵌套滚动时被销毁导致手势事件丢失
+  final bool wantKeepAlive;
 
   @override
   State<TabBarView> createState() => _NestedTabBarViewState();
