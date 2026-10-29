@@ -11,11 +11,21 @@ const _blocks = <String, List<(String, String?)>>{
     ('class _ForceImplicitScrollPhysics', '/// Scroll physics used by a [PageView].'),
     ('const PageScrollPhysics _kPagePhysics', null),
   ],
-  'widgets/scroll_view.dart': [('/// A widget that combines a [Scrollable]', null)],
-  'widgets/scrollable.dart': [('// The return type of _performEnsureVisible.', '// 2D SCROLLING')],
-  'widgets/scrollable_helpers.dart': [('/// An auto scroller that scrolls', '/// A typedef for a function that can calculate')],
-  'widgets/single_child_scroll_view.dart': [('/// A box in which a single widget can be scrolled.', null)],
-  'material/tabs.dart': [('/// A page view that displays the widget', '/// Displays a single circle with the specified size')],
+  'widgets/scroll_view.dart': [
+    ('/// A widget that combines a [Scrollable]', null),
+  ],
+  'widgets/scrollable.dart': [
+    ('// The return type of _performEnsureVisible.', '// 2D SCROLLING'),
+  ],
+  'widgets/scrollable_helpers.dart': [
+    ('/// An auto scroller that scrolls', '/// A typedef for a function that can calculate'),
+  ],
+  'widgets/single_child_scroll_view.dart': [
+    ('/// A box in which a single widget can be scrolled.', null),
+  ],
+  'material/tabs.dart': [
+    ('/// A page view that displays the widget', '/// Displays a single circle with the specified size'),
+  ],
 };
 
 Future<void> main(List<String> arguments) async {

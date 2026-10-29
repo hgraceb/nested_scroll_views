@@ -13,7 +13,11 @@ class _DismissOnDragBehavior extends MaterialScrollBehavior {
 
 void main() {
   final primaryViews = <String, Widget Function()>{
-    'list': () => NestedListView(primary: true, hitTestBehavior: HitTestBehavior.translucent, children: const [SizedBox(height: 1600.0)]),
+    'list': () => NestedListView(
+      primary: true,
+      hitTestBehavior: HitTestBehavior.translucent,
+      children: const [SizedBox(height: 1600.0)],
+    ),
     'grid': () => NestedGridView.count(
       primary: true,
       hitTestBehavior: HitTestBehavior.translucent,
