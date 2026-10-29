@@ -5,39 +5,47 @@ import 'package:nested_scroll_views/src/assembly/widgets/scroll_view.dart' as co
 
 void main() {
   final scrollViews = <String, Widget Function(Axis, ScrollController)>{
-    'list': (axis, controller) => NestedListView.builder(
-          scrollDirection: axis,
-          controller: controller,
-          physics: const ClampingScrollPhysics(),
-          itemExtent: 100.0,
-          itemCount: 20,
-          itemBuilder: (context, index) => const SizedBox.expand(),
-        ),
-    'grid': (axis, controller) => NestedGridView.builder(
-          scrollDirection: axis,
-          controller: controller,
-          physics: const ClampingScrollPhysics(),
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, mainAxisExtent: 100.0),
-          itemCount: 40,
-          itemBuilder: (context, index) => const SizedBox.expand(),
-        ),
-    'custom': (axis, controller) => NestedCustomScrollView(
-          scrollDirection: axis,
-          controller: controller,
-          physics: const ClampingScrollPhysics(),
-          slivers: [
-            SliverFixedExtentList(
-              itemExtent: 100.0,
-              delegate: SliverChildBuilderDelegate((context, index) => const SizedBox.expand(), childCount: 20),
-            ),
-          ],
-        ),
-    'single child': (axis, controller) => NestedSingleChildScrollView(
-          scrollDirection: axis,
-          controller: controller,
-          physics: const ClampingScrollPhysics(),
-          child: SizedBox(width: axis == Axis.horizontal ? 2000.0 : null, height: axis == Axis.vertical ? 2000.0 : null),
-        ),
+    'list': (axis, controller) {
+      return NestedListView.builder(
+        scrollDirection: axis,
+        controller: controller,
+        physics: const ClampingScrollPhysics(),
+        itemExtent: 100.0,
+        itemCount: 20,
+        itemBuilder: (context, index) => const SizedBox.expand(),
+      );
+    },
+    'grid': (axis, controller) {
+      return NestedGridView.builder(
+        scrollDirection: axis,
+        controller: controller,
+        physics: const ClampingScrollPhysics(),
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, mainAxisExtent: 100.0),
+        itemCount: 40,
+        itemBuilder: (context, index) => const SizedBox.expand(),
+      );
+    },
+    'custom': (axis, controller) {
+      return NestedCustomScrollView(
+        scrollDirection: axis,
+        controller: controller,
+        physics: const ClampingScrollPhysics(),
+        slivers: [
+          SliverFixedExtentList(
+            itemExtent: 100.0,
+            delegate: SliverChildBuilderDelegate((context, index) => const SizedBox.expand(), childCount: 20),
+          ),
+        ],
+      );
+    },
+    'single child': (axis, controller) {
+      return NestedSingleChildScrollView(
+        scrollDirection: axis,
+        controller: controller,
+        physics: const ClampingScrollPhysics(),
+        child: SizedBox(width: axis == Axis.horizontal ? 2000.0 : null, height: axis == Axis.vertical ? 2000.0 : null),
+      );
+    },
   };
 
   for (final entry in scrollViews.entries) {
