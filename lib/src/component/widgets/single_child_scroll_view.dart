@@ -31,9 +31,7 @@ class NestedSingleChildScrollView extends SingleChildScrollView {
         child: OverscrollScrollable.from(widget.child as Scrollable),
       );
     } else if (widget is PrimaryScrollController) {
-      child = PrimaryScrollController.none(
-        child: OverscrollScrollable.from(widget.child as Scrollable),
-      );
+      child = PrimaryScrollController.none(child: OverscrollScrollable.from(widget.child as Scrollable));
     } else {
       child = OverscrollScrollable.from(widget as Scrollable);
     }

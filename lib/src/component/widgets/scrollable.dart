@@ -17,20 +17,13 @@ class OverscrollScrollable extends Scrollable {
     super.hitTestBehavior,
   });
 
-  static ScrollIncrementCalculator? _getScrollIncrementCalculator(
-    Scrollable scrollable,
-  ) {
+  static ScrollIncrementCalculator? _getScrollIncrementCalculator(Scrollable scrollable) {
     final incrementCalculator = scrollable.incrementCalculator;
     if (incrementCalculator == null) {
       return null;
     }
     return (details) {
-      return incrementCalculator(
-        ScrollIncrementDetails(
-          metrics: details.metrics,
-          type: ScrollIncrementType.values[details.type.index],
-        ),
-      );
+      return incrementCalculator(ScrollIncrementDetails(metrics: details.metrics, type: ScrollIncrementType.values[details.type.index]));
     };
   }
 
@@ -92,10 +85,7 @@ class _OverscrollScrollableState extends ScrollableState {
         return MapEntry(
           OverscrollVerticalDragGestureRecognizer,
           GestureRecognizerFactoryWithHandlers<OverscrollVerticalDragGestureRecognizer>(
-            () => OverscrollVerticalDragGestureRecognizer(
-              proxyOnUpdate: _proxyOnUpdate,
-              onPointerMoveEvent: _onMoveEvent,
-            ),
+            () => OverscrollVerticalDragGestureRecognizer(proxyOnUpdate: _proxyOnUpdate, onPointerMoveEvent: _onMoveEvent),
             (instance) => value.initializer(instance),
           ),
         );
@@ -103,10 +93,7 @@ class _OverscrollScrollableState extends ScrollableState {
         return MapEntry(
           OverscrollHorizontalDragGestureRecognizer,
           GestureRecognizerFactoryWithHandlers<OverscrollHorizontalDragGestureRecognizer>(
-            () => OverscrollHorizontalDragGestureRecognizer(
-              proxyOnUpdate: _proxyOnUpdate,
-              onPointerMoveEvent: _onMoveEvent,
-            ),
+            () => OverscrollHorizontalDragGestureRecognizer(proxyOnUpdate: _proxyOnUpdate, onPointerMoveEvent: _onMoveEvent),
             (instance) => value.initializer(instance),
           ),
         );

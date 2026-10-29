@@ -52,11 +52,7 @@ void main() {
       MaterialApp(
         home: NestedTabBarView(
           controller: controller,
-          children: const [
-            Center(child: Text('first')),
-            Center(child: Text('second')),
-            Center(child: Text('third')),
-          ],
+          children: const [Center(child: Text('first')), Center(child: Text('second')), Center(child: Text('third'))],
         ),
       ),
     );
@@ -80,20 +76,8 @@ void main() {
           child: Material(
             child: Column(
               children: [
-                TabBar(
-                  tabs: [
-                    Tab(text: 'Tab one'),
-                    Tab(text: 'Tab two'),
-                  ],
-                ),
-                Expanded(
-                  child: NestedTabBarView(
-                    children: [
-                      Center(child: Text('First panel')),
-                      Center(child: Text('Second panel')),
-                    ],
-                  ),
-                ),
+                TabBar(tabs: [Tab(text: 'Tab one'), Tab(text: 'Tab two')]),
+                Expanded(child: NestedTabBarView(children: [Center(child: Text('First panel')), Center(child: Text('Second panel'))])),
               ],
             ),
           ),

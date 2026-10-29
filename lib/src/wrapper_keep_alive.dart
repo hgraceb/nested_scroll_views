@@ -4,11 +4,7 @@ class WrapperKeepAlive extends StatefulWidget {
   final Widget child;
   final bool wantKeepAlive;
 
-  const WrapperKeepAlive({
-    super.key,
-    required this.child,
-    required this.wantKeepAlive,
-  });
+  const WrapperKeepAlive({super.key, required this.child, required this.wantKeepAlive});
 
   @override
   State<WrapperKeepAlive> createState() => _WrapperKeepAliveState();

@@ -8,9 +8,7 @@ Widget _convertScrollable(Widget widget, bool wantKeepAlive) {
       child: OverscrollScrollable.from(widget.child as Scrollable),
     );
   } else if (widget is PrimaryScrollController) {
-    child = PrimaryScrollController.none(
-      child: OverscrollScrollable.from(widget.child as Scrollable),
-    );
+    child = PrimaryScrollController.none(child: OverscrollScrollable.from(widget.child as Scrollable));
   } else {
     child = OverscrollScrollable.from(widget as Scrollable);
   }
@@ -44,9 +42,7 @@ class NestedCustomScrollView extends CustomScrollView {
   });
 
   @override
-  Widget build(BuildContext context) {
-    return _convertScrollable(super.build(context), wantKeepAlive);
-  }
+  Widget build(BuildContext context) => _convertScrollable(super.build(context), wantKeepAlive);
 }
 
 class NestedListView extends ListView {
@@ -156,9 +152,7 @@ class NestedListView extends ListView {
   }) : super.custom();
 
   @override
-  Widget build(BuildContext context) {
-    return _convertScrollable(super.build(context), wantKeepAlive);
-  }
+  Widget build(BuildContext context) => _convertScrollable(super.build(context), wantKeepAlive);
 }
 
 class NestedGridView extends GridView {
@@ -291,7 +285,5 @@ class NestedGridView extends GridView {
   }) : super.extent();
 
   @override
-  Widget build(BuildContext context) {
-    return _convertScrollable(super.build(context), wantKeepAlive);
-  }
+  Widget build(BuildContext context) => _convertScrollable(super.build(context), wantKeepAlive);
 }

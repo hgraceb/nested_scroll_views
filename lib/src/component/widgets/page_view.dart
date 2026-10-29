@@ -163,10 +163,7 @@ class _NestedPageViewState extends _PageViewState {
     final scrollable = notificationListener.child as Scrollable;
     return NotificationListener<ScrollNotification>(
       onNotification: (notification) => notificationListener.onNotification!(notification) || _handleNotification(context, notification),
-      child: WrapperKeepAlive(
-        wantKeepAlive: (widget as NestedPageView).wantKeepAlive,
-        child: OverscrollScrollable.from(scrollable),
-      ),
+      child: WrapperKeepAlive(wantKeepAlive: (widget as NestedPageView).wantKeepAlive, child: OverscrollScrollable.from(scrollable)),
     );
   }
 }
