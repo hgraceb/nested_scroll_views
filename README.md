@@ -14,23 +14,16 @@ Flutter nested scrolling views.
 
 ## Usage
 
-Replace flutter's views with the following views and use them nested.
+Requires Flutter 3.47.0+ and Dart 3.13.0+.
 
-Requires Flutter 3.47.0 or later and Dart 3.13.0 or later. For Material widgets
-and tab controllers, use `material_ui` 1.8.0 or later:
+Add `material_ui: ^1.8.0` for Material widgets and tab controllers:
 
 ```dart
 import 'package:material_ui/material_ui.dart';
 import 'package:nested_scroll_views/material.dart';
 ```
 
-Add `material_ui: ^1.8.0` to your application's dependencies when importing it
-directly. Replace `package:flutter/material.dart` imports and use the
-`material_ui` versions of `TabController` and `DefaultTabController` with
-`NestedTabBarView`.
-
-`NestedPageView.custom` now follows Flutter's non-const constructor. Use Flutter's
-public `ScrollViewKeyboardDismissBehavior` for the nested scroll views.
+Replace Flutter's scroll views with their nested versions:
 
 | Flutter               | Nested                      |
 | --------------------- | --------------------------- |
@@ -43,12 +36,12 @@ public `ScrollViewKeyboardDismissBehavior` for the nested scroll views.
 
 ## Attention
 
-1. Nested non-nested views with the same scroll direction will result in weird scrolling.
-2. Nested views are kept alive by default, you can set `wantKeepAlive` to false, which may lead to loss of gesture events because the page is destroyed.
+1. Use nested views consistently when nesting scroll views along the same axis.
+2. Views are kept alive by default. Setting `wantKeepAlive: false` can interrupt gestures when pages are disposed.
 
 ## Thanks
 
-- [flutter](https://github.com/flutter/flutter)：Flutter makes it easy and fast to build beautiful apps for mobile and beyond
+- [Flutter](https://github.com/flutter/flutter)：Flutter makes it easy and fast to build beautiful apps for mobile and beyond
 
 - [union_tabs](https://github.com/wilin52/union_tabs)：A nested TabBarView overscroll unites outer TabBarView scroll event
-- [primary_page_view](https://gist.github.com/lwlizhe/558ee91b691a7d9e6873f16d9abccf78)：FLutter Nested Primary PageView
+- [primary_page_view](https://gist.github.com/lwlizhe/558ee91b691a7d9e6873f16d9abccf78)：Flutter Nested Primary PageView

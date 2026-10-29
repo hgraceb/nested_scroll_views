@@ -8,40 +8,19 @@ const _materialVersion = '1.8.0';
 // Boundaries include the upstream comments and whitespace of each whole block.
 const _blocks = <String, List<(String, String?)>>{
   'widgets/page_view.dart': [
-    (
-      'class _ForceImplicitScrollPhysics',
-      '/// Scroll physics used by a [PageView].',
-    ),
+    ('class _ForceImplicitScrollPhysics', '/// Scroll physics used by a [PageView].'),
     ('const PageScrollPhysics _kPagePhysics', null),
   ],
-  'widgets/scroll_view.dart': [
-    ('/// A widget that combines a [Scrollable]', null),
-  ],
-  'widgets/scrollable.dart': [
-    ('// The return type of _performEnsureVisible.', '// 2D SCROLLING'),
-  ],
-  'widgets/scrollable_helpers.dart': [
-    (
-      '/// An auto scroller that scrolls',
-      '/// A typedef for a function that can calculate',
-    ),
-  ],
-  'widgets/single_child_scroll_view.dart': [
-    ('/// A box in which a single widget can be scrolled.', null),
-  ],
-  'material/tabs.dart': [
-    (
-      '/// A page view that displays the widget',
-      '/// Displays a single circle with the specified size',
-    ),
-  ],
+  'widgets/scroll_view.dart': [('/// A widget that combines a [Scrollable]', null)],
+  'widgets/scrollable.dart': [('// The return type of _performEnsureVisible.', '// 2D SCROLLING')],
+  'widgets/scrollable_helpers.dart': [('/// An auto scroller that scrolls', '/// A typedef for a function that can calculate')],
+  'widgets/single_child_scroll_view.dart': [('/// A box in which a single widget can be scrolled.', null)],
+  'material/tabs.dart': [('/// A page view that displays the widget', '/// Displays a single circle with the specified size')],
 };
 
 Future<void> main(List<String> arguments) async {
   if (arguments.length != 1) {
-    stderr.writeln(
-      'Usage: dart tool/check_flutter_sources.dart <flutter-git-checkout>',
-    );
+    stderr.writeln('Usage: dart tool/check_flutter_sources.dart <flutter-git-checkout>');
     exitCode = 64;
     return;
   }
@@ -50,32 +29,20 @@ Future<void> main(List<String> arguments) async {
   for (final entry in _blocks.entries) {
     final String source;
     if (entry.key == 'material/tabs.dart') {
-      final uri = await Isolate.resolvePackageUri(
-        Uri.parse('package:material_ui/src/tabs.dart'),
-      );
+      final uri = await Isolate.resolvePackageUri(Uri.parse('package:material_ui/src/tabs.dart'));
       if (uri == null) {
         throw StateError('Run flutter pub get to install material_ui.');
       }
       final pubspec = File.fromUri(uri.resolve('../../pubspec.yaml')).readAsStringSync();
-      if (!RegExp(
-        '^version: ${RegExp.escape(_materialVersion)}\$',
-        multiLine: true,
-      ).hasMatch(pubspec)) {
-        throw StateError(
-          'Source verification requires material_ui $_materialVersion.',
-        );
+      if (!RegExp('^version: ${RegExp.escape(_materialVersion)}\$', multiLine: true).hasMatch(pubspec)) {
+        throw StateError('Source verification requires material_ui $_materialVersion.');
       }
       source = File.fromUri(uri).readAsStringSync();
     } else {
       // Read Git blobs so Windows checkout settings cannot change line endings.
       final result = Process.runSync(
         'git',
-        [
-          '-C',
-          arguments.single,
-          'show',
-          '$_revision:packages/flutter/lib/src/${entry.key}',
-        ],
+        ['-C', arguments.single, 'show', '$_revision:packages/flutter/lib/src/${entry.key}'],
         stdoutEncoding: utf8,
         stderrEncoding: utf8,
       );
@@ -92,9 +59,7 @@ Future<void> main(List<String> arguments) async {
     }
     final assembly = entry.key == 'widgets/scrollable_helpers.dart' ? 'widgets/scrollable.dart' : entry.key;
     final expected = StringBuffer(source.substring(0, headerEnd))
-      ..write(
-        "part of 'package:nested_scroll_views/src/assembly/$assembly';\n\n",
-      );
+      ..write("part of 'package:nested_scroll_views/src/assembly/$assembly';\n\n");
     var previousEnd = headerEnd;
     for (final (start, end) in entry.value) {
       final from = source.indexOf(start, previousEnd);
