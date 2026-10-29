@@ -29,8 +29,8 @@ const _blocks = <String, List<(String, String?)>>{
 };
 
 Future<void> main(List<String> arguments) async {
-  if (arguments.length != 1) {
-    stderr.writeln('Usage: dart tool/check_flutter_sources.dart <flutter-git-checkout>');
+  if (arguments.isEmpty || arguments.length > 2) {
+    stderr.writeln('Usage: dart tool/check_flutter_sources.dart <flutter-git-checkout> [material-ui-package]');
     exitCode = 64;
     return;
   }
@@ -39,20 +39,22 @@ Future<void> main(List<String> arguments) async {
   for (final entry in _blocks.entries) {
     final String source;
     if (entry.key == 'material/tabs.dart') {
-      final uri = await Isolate.resolvePackageUri(Uri.parse('package:material_ui/src/tabs.dart'));
+      final uri = arguments.length == 2
+          ? Directory(arguments[1]).uri.resolve('lib/src/tabs.dart')
+          : await Isolate.resolvePackageUri(Uri.parse('package:material_ui/src/tabs.dart'));
       if (uri == null) {
         throw StateError('Run flutter pub get to install material_ui.');
       }
       final pubspec = File.fromUri(uri.resolve('../../pubspec.yaml')).readAsStringSync();
       if (!RegExp('^version: ${RegExp.escape(_materialVersion)}\$', multiLine: true).hasMatch(pubspec)) {
-        throw StateError('Source verification requires material_ui $_materialVersion.');
+        throw StateError('Source verification requires material_ui $_materialVersion. Pass its directory as the second argument.');
       }
       source = File.fromUri(uri).readAsStringSync();
     } else {
       // Read Git blobs so Windows checkout settings cannot change line endings.
       final result = Process.runSync(
         'git',
-        ['-C', arguments.single, 'show', '$_revision:packages/flutter/lib/src/${entry.key}'],
+        ['-C', arguments.first, 'show', '$_revision:packages/flutter/lib/src/${entry.key}'],
         stdoutEncoding: utf8,
         stderrEncoding: utf8,
       );
