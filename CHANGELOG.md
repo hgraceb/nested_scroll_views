@@ -5,6 +5,7 @@
 - Add `scrollCacheExtent`, `paintOrder`, `findItemIndexCallback`, and grid `mainAxisExtent`.
 - `NestedPageView.custom` is no longer `const`.
 - Preserve tab panel state when keyed children are reordered.
+- Fix crashes when combining primary scrolling with drag-to-dismiss keyboard behavior.
 
 ## 0.0.12
 
