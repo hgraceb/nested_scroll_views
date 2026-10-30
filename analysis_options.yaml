@@ -12,4 +12,6 @@ linter:
 
 analyzer:
   exclude:
+    - build/**
     - lib/src/flutter/**
+    - lib/src/material_ui/**

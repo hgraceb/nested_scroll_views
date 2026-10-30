@@ -5,10 +5,7 @@
 part of 'package:nested_scroll_views/src/assembly/widgets/page_view.dart';
 
 class _ForceImplicitScrollPhysics extends ScrollPhysics {
-  const _ForceImplicitScrollPhysics({
-    required this.allowImplicitScrolling,
-    super.parent,
-  });
+  const _ForceImplicitScrollPhysics({required this.allowImplicitScrolling, super.parent});
 
   @override
   _ForceImplicitScrollPhysics applyTo(ScrollPhysics? ancestor) {
@@ -93,12 +90,21 @@ class PageView extends StatefulWidget {
     List<Widget> children = const <Widget>[],
     this.dragStartBehavior = DragStartBehavior.start,
     this.allowImplicitScrolling = false,
+    ScrollCacheExtent? scrollCacheExtent,
     this.restorationId,
     this.clipBehavior = Clip.hardEdge,
     this.hitTestBehavior = HitTestBehavior.opaque,
     this.scrollBehavior,
     this.padEnds = true,
-  }) : childrenDelegate = SliverChildListDelegate(children);
+  }) : assert(
+         scrollCacheExtent == null || (scrollCacheExtent.value > 0.0) == allowImplicitScrolling,
+         'scrollCacheExtent and allowImplicitScrolling must be consistent: '
+         'scrollCacheExtent must be greater than 0.0 when allowImplicitScrolling is true, '
+         'and must be 0.0 when allowImplicitScrolling is false.',
+       ),
+       scrollCacheExtent =
+           scrollCacheExtent ?? ScrollCacheExtent.viewport(allowImplicitScrolling ? 1.0 : 0.0),
+       childrenDelegate = SliverChildListDelegate(children);
 
   /// Creates a scrollable list that works page by page using widgets that are
   /// created on demand.
@@ -138,12 +144,21 @@ class PageView extends StatefulWidget {
     int? itemCount,
     this.dragStartBehavior = DragStartBehavior.start,
     this.allowImplicitScrolling = false,
+    ScrollCacheExtent? scrollCacheExtent,
     this.restorationId,
     this.clipBehavior = Clip.hardEdge,
     this.hitTestBehavior = HitTestBehavior.opaque,
     this.scrollBehavior,
     this.padEnds = true,
-  }) : childrenDelegate = SliverChildBuilderDelegate(
+  }) : assert(
+         scrollCacheExtent == null || (scrollCacheExtent.value > 0.0) == allowImplicitScrolling,
+         'scrollCacheExtent and allowImplicitScrolling must be consistent: '
+         'scrollCacheExtent must be greater than 0.0 when allowImplicitScrolling is true, '
+         'and must be 0.0 when allowImplicitScrolling is false.',
+       ),
+       scrollCacheExtent =
+           scrollCacheExtent ?? ScrollCacheExtent.viewport(allowImplicitScrolling ? 1.0 : 0.0),
+       childrenDelegate = SliverChildBuilderDelegate(
          itemBuilder,
          findChildIndexCallback: findChildIndexCallback,
          childCount: itemCount,
@@ -160,7 +175,7 @@ class PageView extends StatefulWidget {
   /// {@end-tool}
   ///
   /// {@macro flutter.widgets.PageView.allowImplicitScrolling}
-  const PageView.custom({
+  PageView.custom({
     super.key,
     this.scrollDirection = Axis.horizontal,
     this.reverse = false,
@@ -171,13 +186,22 @@ class PageView extends StatefulWidget {
     required this.childrenDelegate,
     this.dragStartBehavior = DragStartBehavior.start,
     this.allowImplicitScrolling = false,
+    ScrollCacheExtent? scrollCacheExtent,
     this.restorationId,
     this.clipBehavior = Clip.hardEdge,
     this.hitTestBehavior = HitTestBehavior.opaque,
     this.scrollBehavior,
     this.padEnds = true,
-  });
+  }) : assert(
+         scrollCacheExtent == null || (scrollCacheExtent.value > 0.0) == allowImplicitScrolling,
+         'scrollCacheExtent and allowImplicitScrolling must be consistent: '
+         'scrollCacheExtent must be greater than 0.0 when allowImplicitScrolling is true, '
+         'and must be 0.0 when allowImplicitScrolling is false.',
+       ),
+       scrollCacheExtent =
+           scrollCacheExtent ?? ScrollCacheExtent.viewport(allowImplicitScrolling ? 1.0 : 0.0);
 
+  /// {@template flutter.widgets.PageView.allowImplicitScrolling}
   /// Controls whether the widget's pages will respond to
   /// [RenderObject.showOnScreen], which will allow for implicit accessibility
   /// scrolling.
@@ -189,7 +213,36 @@ class PageView extends StatefulWidget {
   /// With this flag set to true, when accessibility focus reaches the end of
   /// the current page and user attempts to move it to the next element, focus
   /// will traverse to the next page in the page view.
+  /// {@endtemplate}
   final bool allowImplicitScrolling;
+
+  /// {@macro flutter.rendering.RenderViewportBase.scrollCacheExtent}
+  ///
+  /// In [PageView], the default [scrollCacheExtent] uses
+  /// [ScrollCacheExtent.viewport], where the value represents the number of
+  /// viewport lengths to cache beyond the visible area.
+  ///
+  /// When [PageController.viewportFraction] is 1.0 (the default), this is
+  /// equivalent to the number of pages. For example,
+  /// `ScrollCacheExtent.viewport(2.0)` caches 2 pages before and after the
+  /// visible page.
+  ///
+  /// When [PageController.viewportFraction] is less than 1.0, multiple pages
+  /// may be visible in a single viewport, so `ScrollCacheExtent.viewport(1.0)`
+  /// may cache more than one additional page in each direction.
+  ///
+  /// [ScrollCacheExtent.pixels] can also be used to specify the cache extent
+  /// in logical pixels instead of viewport sizes.
+  ///
+  /// If [scrollCacheExtent] is specified, its value must be consistent with
+  /// [allowImplicitScrolling]: the value must be greater than 0.0 when
+  /// [allowImplicitScrolling] is true, and must be 0.0 when
+  /// [allowImplicitScrolling] is false.
+  ///
+  /// Defaults to `ScrollCacheExtent.viewport(1.0)` if
+  /// [allowImplicitScrolling] is true, and `ScrollCacheExtent.viewport(0.0)` if
+  /// [allowImplicitScrolling] is false.
+  final ScrollCacheExtent scrollCacheExtent;
 
   /// {@macro flutter.widgets.scrollable.restorationId}
   final String? restorationId;
@@ -266,12 +319,7 @@ class PageView extends StatefulWidget {
   /// Defaults to [HitTestBehavior.opaque].
   final HitTestBehavior hitTestBehavior;
 
-  /// {@macro flutter.widgets.shadow.scrollBehavior}
-  ///
-  /// [ScrollBehavior]s also provide [ScrollPhysics]. If an explicit
-  /// [ScrollPhysics] is provided in [physics], it will take precedence,
-  /// followed by [scrollBehavior], and then the inherited ancestor
-  /// [ScrollBehavior].
+  /// {@macro flutter.widgets.scrollable.scrollBehavior}
   ///
   /// The [ScrollBehavior] of the inherited [ScrollConfiguration] will be
   /// modified by default to not apply a [Scrollbar].
@@ -312,7 +360,6 @@ class _PageViewState extends State<PageView> {
     super.dispose();
   }
 
-
   void _initController() {
     _controller = widget.controller ?? PageController();
   }
@@ -343,18 +390,21 @@ class _PageViewState extends State<PageView> {
   @override
   Widget build(BuildContext context) {
     final AxisDirection axisDirection = _getDirection(context);
-    final ScrollPhysics physics = _ForceImplicitScrollPhysics(
-      allowImplicitScrolling: widget.allowImplicitScrolling,
-    ).applyTo(
-      widget.pageSnapping
-        ? _kPagePhysics.applyTo(widget.physics ?? widget.scrollBehavior?.getScrollPhysics(context))
-        : widget.physics ?? widget.scrollBehavior?.getScrollPhysics(context),
-    );
+    final ScrollPhysics physics =
+        _ForceImplicitScrollPhysics(allowImplicitScrolling: widget.allowImplicitScrolling).applyTo(
+          widget.pageSnapping
+              ? _kPagePhysics.applyTo(
+                  widget.physics ?? widget.scrollBehavior?.getScrollPhysics(context),
+                )
+              : widget.physics ?? widget.scrollBehavior?.getScrollPhysics(context),
+        );
 
     return NotificationListener<ScrollNotification>(
       onNotification: (ScrollNotification notification) {
-        if (notification.depth == 0 && widget.onPageChanged != null && notification is ScrollUpdateNotification) {
-          final PageMetrics metrics = notification.metrics as PageMetrics;
+        if (notification.depth == 0 &&
+            widget.onPageChanged != null &&
+            notification is ScrollUpdateNotification) {
+          final metrics = notification.metrics as PageMetrics;
           final int currentPage = metrics.page!.round();
           if (currentPage != _lastReportedPage) {
             _lastReportedPage = currentPage;
@@ -370,14 +420,11 @@ class _PageViewState extends State<PageView> {
         physics: physics,
         restorationId: widget.restorationId,
         hitTestBehavior: widget.hitTestBehavior,
-        scrollBehavior: widget.scrollBehavior ?? ScrollConfiguration.of(context).copyWith(scrollbars: false),
+        scrollBehavior:
+            widget.scrollBehavior ?? ScrollConfiguration.of(context).copyWith(scrollbars: false),
         viewportBuilder: (BuildContext context, ViewportOffset position) {
           return Viewport(
-            // TODO(dnfield): we should provide a way to set cacheExtent
-            // independent of implicit scrolling:
-            // https://github.com/flutter/flutter/issues/45632
-            cacheExtent: widget.allowImplicitScrolling ? 1.0 : 0.0,
-            cacheExtentStyle: CacheExtentStyle.viewport,
+            scrollCacheExtent: widget.scrollCacheExtent,
             axisDirection: axisDirection,
             offset: position,
             clipBehavior: widget.clipBehavior,
@@ -386,6 +433,7 @@ class _PageViewState extends State<PageView> {
                 viewportFraction: _controller.viewportFraction,
                 delegate: widget.childrenDelegate,
                 padEnds: widget.padEnds,
+                allowImplicitScrolling: widget.allowImplicitScrolling,
               ),
             ],
           );
@@ -399,9 +447,26 @@ class _PageViewState extends State<PageView> {
     super.debugFillProperties(description);
     description.add(EnumProperty<Axis>('scrollDirection', widget.scrollDirection));
     description.add(FlagProperty('reverse', value: widget.reverse, ifTrue: 'reversed'));
-    description.add(DiagnosticsProperty<PageController>('controller', _controller, showName: false));
+    description.add(
+      DiagnosticsProperty<PageController>('controller', _controller, showName: false),
+    );
     description.add(DiagnosticsProperty<ScrollPhysics>('physics', widget.physics, showName: false));
-    description.add(FlagProperty('pageSnapping', value: widget.pageSnapping, ifFalse: 'snapping disabled'));
-    description.add(FlagProperty('allowImplicitScrolling', value: widget.allowImplicitScrolling, ifTrue: 'allow implicit scrolling'));
+    description.add(
+      FlagProperty('pageSnapping', value: widget.pageSnapping, ifFalse: 'snapping disabled'),
+    );
+    description.add(
+      FlagProperty(
+        'allowImplicitScrolling',
+        value: widget.allowImplicitScrolling,
+        ifTrue: 'allow implicit scrolling',
+      ),
+    );
+    description.add(
+      DiagnosticsProperty<ScrollCacheExtent>(
+        'scrollCacheExtent',
+        widget.scrollCacheExtent,
+        defaultValue: ScrollCacheExtent.viewport(widget.allowImplicitScrolling ? 1.0 : 0.0),
+      ),
+    );
   }
 }

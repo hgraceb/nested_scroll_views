@@ -1,6 +1,6 @@
 import 'package:flutter/gestures.dart';
-import 'package:flutter/material.dart';
-import 'package:nested_scroll_views/material.dart';
+import 'package:material_ui/material_ui.dart';
+import 'package:nested_scroll_views/material_ui.dart';
 
 void main() => runApp(const MyApp());
 
@@ -134,7 +134,7 @@ class _FirstPageState extends State<FirstPage> {
                 length: _subTabs.length,
                 child: Column(
                   children: <Widget>[
-                    TabBar(
+                    TabBar.secondary(
                       labelColor: Colors.black,
                       unselectedLabelColor: Colors.black45,
                       tabs: _subTabs.map((tab) => Tab(text: tab)).toList(),

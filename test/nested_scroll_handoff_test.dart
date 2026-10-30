@@ -1,7 +1,6 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:nested_scroll_views/material.dart';
-import 'package:nested_scroll_views/src/assembly/widgets/scroll_view.dart' as copied;
+import 'package:material_ui/material_ui.dart';
+import 'package:nested_scroll_views/material_ui.dart';
 
 void main() {
   final scrollViews = <String, Widget Function(Axis, ScrollController)>{
@@ -114,21 +113,19 @@ void main() {
         final content = Column(children: [TextField(focusNode: focus), const SizedBox(height: 2000.0)]);
         final Widget scrollView;
         if (singleChild) {
-          final mode = dismissOnDrag ? ScrollViewKeyboardDismissBehavior.onDrag : ScrollViewKeyboardDismissBehavior.manual;
           scrollView = NestedSingleChildScrollView(
             key: scrollKey,
             primary: primary,
             controller: primary ? null : controller,
-            keyboardDismissBehavior: mode,
+            keyboardDismissBehavior: dismissOnDrag ? ScrollViewKeyboardDismissBehavior.onDrag : ScrollViewKeyboardDismissBehavior.manual,
             child: content,
           );
         } else {
-          final mode = dismissOnDrag ? copied.ScrollViewKeyboardDismissBehavior.onDrag : copied.ScrollViewKeyboardDismissBehavior.manual;
           scrollView = NestedListView(
             key: scrollKey,
             primary: primary,
             controller: primary ? null : controller,
-            keyboardDismissBehavior: mode,
+            keyboardDismissBehavior: dismissOnDrag ? ScrollViewKeyboardDismissBehavior.onDrag : ScrollViewKeyboardDismissBehavior.manual,
             children: [content],
           );
         }

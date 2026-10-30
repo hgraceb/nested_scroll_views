@@ -21,6 +21,16 @@ class NestedTabBarView extends TabBarView {
 
 class _NestedTabBarViewState extends _TabBarViewState {
   @override
+  void _updateChildren() {
+    // Assign stable keys before adding semantics so reordered panels retain state.
+    _childrenWithKey = [
+      for (final child in KeyedSubtree.ensureUniqueKeysForList(widget.children)) ...[
+        Semantics(key: child.key, role: SemanticsRole.tabPanel, child: child),
+      ],
+    ];
+  }
+
+  @override
   Widget build(BuildContext context) {
     final notificationListener = super.build(context) as NotificationListener<ScrollNotification>;
     final flutterPageView = notificationListener.child as PageView;

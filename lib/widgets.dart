@@ -1,4 +1,4 @@
-library widgets;
+library;
 
 export 'src/assembly/widgets/page_view.dart' show NestedPageView;
 export 'src/assembly/widgets/scroll_view.dart' show NestedCustomScrollView, NestedGridView, NestedListView;

@@ -1,3 +1,11 @@
+## Unreleased
+
+- Require Flutter 3.47.0 / Dart 3.13.0 and use `material_ui` for Material widgets and tab controllers.
+- Rename `material.dart` to `material_ui.dart`.
+- Add `scrollCacheExtent`, `paintOrder`, `findItemIndexCallback`, and grid `mainAxisExtent`.
+- `NestedPageView.custom` is no longer `const`.
+- Preserve tab panel state when keyed children are reordered.
+
 ## 0.0.12
 
 - Adapt for Flutter 3.24.0 and Dart 3.5.0.

@@ -4,14 +4,15 @@ version: 0.0.12
 homepage: https://github.com/hgraceb/nested_scroll_views
 
 environment:
-  sdk: '>=3.5.0 <4.0.0'
-  flutter: '>=3.24.0'
+  sdk: '>=3.13.0 <4.0.0'
+  flutter: '>=3.47.0'
 
 dependencies:
   flutter:
     sdk: flutter
+  material_ui: '>=0.0.1'
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^3.0.1
+  flutter_lints: ^6.0.0

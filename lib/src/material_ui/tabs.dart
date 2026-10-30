@@ -1,4 +1,4 @@
-// Copyright 2014 The Flutter Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@ part of 'package:nested_scroll_views/src/assembly/material/tabs.dart';
 ///
 /// This widget is typically used in conjunction with a [TabBar].
 ///
-/// {@youtube 560 315 https://www.youtube.com/watch?v=POtoEH-5l40}
+/// Learn more about [TabBarView] on the [Flutter YouTube channel](https://www.youtube.com/watch?v=POtoEH-5l40).
 ///
 /// If a [TabController] is not provided, then there must be a [DefaultTabController]
 /// ancestor.
@@ -61,7 +61,7 @@ class TabBarView extends StatefulWidget {
   /// {@macro flutter.widgets.pageview.viewportFraction}
   final double viewportFraction;
 
-  /// {@macro flutter.material.Material.clipBehavior}
+  /// {@macro cupertino_ui.Material.clipBehavior}
   ///
   /// Defaults to [Clip.hardEdge].
   final Clip clipBehavior;
@@ -118,11 +118,7 @@ class _TabBarViewState extends State<TabBarView> {
     _warpUnderwayCount -= 1;
   }
 
-  Future<void> _animateToPage(
-    int page, {
-    required Duration duration,
-    required Curve curve,
-  }) async {
+  Future<void> _animateToPage(int page, {required Duration duration, required Curve curve}) async {
     _warpUnderwayCount += 1;
     await _pageController!.animateToPage(page, duration: duration, curve: curve);
     _warpUnderwayCount -= 1;
@@ -183,7 +179,11 @@ class _TabBarViewState extends State<TabBarView> {
   }
 
   void _updateChildren() {
-    _childrenWithKey = KeyedSubtree.ensureUniqueKeysForList(widget.children);
+    _childrenWithKey = KeyedSubtree.ensureUniqueKeysForList(
+      widget.children.map<Widget>((Widget child) {
+        return Semantics(role: SemanticsRole.tabPanel, child: child);
+      }).toList(),
+    );
   }
 
   void _handleTabControllerAnimationTick() {
@@ -202,7 +202,7 @@ class _TabBarViewState extends State<TabBarView> {
       return;
     }
 
-    final bool adjacentDestination = (_currentIndex! - _controller!.previousIndex).abs() == 1;
+    final adjacentDestination = (_currentIndex! - _controller!.previousIndex).abs() == 1;
     if (adjacentDestination) {
       _warpToAdjacentTab(_controller!.animationDuration);
     } else {
@@ -217,7 +217,9 @@ class _TabBarViewState extends State<TabBarView> {
       await _animateToPage(_currentIndex!, duration: duration, curve: Curves.ease);
     }
     if (mounted) {
-      setState(() { _updateChildren(); });
+      setState(() {
+        _updateChildren();
+      });
     }
     return Future<void>.value();
   }
@@ -253,7 +255,9 @@ class _TabBarViewState extends State<TabBarView> {
     }
 
     if (mounted) {
-      setState(() { _updateChildren(); });
+      setState(() {
+        _updateChildren();
+      });
     }
   }
 
@@ -281,7 +285,7 @@ class _TabBarViewState extends State<TabBarView> {
       final bool pageChanged = (page - _controller!.index).abs() > 1.0;
       if (pageChanged) {
         _controller!.index = page.round();
-        _currentIndex =_controller!.index;
+        _currentIndex = _controller!.index;
       }
       _syncControllerOffset();
     } else if (notification is ScrollEndNotification) {
@@ -330,8 +334,8 @@ class _TabBarViewState extends State<TabBarView> {
         clipBehavior: widget.clipBehavior,
         controller: _pageController,
         physics: widget.physics == null
-          ? const PageScrollPhysics().applyTo(const ClampingScrollPhysics())
-          : const PageScrollPhysics().applyTo(widget.physics),
+            ? const PageScrollPhysics().applyTo(const ClampingScrollPhysics())
+            : const PageScrollPhysics().applyTo(widget.physics),
         children: _childrenWithKey,
       ),
     );
