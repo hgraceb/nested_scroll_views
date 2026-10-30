@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:nested_scroll_views/material.dart';
+import 'package:nested_scroll_views/material_ui.dart';
 
 void main() {
   final scrollViews = <String, Widget Function(Axis, ScrollController)>{

@@ -65,7 +65,7 @@ class _OverscrollScrollableState extends ScrollableState {
   }
 
   /// 处理手势移动事件
-  _onMoveEvent(PointerMoveEvent event, Offset delta, double primaryDelta) {
+  void _onMoveEvent(PointerMoveEvent event, Offset delta, double primaryDelta) {
     // 如果已经滚动到边界并且又继续移动
     if (_overscroll && primaryDelta != 0.0) {
       // 边界滚动事件通知

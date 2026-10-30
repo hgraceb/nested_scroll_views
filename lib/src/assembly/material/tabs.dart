@@ -7,4 +7,4 @@ import 'package:nested_scroll_views/src/assembly/widgets/page_view.dart';
 
 part 'package:nested_scroll_views/src/component/material/tabs.dart';
 
-part 'package:nested_scroll_views/src/flutter/material/tabs.dart';
+part 'package:nested_scroll_views/src/material_ui/tabs.dart';

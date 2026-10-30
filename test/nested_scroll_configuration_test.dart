@@ -1,7 +1,7 @@
 import 'package:flutter/rendering.dart' show ScrollCacheExtent;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:nested_scroll_views/material.dart';
+import 'package:nested_scroll_views/material_ui.dart';
 import 'package:nested_scroll_views/src/assembly/widgets/scrollable.dart' show OverscrollScrollable;
 
 class _DismissOnDragBehavior extends MaterialScrollBehavior {
@@ -76,6 +76,38 @@ void main() {
       expect(tester.takeException(), isNull);
       await tester.pumpWidget(const SizedBox());
     });
+  }
+
+  final grids = <String, Widget Function(Axis)>{
+    'count': (axis) => NestedGridView.count(
+      scrollDirection: axis,
+      crossAxisCount: 2,
+      childAspectRatio: 4.0,
+      mainAxisExtent: 75.0,
+      children: const [SizedBox(key: ValueKey('grid cell'))],
+    ),
+    'extent': (axis) => NestedGridView.extent(
+      scrollDirection: axis,
+      maxCrossAxisExtent: 200.0,
+      childAspectRatio: 4.0,
+      mainAxisExtent: 75.0,
+      children: const [SizedBox(key: ValueKey('grid cell'))],
+    ),
+  };
+  for (final entry in grids.entries) {
+    for (final axis in Axis.values) {
+      testWidgets('grid ${entry.key} $axis uses mainAxisExtent instead of childAspectRatio', (tester) async {
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Center(child: SizedBox.square(dimension: 400.0, child: entry.value(axis))),
+          ),
+        );
+        final size = tester.getSize(find.byKey(const ValueKey('grid cell')));
+        expect(size, axis == Axis.vertical ? const Size(200.0, 75.0) : const Size(75.0, 200.0));
+        expect(tester.takeException(), isNull);
+        await tester.pumpWidget(const SizedBox());
+      });
+    }
   }
 
   final pageViews = <String, Widget Function(IndexedWidgetBuilder)>{

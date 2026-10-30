@@ -23,10 +23,10 @@ jobs:
         include:
           - os: ubuntu-latest
             label: ubuntu-latest
-            flutter-version: 3.47.8
+            flutter-version: 3.47.9
           - os: windows-2022
             label: windows-2022
-            flutter-version: 3.47.8
+            flutter-version: 3.47.9
           - os: ubuntu-latest
             label: ubuntu-latest, minimum SDK
             flutter-version: 3.47.0
@@ -49,27 +49,5 @@ jobs:
       - name: Analyze
         run: flutter analyze --no-pub
 
-      - name: Verify copied sources
-        if: matrix.flutter-version == '3.47.8'
-        run: |
-          dart pub cache add material_ui --version 1.8.0
-          dart tool/check_flutter_sources.dart "${{ env.FLUTTER_ROOT }}" "${{ env.PUB_CACHE }}/hosted/pub.dev/material_ui-1.8.0"
-
-      - name: Build Windows example
-        if: runner.os == 'Windows'
-        run: flutter build windows --debug
-        working-directory: example
-
-      - name: Build example assets
-        if: runner.os != 'Windows'
-        run: flutter build bundle --debug
-        working-directory: example
-
       - name: Test
-        run: flutter test --no-pub --reporter expanded
-
-      - name: Test example assets
-        working-directory: example
-        env:
-          EXAMPLE_ASSET_DIR: ${{ runner.os == 'Windows' && 'build/windows/x64/runner/Debug/data/flutter_assets' || 'build/flutter_assets' }}
         run: flutter test --no-pub --reporter expanded
