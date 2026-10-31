@@ -7,6 +7,7 @@ void main() {
     for (final reverse in [false, true]) {
       for (final atEnd in [false, true]) {
         for (final fast in [false, true]) {
+          // Regression test for https://github.com/hgraceb/nested_scroll_views/issues/2.
           testWidgets('$axis reverse=$reverse atEnd=$atEnd fast=$fast returns a blocked handoff to the list', (tester) async {
             final initialPage = atEnd ? 1 : 0;
             final outer = PageController(initialPage: initialPage);
