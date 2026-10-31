@@ -52,6 +52,15 @@ class _OverscrollScrollableState extends ScrollableState {
   void _onMoveEvent(PointerMoveEvent event, Offset delta, double primaryDelta) {
     // 如果已经滚动到边界并且又继续移动
     if (_overscroll && primaryDelta != 0.0) {
+      final scrollDelta = axisDirectionIsReversed(axisDirection) ? primaryDelta : -primaryDelta;
+      if ((scrollDelta < 0.0 && position.extentBefore > 0.0) || (scrollDelta > 0.0 && position.extentAfter > 0.0)) {
+        final notification = NestedScrollResumeNotification(metrics: position.copyWith(), context: context);
+        notification.dispatch(context);
+        if (notification.accepted) {
+          _overscroll = false;
+          return;
+        }
+      }
       // 边界滚动事件通知
       OverscrollNotification(
         metrics: position.copyWith(),
