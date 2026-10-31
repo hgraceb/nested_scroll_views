@@ -71,86 +71,72 @@ class NestedPageView extends PageView {
 }
 
 class _NestedPageViewState extends _PageViewState {
-  bool? _ignoreOverscroll;
+  bool _ignoreOverscroll = false;
   ScrollDragController? _dragController;
 
   /// 处理滚动事件通知
-  bool _handleNotification(BuildContext context, ScrollNotification notification) {
+  bool _handleNotification(ScrollNotification notification) {
     // 不处理默认滚动事件
-    if (notification.depth == 0) {
-      return false;
-    }
-
+    if (notification.depth == 0) return false;
     // 获取可滚动组件当前位置信息
     final position = _controller.position;
-
-    // 当前不允许滚动
-    if (!position.physics.shouldAcceptUserOffset(position)) {
-      return false;
-    }
-
+    // 如果当前不允许滚动
+    if (!position.physics.shouldAcceptUserOffset(position)) return false;
     // 如果当前组件与边界滚动事件的滚动方向不一致
-    if (position.axis != notification.metrics.axis) {
-      return false;
-    }
-
+    if (position.axis != notification.metrics.axis) return false;
     // 处理边界滚动事件
-    if (notification is OverscrollNotification) {
-      // 如果被父组件通知需要忽略边界滚动事件
-      if (_ignoreOverscroll == true) {
-        return false;
-      }
-      // 拖动被取消的回调，不需要调用 dispose 方法，不然会死循环
-      void dragCancelCallback() => _dragController = null;
-      // 滚动位置超出可滚动范围，自定义拖动事件控制器并保存，不要使用 ScrollStartNotification 携带的 DragStartDetails 数据作为参数
-      // 如从可滚动 TabBar 的第三项开始滚动到第一项并结束滚动，依次接收到的滚动事件的序列可能如下： Start, End, Start, End
-      _dragController ??= position.drag(DragStartDetails(), dragCancelCallback) as ScrollDragController;
-      // 如果存在滚动数据
-      if (notification.dragDetails != null) {
-        // 开始处理拖动事件
-        _dragController?.update(notification.dragDetails!);
-      }
-      // 判断当前组件位置是否已到达边界
-      if (position.hasPixels && position.atEdge) {
-        // 处理多层嵌套，到达边界后发送通知，如果还有父组件则将后续边界滚动事件全部移交给父组件
-        NestedScrollNotification(
-          metrics: notification.metrics,
-          context: notification.context,
-          expectType: runtimeType,
-          callback: () => _ignoreOverscroll = true,
-        ).dispatch(context);
-      }
-      // 消耗滚动事件
-      return true;
-    }
-
+    if (notification is OverscrollNotification) return _handleOverscroll(notification, position);
     // 处理滚动结束事件
-    if (notification is ScrollEndNotification) {
-      if (notification.dragDetails != null) {
-        // 滚动结束时还有额外的滚动数据，需要继续处理，如：子组件快速滑动切换到父组件
-        _dragController?.end(notification.dragDetails!);
-      } else {
-        // 滚动结束时没有额外的滚动数据，直接复位页面位置
-        _dragController?.cancel();
-      }
-      // 清理页面拖动数据
-      _dragController?.dispose();
-      _dragController = _ignoreOverscroll = null;
-      return false;
-    }
-
+    if (notification is ScrollEndNotification) return _handleScrollEnd(notification);
     // 处理嵌套滚动事件
-    if (notification is NestedScrollNotification) {
-      if (runtimeType == notification.expectType) {
-        // 通知子组件忽略边界滚动事件
-        notification.callback();
-        // 消耗嵌套通知事件
-        return true;
-      } else {
-        return false;
-      }
-    }
+    if (notification is NestedPageViewNotification) return _handleNestedPageView(notification);
+    // 忽略其他滚动事件
     return false;
+  }
+
+  /// 处理边界滚动事件
+  bool _handleOverscroll(OverscrollNotification notification, ScrollPosition position) {
+    // 如果被父组件通知需要忽略边界滚动事件
+    if (_ignoreOverscroll) return false;
+    // 拖动被取消的回调，不需要调用 dispose 方法，不然会死循环
+    void dragCancelCallback() => _dragController = null;
+    // 子组件越界时再创建并保存当前页面的拖动控制器，避免在 Start 时创建的控制器被 TabBar 跟随滚动产生的 End 通知提前清理
+    _dragController ??= position.drag(DragStartDetails(), dragCancelCallback) as ScrollDragController;
+    // 如果存在滚动数据则开始处理拖动事件
+    if (notification.dragDetails != null) _dragController?.update(notification.dragDetails!);
+    // 判断当前组件位置是否已到达边界
+    if (position.hasPixels && position.atEdge) {
+      // 处理多层嵌套，到达边界后发送通知，如果还有父组件则将后续边界滚动事件全部移交给父组件
+      final parentNotification = NestedPageViewNotification(metrics: notification.metrics, context: notification.context);
+      parentNotification.dispatch(context);
+      _ignoreOverscroll = parentNotification.accepted;
+    }
+    // 消耗滚动事件
+    return true;
+  }
+
+  /// 处理滚动结束事件
+  bool _handleScrollEnd(ScrollEndNotification notification) {
+    if (notification.dragDetails != null) {
+      // 滚动结束时还有额外的滚动数据，需要继续处理，如：子组件快速滑动切换到父组件
+      _dragController?.end(notification.dragDetails!);
+    } else {
+      // 滚动结束时没有额外的滚动数据，直接复位页面位置
+      _dragController?.cancel();
+    }
+    // 清理页面拖动数据
+    _dragController?.dispose();
+    _dragController = null;
+    _ignoreOverscroll = false;
+    return false;
+  }
+
+  /// 处理嵌套滚动事件
+  bool _handleNestedPageView(NestedPageViewNotification notification) {
+    // 确认存在符合条件的父组件
+    notification.accepted = true;
+    // 消耗嵌套通知事件
+    return true;
   }
 
   @override
@@ -165,7 +151,7 @@ class _NestedPageViewState extends _PageViewState {
     final notificationListener = super.build(context) as NotificationListener<ScrollNotification>;
     final scrollable = notificationListener.child as Scrollable;
     return NotificationListener<ScrollNotification>(
-      onNotification: (notification) => notificationListener.onNotification!(notification) || _handleNotification(context, notification),
+      onNotification: (notification) => notificationListener.onNotification!(notification) || _handleNotification(notification),
       child: WrapperKeepAlive(wantKeepAlive: (widget as NestedPageView).wantKeepAlive, child: OverscrollScrollable.from(scrollable)),
     );
   }
