@@ -1,4 +1,4 @@
-## Unreleased
+## 0.0.14
 
 - Fix premature page switching during reverse dragging.
 
