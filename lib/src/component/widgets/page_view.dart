@@ -72,7 +72,14 @@ class NestedPageView extends PageView {
 
 class _NestedPageViewState extends _PageViewState {
   bool _ignoreOverscroll = false;
+  double? _dragStartPixels;
   ScrollDragController? _dragController;
+
+  /// 处理拖动取消事件
+  void _handleDragCancel() {
+    _dragController = null;
+    _dragStartPixels = null;
+  }
 
   /// 处理滚动事件通知
   bool _handleNotification(ScrollNotification notification) {
@@ -90,6 +97,8 @@ class _NestedPageViewState extends _PageViewState {
     if (notification is ScrollEndNotification) return _handleScrollEnd(notification);
     // 处理嵌套滚动事件
     if (notification is NestedPageViewNotification) return _handleNestedPageView(notification);
+    // 处理反向恢复事件
+    if (notification is NestedScrollResumeNotification) return _handleScrollResume(notification, position);
     // 忽略其他滚动事件
     return false;
   }
@@ -98,10 +107,11 @@ class _NestedPageViewState extends _PageViewState {
   bool _handleOverscroll(OverscrollNotification notification, ScrollPosition position) {
     // 如果被父组件通知需要忽略边界滚动事件
     if (_ignoreOverscroll) return false;
-    // 拖动被取消的回调，不需要调用 dispose 方法，不然会死循环
-    void dragCancelCallback() => _dragController = null;
     // 子组件越界时再创建并保存当前页面的拖动控制器，避免在 Start 时创建的控制器被 TabBar 跟随滚动产生的 End 通知提前清理
-    _dragController ??= position.drag(DragStartDetails(), dragCancelCallback) as ScrollDragController;
+    if (_dragController == null) {
+      _dragStartPixels = position.pixels;
+      _dragController = position.drag(DragStartDetails(), _handleDragCancel) as ScrollDragController;
+    }
     // 如果存在滚动数据则开始处理拖动事件
     if (notification.dragDetails != null) _dragController?.update(notification.dragDetails!);
     // 判断当前组件位置是否已到达边界
@@ -136,6 +146,15 @@ class _NestedPageViewState extends _PageViewState {
     // 确认存在符合条件的父组件
     notification.accepted = true;
     // 消耗嵌套通知事件
+    return true;
+  }
+
+  /// 处理反向恢复事件
+  bool _handleScrollResume(NestedScrollResumeNotification notification, ScrollPosition position) {
+    // 已经移交给更外层或已经移动时，保留现有交接行为
+    if (_ignoreOverscroll || _dragController == null || position.pixels != _dragStartPixels) return true;
+    _dragController?.cancel();
+    notification.accepted = true;
     return true;
   }
 

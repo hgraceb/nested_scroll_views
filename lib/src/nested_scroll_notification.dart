@@ -15,3 +15,11 @@ class NestedPageViewNotification extends ScrollNotification {
   /// 是否已找到符合条件的父组件
   bool accepted = false;
 }
+
+/// 反向拖动时，询问父级是否可以将未发生位移的滚动交回子级
+class NestedScrollResumeNotification extends ScrollNotification {
+  NestedScrollResumeNotification({required super.metrics, required super.context});
+
+  /// 父级是否已释放拖动
+  bool accepted = false;
+}
