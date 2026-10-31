@@ -1,22 +1,6 @@
 part of 'package:nested_scroll_views/src/assembly/widgets/scrollable.dart';
 
 class OverscrollScrollable extends Scrollable {
-  const OverscrollScrollable({
-    super.key,
-    super.axisDirection,
-    super.controller,
-    super.physics,
-    required super.viewportBuilder,
-    super.incrementCalculator,
-    super.excludeFromSemantics,
-    super.semanticChildCount,
-    super.dragStartBehavior,
-    super.restorationId,
-    super.scrollBehavior,
-    super.clipBehavior,
-    super.hitTestBehavior,
-  });
-
   /// 将 Scrollable 转换为 OverscrollScrollable
   OverscrollScrollable.from(Scrollable scrollable)
     : super(

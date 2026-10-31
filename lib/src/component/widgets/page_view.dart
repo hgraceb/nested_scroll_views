@@ -71,7 +71,7 @@ class NestedPageView extends PageView {
 }
 
 class _NestedPageViewState extends _PageViewState {
-  bool? _ignoreOverscroll;
+  bool _ignoreOverscroll = false;
   ScrollDragController? _dragController;
 
   /// 处理滚动事件通知
@@ -97,7 +97,7 @@ class _NestedPageViewState extends _PageViewState {
     // 处理边界滚动事件
     if (notification is OverscrollNotification) {
       // 如果被父组件通知需要忽略边界滚动事件
-      if (_ignoreOverscroll == true) {
+      if (_ignoreOverscroll) {
         return false;
       }
       // 拖动被取消的回调，不需要调用 dispose 方法，不然会死循环
@@ -135,7 +135,8 @@ class _NestedPageViewState extends _PageViewState {
       }
       // 清理页面拖动数据
       _dragController?.dispose();
-      _dragController = _ignoreOverscroll = null;
+      _dragController = null;
+      _ignoreOverscroll = false;
       return false;
     }
 
