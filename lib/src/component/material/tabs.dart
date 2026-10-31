@@ -24,8 +24,9 @@ class _NestedTabBarViewState extends _TabBarViewState {
   void _updateChildren() {
     // Assign stable keys before adding semantics so reordered panels retain state.
     _childrenWithKey = [
-      for (final child in KeyedSubtree.ensureUniqueKeysForList(widget.children))
+      for (final child in KeyedSubtree.ensureUniqueKeysForList(widget.children)) ...[
         Semantics(key: child.key, role: SemanticsRole.tabPanel, child: child),
+      ],
     ];
   }
 

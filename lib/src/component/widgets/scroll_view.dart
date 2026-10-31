@@ -1,7 +1,8 @@
 part of 'package:nested_scroll_views/src/assembly/widgets/scroll_view.dart';
 
-Widget _convertScrollable(Widget widget, bool wantKeepAlive) =>
-    WrapperKeepAlive(wantKeepAlive: wantKeepAlive, child: OverscrollScrollable.replace(widget));
+Widget _convertScrollable(Widget widget, bool wantKeepAlive) {
+  return WrapperKeepAlive(wantKeepAlive: wantKeepAlive, child: OverscrollScrollable.replace(widget));
+}
 
 class NestedCustomScrollView extends CustomScrollView {
   const NestedCustomScrollView({

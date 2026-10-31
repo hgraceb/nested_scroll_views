@@ -123,6 +123,7 @@ class _OverscrollScrollableState extends ScrollableState {
   }
 
   @override
-  Widget build(BuildContext context) =>
-      NotificationListener<ScrollNotification>(onNotification: _handleNotification, child: super.build(context));
+  Widget build(BuildContext context) {
+    return NotificationListener<ScrollNotification>(onNotification: _handleNotification, child: super.build(context));
+  }
 }

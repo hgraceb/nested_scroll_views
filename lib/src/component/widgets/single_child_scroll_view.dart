@@ -22,6 +22,7 @@ class NestedSingleChildScrollView extends SingleChildScrollView {
   final bool wantKeepAlive;
 
   @override
-  Widget build(BuildContext context) =>
-      WrapperKeepAlive(wantKeepAlive: wantKeepAlive, child: OverscrollScrollable.replace(super.build(context)));
+  Widget build(BuildContext context) {
+    return WrapperKeepAlive(wantKeepAlive: wantKeepAlive, child: OverscrollScrollable.replace(super.build(context)));
+  }
 }
