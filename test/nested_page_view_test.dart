@@ -383,6 +383,66 @@ void main() {
       });
     }
   }
+
+  for (final kind in [PointerDeviceKind.touch, PointerDeviceKind.mouse]) {
+    testWidgets('$kind hands off after dragging through tabs with a scrollable tab bar', (tester) async {
+      final outer = PageController(initialPage: 1);
+      final tabs = TabController(length: 5, initialIndex: 2, vsync: const TestVSync());
+      addTearDown(outer.dispose);
+      addTearDown(tabs.dispose);
+      const innerKey = ValueKey('scrollable tabs');
+
+      await _pumpPage(
+        tester,
+        Material(
+          child: ScrollConfiguration(
+            behavior: const MaterialScrollBehavior().copyWith(dragDevices: {PointerDeviceKind.touch, PointerDeviceKind.mouse}),
+            child: NestedPageView(
+              controller: outer,
+              children: [
+                const SizedBox.expand(),
+                Column(
+                  children: [
+                    TabBar(
+                      controller: tabs,
+                      isScrollable: true,
+                      tabs: [for (var i = 0; i < 5; i++) Tab(child: SizedBox(width: 160.0, child: Text('Tab $i')))],
+                    ),
+                    Expanded(
+                      child: NestedTabBarView(
+                        key: innerKey,
+                        controller: tabs,
+                        physics: const ClampingScrollPhysics(),
+                        children: const [SizedBox.expand(), SizedBox.expand(), SizedBox.expand(), SizedBox.expand(), SizedBox.expand()],
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox.expand(),
+              ],
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(tabs.index, 2);
+
+      final gesture = await tester.startGesture(tester.getCenter(find.byKey(innerKey)), kind: kind);
+      for (var i = 1; i <= 10; i++) {
+        await gesture.moveBy(const Offset(120.0, 0.0), timeStamp: Duration(milliseconds: i * 100));
+        await tester.pump(const Duration(milliseconds: 100));
+        if (i == 6) {
+          expect(outer.page, closeTo(1.0, 0.001));
+        }
+      }
+      await gesture.up(timeStamp: const Duration(milliseconds: 1001));
+      await tester.pumpAndSettle();
+      expect(tabs.index, 0);
+      expect(outer.page, closeTo(0.0, 0.001));
+      expect(tester.takeException(), isNull);
+      await tester.pumpWidget(const SizedBox());
+    });
+  }
 }
 
 Future<void> _pumpPage(WidgetTester tester, Widget child) {
