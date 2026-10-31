@@ -19,7 +19,6 @@ void main() {
               reverse: reverse,
               padding: EdgeInsets.zero,
               itemExtent: 100,
-              // Leave room for the fast release to settle before the other edge.
               itemCount: fast ? 80 : 8,
               itemBuilder: (_, _) => const SizedBox.expand(),
             );
@@ -60,9 +59,7 @@ void main() {
             expect(outer.page, initialPage);
             expect(inner.position.isScrollingNotifier.value, isFalse);
             expect(outer.position.isScrollingNotifier.value, isFalse);
-            if (fast) {
-              expect(inner.offset, atEnd ? lessThan(offsetBeforeRelease) : greaterThan(offsetBeforeRelease));
-            }
+            if (fast) expect(inner.offset, atEnd ? lessThan(offsetBeforeRelease) : greaterThan(offsetBeforeRelease));
 
             final settledOffset = inner.offset;
             await tester.pump(const Duration(milliseconds: 500));
