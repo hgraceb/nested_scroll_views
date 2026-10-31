@@ -50,34 +50,35 @@ class _OverscrollScrollableState extends ScrollableState {
 
   /// 处理手势移动事件
   void _onMoveEvent(PointerMoveEvent event, Offset delta, double primaryDelta) {
-    if (!_overscroll || primaryDelta == 0.0) return;
-    if (_tryResumeDrag(primaryDelta)) return;
+    // 如果已经滚动到边界并且又继续移动
+    if (_overscroll && primaryDelta != 0.0) _tryDispatchResumeNotification(primaryDelta);
+    if (_overscroll && primaryDelta != 0.0) _dispatchOverscrollNotification(event, delta, primaryDelta);
+  }
 
-    // 无法恢复子级拖动时，继续向父级转发边界滚动事件
-    OverscrollNotification(
+  /// 通知反向恢复事件
+  void _tryDispatchResumeNotification(double primaryDelta) {
+    final scrollDelta = axisDirectionIsReversed(axisDirection) ? primaryDelta : -primaryDelta;
+    final canScroll = (scrollDelta < 0.0 && position.extentBefore > 0.0) || (scrollDelta > 0.0 && position.extentAfter > 0.0);
+    final notification = canScroll ? NestedScrollResumeNotification.dispatch(metrics: position.copyWith(), context: context) : null;
+    if (notification?.accepted == true) _overscroll = false;
+  }
+
+  /// 通知边界滚动事件
+  void _dispatchOverscrollNotification(PointerMoveEvent event, Offset delta, double primaryDelta) {
+    final dragDetails = DragUpdateDetails(
+      sourceTimeStamp: event.timeStamp,
+      delta: delta,
+      primaryDelta: primaryDelta,
+      globalPosition: event.position,
+      localPosition: event.localPosition,
+    );
+    final notification = OverscrollNotification(
       metrics: position.copyWith(),
       context: context,
       overscroll: primaryDelta,
-      dragDetails: DragUpdateDetails(
-        sourceTimeStamp: event.timeStamp,
-        delta: delta,
-        primaryDelta: primaryDelta,
-        globalPosition: event.position,
-        localPosition: event.localPosition,
-      ),
-    ).dispatch(context);
-  }
-
-  /// 反向移动且父级允许释放时，恢复当前拖动
-  bool _tryResumeDrag(double primaryDelta) {
-    final scrollDelta = axisDirectionIsReversed(axisDirection) ? primaryDelta : -primaryDelta;
-    final canScroll = (scrollDelta < 0.0 && position.extentBefore > 0.0) || (scrollDelta > 0.0 && position.extentAfter > 0.0);
-    if (!canScroll) return false;
-    final notification = NestedScrollResumeNotification(metrics: position.copyWith(), context: context);
+      dragDetails: dragDetails,
+    );
     notification.dispatch(context);
-    if (!notification.accepted) return false;
-    _overscroll = false;
-    return true;
   }
 
   @override
@@ -111,11 +112,8 @@ class _OverscrollScrollableState extends ScrollableState {
 
     if (notification.depth == 0) {
       // 当边界滚动事件的深度只有一层时，等查询有指定类型的父组件后再进一步处理滚动事件，避免当前组件作为最外层组件时无法正常滚动
-      final parentNotification = NestedScrollableNotification(metrics: notification.metrics, context: notification.context);
-      parentNotification.dispatch(context);
-      if (!parentNotification.accepted) {
-        return false;
-      }
+      final parentNotification = NestedScrollableNotification.dispatch(metrics: notification.metrics, context: notification.context);
+      if (parentNotification.accepted != true) return false;
     } else if (notification is NestedScrollableNotification) {
       // 确认存在符合条件的父组件
       notification.accepted = true;
