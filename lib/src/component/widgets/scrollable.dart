@@ -95,9 +95,8 @@ class _OverscrollScrollableState extends ScrollableState {
   /// 处理滚动事件
   bool _handleNotification(ScrollNotification notification) {
     // 如果当前组件与边界滚动事件的滚动方向不一致
-    if (axisDirectionToAxis(axisDirection) != notification.metrics.axis) {
-      return false;
-    }
+    if (axisDirectionToAxis(axisDirection) != notification.metrics.axis) return false;
+
     if (notification.depth == 0) {
       // 当边界滚动事件的深度只有一层时，等查询有指定类型的父组件后再进一步处理滚动事件，避免当前组件作为最外层组件时无法正常滚动
       final parentNotification = NestedScrollableNotification(metrics: notification.metrics, context: notification.context);
