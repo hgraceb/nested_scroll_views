@@ -24,9 +24,11 @@ jobs:
           - os: ubuntu-latest
             label: ubuntu-latest
             flutter-version: 3.47.9
+            build-target: apk
           - os: windows-2022
             label: windows-2022
             flutter-version: 3.47.9
+            build-target: windows
           - os: ubuntu-latest
             label: ubuntu-latest, minimum SDK
             flutter-version: 3.47.0
@@ -51,3 +53,20 @@ jobs:
 
       - name: Test
         run: flutter test --no-pub --reporter expanded
+
+      - name: Set up Java
+        if: matrix.build-target == 'apk'
+        uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Build Android example
+        if: matrix.build-target == 'apk'
+        run: flutter build apk --release --no-pub --target-platform android-arm64
+        working-directory: example
+
+      - name: Build Windows example
+        if: matrix.build-target == 'windows'
+        run: flutter build windows --release --no-pub
+        working-directory: example
