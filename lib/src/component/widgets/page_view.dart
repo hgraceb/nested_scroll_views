@@ -117,7 +117,8 @@ class _NestedPageViewState extends _PageViewState {
     // 判断当前组件位置是否已到达边界
     if (position.hasPixels && position.atEdge) {
       // 处理多层嵌套，到达边界后发送通知，如果还有父组件则将后续边界滚动事件全部移交给父组件
-      final parentNotification = NestedPageViewNotification.dispatch(metrics: notification.metrics, context: notification.context);
+      final parentNotification = NestedPageViewNotification(metrics: notification.metrics, context: notification.context);
+      parentNotification.dispatch(context);
       _ignoreOverscroll = parentNotification.accepted;
     }
     // 消耗滚动事件

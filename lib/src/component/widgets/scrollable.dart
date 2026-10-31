@@ -59,8 +59,11 @@ class _OverscrollScrollableState extends ScrollableState {
   void _tryDispatchResumeNotification(double primaryDelta) {
     final scrollDelta = axisDirectionIsReversed(axisDirection) ? primaryDelta : -primaryDelta;
     final canScroll = (scrollDelta < 0.0 && position.extentBefore > 0.0) || (scrollDelta > 0.0 && position.extentAfter > 0.0);
-    final notification = canScroll ? NestedScrollResumeNotification.dispatch(metrics: position.copyWith(), context: context) : null;
-    if (notification?.accepted == true) _overscroll = false;
+    if (canScroll) {
+      final notification = NestedScrollResumeNotification(metrics: position.copyWith(), context: context);
+      notification.dispatch(context);
+      if (notification.accepted) _overscroll = false;
+    }
   }
 
   /// 通知边界滚动事件
@@ -112,7 +115,8 @@ class _OverscrollScrollableState extends ScrollableState {
 
     if (notification.depth == 0) {
       // 当边界滚动事件的深度只有一层时，等查询有指定类型的父组件后再进一步处理滚动事件，避免当前组件作为最外层组件时无法正常滚动
-      final parentNotification = NestedScrollableNotification.dispatch(metrics: notification.metrics, context: notification.context);
+      final parentNotification = NestedScrollableNotification(metrics: notification.metrics, context: notification.context);
+      parentNotification.dispatch(context);
       if (parentNotification.accepted != true) return false;
     } else if (notification is NestedScrollableNotification) {
       // 确认存在符合条件的父组件
