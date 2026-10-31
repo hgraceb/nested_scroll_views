@@ -1,6 +1,6 @@
 ## Unreleased
 
-- Fix premature page switching when reversing an inner drag in two-level nested views if the scrollable parent has not moved.
+- Fix premature page switching during reverse dragging.
 
 ## 0.0.13
 
