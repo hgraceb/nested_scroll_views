@@ -19,7 +19,8 @@ void main() {
               reverse: reverse,
               padding: EdgeInsets.zero,
               itemExtent: 100,
-              itemCount: 8,
+              // Leave room for the fast release to settle before the other edge.
+              itemCount: fast ? 80 : 8,
               itemBuilder: (_, _) => const SizedBox.expand(),
             );
             await _pumpViews(
@@ -46,14 +47,35 @@ void main() {
             expect(outer.page, initialPage);
 
             for (var i = 6; i <= 10; i++) {
-              await gesture.moveBy(_offset(axis, -outward), timeStamp: interval * i);
+              await gesture.moveBy(_offset(axis, -outward * (fast ? 2 : 1)), timeStamp: interval * i);
               await tester.pump(interval);
             }
             expect(inner.offset, inExclusiveRange(inner.position.minScrollExtent, inner.position.maxScrollExtent));
             expect(outer.page, initialPage);
+            final offsetBeforeRelease = inner.offset;
             await gesture.up(timeStamp: interval * 10 + const Duration(milliseconds: 1));
-            // A fast release may eventually reach the opposite edge legitimately.
-            await tester.pump(const Duration(milliseconds: 16));
+            if (fast) expect(inner.position.isScrollingNotifier.value, isTrue);
+            await tester.pumpAndSettle();
+            expect(inner.offset, inExclusiveRange(inner.position.minScrollExtent, inner.position.maxScrollExtent));
+            expect(outer.page, initialPage);
+            expect(inner.position.isScrollingNotifier.value, isFalse);
+            expect(outer.position.isScrollingNotifier.value, isFalse);
+            if (fast) {
+              expect(inner.offset, atEnd ? lessThan(offsetBeforeRelease) : greaterThan(offsetBeforeRelease));
+            }
+
+            final settledOffset = inner.offset;
+            await tester.pump(const Duration(milliseconds: 500));
+            expect(inner.offset, settledOffset);
+            expect(outer.page, initialPage);
+
+            await tester.timedDrag(find.byType(NestedListView), _offset(axis, outward * 2), const Duration(milliseconds: 600));
+            await tester.pumpAndSettle();
+            expect(inner.offset, atEnd ? greaterThan(settledOffset) : lessThan(settledOffset));
+            expect(inner.offset, inExclusiveRange(inner.position.minScrollExtent, inner.position.maxScrollExtent));
+            expect(outer.page, initialPage);
+            expect(inner.position.isScrollingNotifier.value, isFalse);
+            expect(outer.position.isScrollingNotifier.value, isFalse);
             expect(tester.takeException(), isNull);
             await tester.pumpWidget(const SizedBox());
           });
