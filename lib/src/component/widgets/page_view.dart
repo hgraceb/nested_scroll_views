@@ -107,10 +107,7 @@ class _NestedPageViewState extends _PageViewState {
 
     // 处理嵌套滚动事件
     if (notification is NestedPageViewNotification) {
-      // 确认存在指定类型的父组件
-      notification.accepted = true;
-      // 消耗嵌套通知事件
-      return true;
+      return _handleNestedPageView(notification);
     }
     return false;
   }
@@ -156,6 +153,14 @@ class _NestedPageViewState extends _PageViewState {
     _dragController = null;
     _ignoreOverscroll = false;
     return false;
+  }
+
+  /// 处理嵌套滚动事件
+  bool _handleNestedPageView(NestedPageViewNotification notification) {
+    // 确认存在指定类型的父组件
+    notification.accepted = true;
+    // 消耗嵌套通知事件
+    return true;
   }
 
   @override
