@@ -39,7 +39,7 @@ class OverscrollScrollable extends Scrollable {
 }
 
 class _OverscrollScrollableState extends ScrollableState {
-  /// 是否需要通过边界通知转发移动事件
+  /// 是否已经滚动到边界
   bool _overscroll = false;
 
   /// 代理手势更新事件
@@ -92,7 +92,7 @@ class _OverscrollScrollableState extends ScrollableState {
     });
   }
 
-  /// 处理滚动事件通知
+  /// 处理滚动事件
   bool _handleNotification(ScrollNotification notification) {
     // 如果当前组件与边界滚动事件的滚动方向不一致
     if (axisDirectionToAxis(axisDirection) != notification.metrics.axis) {
@@ -106,7 +106,7 @@ class _OverscrollScrollableState extends ScrollableState {
         return false;
       }
     } else if (notification is NestedScrollableNotification) {
-      // 确认存在指定类型的父组件
+      // 确认存在符合条件的父组件
       notification.accepted = true;
       // 消耗嵌套通知事件
       return true;
@@ -123,10 +123,6 @@ class _OverscrollScrollableState extends ScrollableState {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return NotificationListener<ScrollNotification>(
-      onNotification: _handleNotification,
-      child: super.build(context),
-    );
-  }
+  Widget build(BuildContext context) =>
+      NotificationListener<ScrollNotification>(onNotification: _handleNotification, child: super.build(context));
 }

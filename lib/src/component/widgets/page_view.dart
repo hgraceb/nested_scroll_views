@@ -157,7 +157,7 @@ class _NestedPageViewState extends _PageViewState {
 
   /// 处理嵌套滚动事件
   bool _handleNestedPageView(NestedPageViewNotification notification) {
-    // 确认存在指定类型的父组件
+    // 确认存在符合条件的父组件
     notification.accepted = true;
     // 消耗嵌套通知事件
     return true;
