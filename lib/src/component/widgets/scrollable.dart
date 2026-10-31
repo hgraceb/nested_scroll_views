@@ -99,20 +99,13 @@ class _OverscrollScrollableState extends ScrollableState {
       return false;
     }
     if (notification.depth == 0) {
-      // 当边界滚动事件的深度只有一层时，等查询有指定类型的父组件后再进一步处理滚动事件，避免当前组件作为最外层组件时无法正常滚动
-      final parentNotification = NestedScrollNotification(
-        metrics: notification.metrics,
-        context: notification.context,
-        expectType: runtimeType,
-      );
+      // 当前组件发出的滚动通知先查询是否有同方向的父组件，没有则不再进一步处理，避免当前组件作为最外层组件时无法正常滚动
+      final parentNotification = NestedScrollableNotification(metrics: notification.metrics, context: notification.context);
       parentNotification.dispatch(context);
       if (!parentNotification.accepted) {
         return false;
       }
-    } else if (notification is NestedScrollNotification) {
-      if (runtimeType != notification.expectType) {
-        return false;
-      }
+    } else if (notification is NestedScrollableNotification) {
       // 确认存在指定类型的父组件
       notification.accepted = true;
       // 消耗嵌套通知事件
