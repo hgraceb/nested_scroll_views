@@ -50,31 +50,34 @@ class _OverscrollScrollableState extends ScrollableState {
 
   /// 处理手势移动事件
   void _onMoveEvent(PointerMoveEvent event, Offset delta, double primaryDelta) {
-    // 如果已经滚动到边界并且又继续移动
-    if (_overscroll && primaryDelta != 0.0) {
-      final scrollDelta = axisDirectionIsReversed(axisDirection) ? primaryDelta : -primaryDelta;
-      if ((scrollDelta < 0.0 && position.extentBefore > 0.0) || (scrollDelta > 0.0 && position.extentAfter > 0.0)) {
-        final notification = NestedScrollResumeNotification(metrics: position.copyWith(), context: context);
-        notification.dispatch(context);
-        if (notification.accepted) {
-          _overscroll = false;
-          return;
-        }
-      }
-      // 边界滚动事件通知
-      OverscrollNotification(
-        metrics: position.copyWith(),
-        context: context,
-        overscroll: primaryDelta,
-        dragDetails: DragUpdateDetails(
-          sourceTimeStamp: event.timeStamp,
-          delta: delta,
-          primaryDelta: primaryDelta,
-          globalPosition: event.position,
-          localPosition: event.localPosition,
-        ),
-      ).dispatch(context);
-    }
+    if (!_overscroll || primaryDelta == 0.0) return;
+    if (_tryResumeDrag(primaryDelta)) return;
+
+    // 无法恢复子级拖动时，继续向父级转发边界滚动事件
+    OverscrollNotification(
+      metrics: position.copyWith(),
+      context: context,
+      overscroll: primaryDelta,
+      dragDetails: DragUpdateDetails(
+        sourceTimeStamp: event.timeStamp,
+        delta: delta,
+        primaryDelta: primaryDelta,
+        globalPosition: event.position,
+        localPosition: event.localPosition,
+      ),
+    ).dispatch(context);
+  }
+
+  /// 反向移动且父级允许释放时，恢复当前拖动
+  bool _tryResumeDrag(double primaryDelta) {
+    final scrollDelta = axisDirectionIsReversed(axisDirection) ? primaryDelta : -primaryDelta;
+    final canScroll = (scrollDelta < 0.0 && position.extentBefore > 0.0) || (scrollDelta > 0.0 && position.extentAfter > 0.0);
+    if (!canScroll) return false;
+    final notification = NestedScrollResumeNotification(metrics: position.copyWith(), context: context);
+    notification.dispatch(context);
+    if (!notification.accepted) return false;
+    _overscroll = false;
+    return true;
   }
 
   @override

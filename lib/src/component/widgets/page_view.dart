@@ -75,7 +75,7 @@ class _NestedPageViewState extends _PageViewState {
   double? _dragStartPixels;
   ScrollDragController? _dragController;
 
-  /// 处理拖动取消事件
+  /// 拖动控制器释放后的回调，只清理本地状态
   void _handleDragCancel() {
     _dragController = null;
     _dragStartPixels = null;
