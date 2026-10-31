@@ -39,7 +39,7 @@ class OverscrollScrollable extends Scrollable {
 }
 
 class _OverscrollScrollableState extends ScrollableState {
-  /// 是否已确认存在嵌套祖先，后续移动改由边界通知转发
+  /// 是否需要通过边界通知转发移动事件
   bool _overscroll = false;
 
   /// 代理手势更新事件
@@ -92,12 +92,14 @@ class _OverscrollScrollableState extends ScrollableState {
     });
   }
 
+  /// 处理滚动事件通知
   bool _handleNotification(ScrollNotification notification) {
+    // 如果当前组件与边界滚动事件的滚动方向不一致
     if (axisDirectionToAxis(axisDirection) != notification.metrics.axis) {
       return false;
     }
     if (notification.depth == 0) {
-      // 确认存在同类祖先后才锁定原生更新，独立滚动组件保持原有行为
+      // 当边界滚动事件的深度只有一层时，等查询有指定类型的父组件后再进一步处理滚动事件，避免当前组件作为最外层组件时无法正常滚动
       final parentNotification = NestedScrollNotification(
         metrics: notification.metrics,
         context: notification.context,
@@ -111,13 +113,17 @@ class _OverscrollScrollableState extends ScrollableState {
       if (runtimeType != notification.expectType) {
         return false;
       }
+      // 确认存在指定类型的父组件
       notification.accepted = true;
+      // 消耗嵌套通知事件
       return true;
     }
 
     if (notification is OverscrollNotification) {
+      // 设置边界滚动状态
       _overscroll = true;
     } else if (notification is ScrollEndNotification) {
+      // 重置边界滚动状态
       _overscroll = false;
     }
     return false;

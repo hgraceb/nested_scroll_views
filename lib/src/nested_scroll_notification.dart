@@ -1,12 +1,12 @@
 import 'package:flutter/widgets.dart';
 
-/// 向祖先查询是否有符合条件的嵌套滚动接收端
+/// 嵌套通知事件，用于判断是否有指定的父组件
 class NestedScrollNotification extends ScrollNotification {
   NestedScrollNotification({required super.metrics, required super.context, required this.expectType});
 
   /// 期望的父组件类型
   final Type expectType;
 
-  /// 由符合条件的祖先确认，发送方在 dispatch 返回后读取
+  /// 是否已由指定类型的父组件确认
   bool accepted = false;
 }
