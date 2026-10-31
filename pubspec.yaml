@@ -1,5 +1,5 @@
 name: nested_scroll_views
-description: 'Flutter nested scrolling views.'
+description: 'Flutter nested scrolling with drag handoff at scroll boundaries for PageView, TabBarView, ListView, GridView, CustomScrollView, and SingleChildScrollView.'
 version: 0.0.13
 homepage: https://github.com/hgraceb/nested_scroll_views
 
