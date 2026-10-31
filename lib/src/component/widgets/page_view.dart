@@ -119,8 +119,7 @@ class _NestedPageViewState extends _PageViewState {
     }
     // 拖动被取消的回调，不需要调用 dispose 方法，不然会死循环
     void dragCancelCallback() => _dragController = null;
-    // 子组件越界时再创建并保存当前页面的拖动控制器
-    // 如从可滚动 TabBar 的第三项连续拖到第一项，TabBar 跟随页面滚动也会发送 Start/End 通知，在 Start 时创建的控制器可能被中途的 End 提前清理
+    // 子组件越界时再创建并保存当前页面的拖动控制器，避免在 Start 时创建的控制器被 TabBar 跟随滚动产生的 End 通知提前清理
     _dragController ??= position.drag(DragStartDetails(), dragCancelCallback) as ScrollDragController;
     // 如果存在滚动数据
     if (notification.dragDetails != null) {
