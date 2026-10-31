@@ -39,7 +39,7 @@ class OverscrollScrollable extends Scrollable {
 }
 
 class _OverscrollScrollableState extends ScrollableState {
-  /// 是否已经滚动到边界
+  /// 是否已确认存在嵌套祖先，后续移动改由边界通知转发
   bool _overscroll = false;
 
   /// 代理手势更新事件
@@ -92,45 +92,41 @@ class _OverscrollScrollableState extends ScrollableState {
     });
   }
 
-  /// 处理滚动事件
-  void _handleScrollNotification(ScrollNotification notification) {
+  bool _handleNotification(ScrollNotification notification) {
+    if (axisDirectionToAxis(axisDirection) != notification.metrics.axis) {
+      return false;
+    }
+    if (notification.depth == 0) {
+      // 确认存在同类祖先后才锁定原生更新，独立滚动组件保持原有行为
+      final parentNotification = NestedScrollNotification(
+        metrics: notification.metrics,
+        context: notification.context,
+        expectType: runtimeType,
+      );
+      parentNotification.dispatch(context);
+      if (!parentNotification.accepted) {
+        return false;
+      }
+    } else if (notification is NestedScrollNotification) {
+      if (runtimeType != notification.expectType) {
+        return false;
+      }
+      notification.accepted = true;
+      return true;
+    }
+
     if (notification is OverscrollNotification) {
-      // 设置边界滚动状态
       _overscroll = true;
     } else if (notification is ScrollEndNotification) {
-      // 重置边界滚动状态
       _overscroll = false;
     }
+    return false;
   }
 
   @override
   Widget build(BuildContext context) {
     return NotificationListener<ScrollNotification>(
-      onNotification: (ScrollNotification notification) {
-        // 如果当前组件与边界滚动事件的滚动方向不一致
-        if (axisDirectionToAxis(axisDirection) != notification.metrics.axis) {
-          return false;
-        }
-        if (notification.depth == 0) {
-          // 当边界滚动事件的深度只有一层时，等查询有指定类型的父组件后再进一步处理滚动事件，避免当前组件作为最外层组件时无法正常滚动
-          NestedScrollNotification(
-            metrics: notification.metrics,
-            context: notification.context,
-            expectType: runtimeType,
-            callback: () => _handleScrollNotification(notification),
-          ).dispatch(context);
-        } else if (notification is NestedScrollNotification) {
-          if (runtimeType == notification.expectType) {
-            // 通知子组件停用滚动事件
-            notification.callback();
-            // 消耗嵌套通知事件
-            return true;
-          }
-        } else {
-          _handleScrollNotification(notification);
-        }
-        return false;
-      },
+      onNotification: _handleNotification,
       child: super.build(context),
     );
   }
