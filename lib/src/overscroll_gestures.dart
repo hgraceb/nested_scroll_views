@@ -16,30 +16,26 @@ class OverscrollVerticalDragGestureRecognizer extends VerticalDragGestureRecogni
 
   @override
   void handleEvent(PointerEvent event) {
-    if (event is PointerMoveEvent) {
-      // 如果是 PointerMoveEvent 则取 localDelta 作为 Offset 进行计算
-      onPointerMoveEvent(event, Offset(0.0, event.localDelta.dy), event.localDelta.dy);
-    }
+    // 如果是 PointerMoveEvent 则取 localDelta 作为 Offset 进行计算
+    if (event is PointerMoveEvent) onPointerMoveEvent(event, Offset(0.0, event.localDelta.dy), event.localDelta.dy);
     super.handleEvent(event);
   }
 }
 
 class OverscrollHorizontalDragGestureRecognizer extends HorizontalDragGestureRecognizer {
-  OverscrollHorizontalDragGestureRecognizer({required this.proxyOnUpdate, required this.onPointerMoveEvent});
+  OverscrollHorizontalDragGestureRecognizer({required this.onDragUpdate, required this.onPointerMoveEvent});
 
-  final OnDragUpdate proxyOnUpdate;
+  final OnDragUpdate onDragUpdate;
 
   final OnPointerMoveEvent onPointerMoveEvent;
 
   @override
-  GestureDragUpdateCallback? get onUpdate => proxyOnUpdate(super.onUpdate);
+  GestureDragUpdateCallback? get onUpdate => onDragUpdate(super.onUpdate);
 
   @override
   void handleEvent(PointerEvent event) {
-    if (event is PointerMoveEvent) {
-      // 如果是 PointerMoveEvent 则取 localDelta 作为 Offset 进行计算
-      onPointerMoveEvent(event, Offset(event.localDelta.dx, 0.0), event.localDelta.dx);
-    }
+    // 如果是 PointerMoveEvent 则取 localDelta 作为 Offset 进行计算
+    if (event is PointerMoveEvent) onPointerMoveEvent(event, Offset(event.localDelta.dx, 0.0), event.localDelta.dx);
     super.handleEvent(event);
   }
 }

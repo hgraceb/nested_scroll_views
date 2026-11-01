@@ -119,7 +119,7 @@ class _OverscrollScrollableState extends ScrollableState {
           ),
         } else if (entry.key == HorizontalDragGestureRecognizer) ...{
           OverscrollHorizontalDragGestureRecognizer: GestureRecognizerFactoryWithHandlers<OverscrollHorizontalDragGestureRecognizer>(
-            () => OverscrollHorizontalDragGestureRecognizer(proxyOnUpdate: _onDragUpdate, onPointerMoveEvent: _onPointerMoveEvent),
+            () => OverscrollHorizontalDragGestureRecognizer(onDragUpdate: _onDragUpdate, onPointerMoveEvent: _onPointerMoveEvent),
             entry.value.initializer,
           ),
         } else ...{
