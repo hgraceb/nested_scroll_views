@@ -2,7 +2,7 @@ name: Update Flutter stable
 
 on:
   schedule:
-    - cron: '23 1 * * 1'
+    - cron: '23 1 * * *'
   workflow_dispatch:
 
 permissions:
@@ -66,7 +66,12 @@ jobs:
             CI checks analysis, tests, and the Android and Windows release examples, as well as the minimum supported SDK. Resolve any compatibility failures before merging.
 
       - name: Run compatibility checks
-        if: steps.pull-request.outputs.pull-request-number != '' && steps.pull-request.outputs.pull-request-operation != 'closed'
+        if: >-
+          steps.pull-request.outputs.pull-request-number != '' &&
+          steps.pull-request.outputs.pull-request-operation != 'closed' &&
+          (github.event_name == 'workflow_dispatch' ||
+          steps.pull-request.outputs.pull-request-operation == 'created' ||
+          steps.pull-request.outputs.pull-request-operation == 'updated')
         env:
           GH_TOKEN: ${{ github.token }}
         run: gh workflow run ci.yml --ref "$UPDATE_BRANCH"
