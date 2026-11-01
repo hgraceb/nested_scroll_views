@@ -110,7 +110,7 @@ class _NestedPageViewState extends _PageViewState {
     // 子组件越界时再创建并保存当前页面的拖动控制器，避免在 Start 时创建的控制器被 TabBar 跟随滚动产生的 End 通知提前清理
     if (_dragController == null) {
       _dragStartPixels = position.pixels;
-      _dragController = position.drag(DragStartDetails(), _handleDragCancel) as ScrollDragController;
+      _dragController = position.drag(DragStartDetails(kind: notification.dragDetails?.kind), _handleDragCancel) as ScrollDragController;
     }
     // 如果存在滚动数据则开始处理拖动事件
     if (notification.dragDetails != null) _dragController?.update(notification.dragDetails!);

@@ -1,18 +1,18 @@
 import 'package:flutter/gestures.dart';
 
-typedef ProxyOnUpdate = GestureDragUpdateCallback? Function(GestureDragUpdateCallback? parent);
+typedef OnDragUpdate = GestureDragUpdateCallback? Function(GestureDragUpdateCallback? parent);
 
 typedef OnPointerMoveEvent = void Function(PointerMoveEvent event, Offset delta, double primaryDelta);
 
 class OverscrollVerticalDragGestureRecognizer extends VerticalDragGestureRecognizer {
-  OverscrollVerticalDragGestureRecognizer({required this.proxyOnUpdate, required this.onPointerMoveEvent});
+  OverscrollVerticalDragGestureRecognizer({required this.onDragUpdate, required this.onPointerMoveEvent});
 
-  final ProxyOnUpdate proxyOnUpdate;
+  final OnDragUpdate onDragUpdate;
 
   final OnPointerMoveEvent onPointerMoveEvent;
 
   @override
-  GestureDragUpdateCallback? get onUpdate => proxyOnUpdate(super.onUpdate);
+  GestureDragUpdateCallback? get onUpdate => onDragUpdate(super.onUpdate);
 
   @override
   void handleEvent(PointerEvent event) {
@@ -27,7 +27,7 @@ class OverscrollVerticalDragGestureRecognizer extends VerticalDragGestureRecogni
 class OverscrollHorizontalDragGestureRecognizer extends HorizontalDragGestureRecognizer {
   OverscrollHorizontalDragGestureRecognizer({required this.proxyOnUpdate, required this.onPointerMoveEvent});
 
-  final ProxyOnUpdate proxyOnUpdate;
+  final OnDragUpdate proxyOnUpdate;
 
   final OnPointerMoveEvent onPointerMoveEvent;
 

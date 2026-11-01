@@ -39,7 +39,7 @@ class _OverscrollScrollableState extends ScrollableState {
   bool _overscroll = false;
 
   /// 代理手势更新事件
-  GestureDragUpdateCallback? _proxyOnUpdate(GestureDragUpdateCallback? parent) {
+  GestureDragUpdateCallback? _onDragUpdate(GestureDragUpdateCallback? parent) {
     // 如果已经滚动到了边界则不再响应移动事件
     return _overscroll ? null : parent;
   }
@@ -68,6 +68,7 @@ class _OverscrollScrollableState extends ScrollableState {
       globalPosition: event.position,
       localPosition: event.localPosition,
       sourceTimeStamp: event.timeStamp,
+      kind: event.kind,
       delta: delta,
       primaryDelta: primaryDelta,
     );
@@ -113,12 +114,12 @@ class _OverscrollScrollableState extends ScrollableState {
       for (final entry in value.entries) ...{
         if (entry.key == VerticalDragGestureRecognizer) ...{
           OverscrollVerticalDragGestureRecognizer: GestureRecognizerFactoryWithHandlers<OverscrollVerticalDragGestureRecognizer>(
-            () => OverscrollVerticalDragGestureRecognizer(proxyOnUpdate: _proxyOnUpdate, onPointerMoveEvent: _onPointerMoveEvent),
+            () => OverscrollVerticalDragGestureRecognizer(onDragUpdate: _onDragUpdate, onPointerMoveEvent: _onPointerMoveEvent),
             entry.value.initializer,
           ),
         } else if (entry.key == HorizontalDragGestureRecognizer) ...{
           OverscrollHorizontalDragGestureRecognizer: GestureRecognizerFactoryWithHandlers<OverscrollHorizontalDragGestureRecognizer>(
-            () => OverscrollHorizontalDragGestureRecognizer(proxyOnUpdate: _proxyOnUpdate, onPointerMoveEvent: _onPointerMoveEvent),
+            () => OverscrollHorizontalDragGestureRecognizer(proxyOnUpdate: _onDragUpdate, onPointerMoveEvent: _onPointerMoveEvent),
             entry.value.initializer,
           ),
         } else ...{
