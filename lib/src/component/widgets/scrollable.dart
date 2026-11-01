@@ -86,26 +86,23 @@ class _OverscrollScrollableState extends ScrollableState {
 
   @override
   set _gestureRecognizers(value) {
-    super._gestureRecognizers = value.map((key, value) {
-      if (key == VerticalDragGestureRecognizer) {
-        return MapEntry(
-          OverscrollVerticalDragGestureRecognizer,
-          GestureRecognizerFactoryWithHandlers<OverscrollVerticalDragGestureRecognizer>(
+    super._gestureRecognizers = {
+      for (final entry in value.entries) ...{
+        if (entry.key == VerticalDragGestureRecognizer) ...{
+          OverscrollVerticalDragGestureRecognizer: GestureRecognizerFactoryWithHandlers<OverscrollVerticalDragGestureRecognizer>(
             () => OverscrollVerticalDragGestureRecognizer(proxyOnUpdate: _proxyOnUpdate, onPointerMoveEvent: _onMoveEvent),
-            (instance) => value.initializer(instance),
+            entry.value.initializer,
           ),
-        );
-      } else if (key == HorizontalDragGestureRecognizer) {
-        return MapEntry(
-          OverscrollHorizontalDragGestureRecognizer,
-          GestureRecognizerFactoryWithHandlers<OverscrollHorizontalDragGestureRecognizer>(
+        } else if (entry.key == HorizontalDragGestureRecognizer) ...{
+          OverscrollHorizontalDragGestureRecognizer: GestureRecognizerFactoryWithHandlers<OverscrollHorizontalDragGestureRecognizer>(
             () => OverscrollHorizontalDragGestureRecognizer(proxyOnUpdate: _proxyOnUpdate, onPointerMoveEvent: _onMoveEvent),
-            (instance) => value.initializer(instance),
+            entry.value.initializer,
           ),
-        );
-      }
-      return MapEntry(key, value);
-    });
+        } else ...{
+          entry.key: entry.value,
+        },
+      },
+    };
   }
 
   /// 处理滚动事件
