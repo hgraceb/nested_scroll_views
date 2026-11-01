@@ -4,6 +4,10 @@ on:
   schedule:
     - cron: '23 1 * * *'
   workflow_dispatch:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [automation/flutter-stable]
 
 permissions:
   contents: read
@@ -14,6 +18,7 @@ concurrency:
 
 jobs:
   update:
+    if: github.event_name != 'workflow_run'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
@@ -63,7 +68,7 @@ jobs:
           body: |
             Update the Flutter stable SDK tested by CI to `${{ steps.stable.outputs.version }}`.
 
-            CI checks analysis, tests, and the Android and Windows release examples, as well as the minimum supported SDK. Resolve any compatibility failures before merging.
+            CI checks analysis, tests, and the Android and Windows release examples, as well as the minimum supported SDK. This version-only update is merged automatically after all checks pass.
 
       - name: Run compatibility checks
         if: >-
@@ -75,3 +80,56 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: gh workflow run ci.yml --ref "$UPDATE_BRANCH"
+
+  auto-merge:
+    if: >-
+      github.event_name == 'workflow_run' &&
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'workflow_dispatch' &&
+      github.event.workflow_run.head_repository.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Merge the verified Flutter stable update
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+          CI_HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          node --input-type=module <<'NODE'
+          import { execFileSync } from 'node:child_process';
+
+          const gh = (...args) => execFileSync('gh', args, { encoding: 'utf8' });
+          const repository = process.env.GH_REPO;
+          const branch = 'automation/flutter-stable';
+          const pulls = JSON.parse(gh(
+            'api', '--method', 'GET', `repos/${repository}/pulls`,
+            '-f', 'state=open',
+            '-f', `base=${process.env.DEFAULT_BRANCH}`,
+            '-f', `head=${repository.split('/')[0]}:${branch}`,
+          ));
+          const pull = pulls.find(pr =>
+            pr.user.login === 'github-actions[bot]' &&
+            pr.base.ref === process.env.DEFAULT_BRANCH &&
+            pr.head.ref === branch &&
+            pr.head.repo?.full_name === repository &&
+            pr.head.sha === process.env.CI_HEAD_SHA,
+          );
+          if (!pull) {
+            console.log('No open bot update matches the commit that passed CI.');
+            process.exit(0);
+          }
+          const files = JSON.parse(gh('api', `repos/${repository}/pulls/${pull.number}/files`));
+          if (files.length !== 1 || files[0].filename !== '.github/flutter-version' || files[0].status !== 'modified') {
+            console.log('The pull request needs manual review because it changes more than the Flutter version.');
+            process.exit(0);
+          }
+          process.stdout.write(gh(
+            'pr', 'merge', String(pull.number), '--squash',
+            '--match-head-commit', process.env.CI_HEAD_SHA,
+          ));
+          NODE
