@@ -20,26 +20,18 @@ class OverscrollScrollable extends Scrollable {
       );
 
   /// 沿 ScrollView 和 SingleChildScrollView 的已知包装层替换 Scrollable
-  static Widget replace(Widget widget) {
-    if (widget is NotificationListener<ScrollUpdateNotification>) {
-      return NotificationListener<ScrollUpdateNotification>(
-        key: widget.key,
-        onNotification: widget.onNotification,
-        child: replace(widget.child),
-      );
-    }
-    if (widget is PrimaryScrollController) {
-      return PrimaryScrollController.none(key: widget.key, child: replace(widget.child));
-    }
-    return OverscrollScrollable.from(widget as Scrollable);
-  }
+  static Widget replace(Widget widget) => switch (widget) {
+    NotificationListener() => NotificationListener(key: widget.key, onNotification: widget.onNotification, child: replace(widget.child)),
+    PrimaryScrollController() => PrimaryScrollController.none(key: widget.key, child: replace(widget.child)),
+    _ => OverscrollScrollable.from(widget as Scrollable),
+  };
 
   @override
   ScrollableState createState() => _OverscrollScrollableState();
 }
 
 class _OverscrollScrollableState extends ScrollableState {
-  /// 是否已经滚动到边界
+  /// 是否已滚动到边界
   bool _overscroll = false;
 
   /// 代理手势更新事件
@@ -84,28 +76,7 @@ class _OverscrollScrollableState extends ScrollableState {
     notification.dispatch(context);
   }
 
-  @override
-  set _gestureRecognizers(value) {
-    super._gestureRecognizers = {
-      for (final entry in value.entries) ...{
-        if (entry.key == VerticalDragGestureRecognizer) ...{
-          OverscrollVerticalDragGestureRecognizer: GestureRecognizerFactoryWithHandlers<OverscrollVerticalDragGestureRecognizer>(
-            () => OverscrollVerticalDragGestureRecognizer(proxyOnUpdate: _proxyOnUpdate, onPointerMoveEvent: _onMoveEvent),
-            entry.value.initializer,
-          ),
-        } else if (entry.key == HorizontalDragGestureRecognizer) ...{
-          OverscrollHorizontalDragGestureRecognizer: GestureRecognizerFactoryWithHandlers<OverscrollHorizontalDragGestureRecognizer>(
-            () => OverscrollHorizontalDragGestureRecognizer(proxyOnUpdate: _proxyOnUpdate, onPointerMoveEvent: _onMoveEvent),
-            entry.value.initializer,
-          ),
-        } else ...{
-          entry.key: entry.value,
-        },
-      },
-    };
-  }
-
-  /// 处理滚动事件
+  /// 处理滚动事件通知
   bool _handleNotification(ScrollNotification notification) {
     // 如果当前组件与边界滚动事件的滚动方向不一致
     if (axisDirectionToAxis(axisDirection) != notification.metrics.axis) return false;
@@ -130,6 +101,27 @@ class _OverscrollScrollableState extends ScrollableState {
       _overscroll = false;
     }
     return false;
+  }
+
+  @override
+  set _gestureRecognizers(value) {
+    super._gestureRecognizers = {
+      for (final entry in value.entries) ...{
+        if (entry.key == VerticalDragGestureRecognizer) ...{
+          OverscrollVerticalDragGestureRecognizer: GestureRecognizerFactoryWithHandlers<OverscrollVerticalDragGestureRecognizer>(
+            () => OverscrollVerticalDragGestureRecognizer(proxyOnUpdate: _proxyOnUpdate, onPointerMoveEvent: _onMoveEvent),
+            entry.value.initializer,
+          ),
+        } else if (entry.key == HorizontalDragGestureRecognizer) ...{
+          OverscrollHorizontalDragGestureRecognizer: GestureRecognizerFactoryWithHandlers<OverscrollHorizontalDragGestureRecognizer>(
+            () => OverscrollHorizontalDragGestureRecognizer(proxyOnUpdate: _proxyOnUpdate, onPointerMoveEvent: _onMoveEvent),
+            entry.value.initializer,
+          ),
+        } else ...{
+          entry.key: entry.value,
+        },
+      },
+    };
   }
 
   @override
