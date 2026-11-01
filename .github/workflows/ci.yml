@@ -8,6 +8,7 @@ on:
     branches: [master]
   push:
     branches: [master]
+  workflow_dispatch:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -23,11 +24,9 @@ jobs:
         include:
           - os: ubuntu-latest
             label: ubuntu-latest
-            flutter-version: 3.47.9
             build-target: apk
           - os: windows-2022
             label: windows-2022
-            flutter-version: 3.47.9
             build-target: windows
           - os: ubuntu-latest
             label: ubuntu-latest, minimum SDK
@@ -35,9 +34,13 @@ jobs:
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
 
+      - name: Read Flutter stable version
+        shell: bash
+        run: echo "FLUTTER_STABLE_VERSION=$(tr -d '\r\n' < .github/flutter-version)" >> "$GITHUB_ENV"
+
       - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
         with:
-          flutter-version: ${{ matrix.flutter-version }}
+          flutter-version: ${{ matrix.flutter-version || env.FLUTTER_STABLE_VERSION }}
           channel: stable
           cache: true
 
