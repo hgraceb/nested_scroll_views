@@ -1,0 +1,25 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended"],
+  "enabledManagers": ["custom.regex"],
+  "automerge": false,
+  "customManagers": [
+    {
+      "customType": "regex",
+      "managerFilePatterns": ["/^\\.github/workflows/ci\\.yml$/"],
+      "matchStrings": [
+        "# renovate: flutter-stable\\r?\\n[ \\t]+flutter-version: (?<currentValue>\\d+\\.\\d+\\.\\d+)"
+      ],
+      "datasourceTemplate": "flutter-version",
+      "depNameTemplate": "flutter"
+    }
+  ],
+  "packageRules": [
+    {
+      "matchDatasources": ["flutter-version"],
+      "allowedVersions": "/^\\d+\\.\\d+\\.\\d+$/",
+      "groupName": "Flutter stable",
+      "separateMajorMinor": false
+    }
+  ]
+}

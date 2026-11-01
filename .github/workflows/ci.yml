@@ -23,10 +23,12 @@ jobs:
         include:
           - os: ubuntu-latest
             label: ubuntu-latest
+            # renovate: flutter-stable
             flutter-version: 3.47.9
             build-target: apk
           - os: windows-2022
             label: windows-2022
+            # renovate: flutter-stable
             flutter-version: 3.47.9
             build-target: windows
           - os: ubuntu-latest
