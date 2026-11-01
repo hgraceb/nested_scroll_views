@@ -45,7 +45,7 @@ class _OverscrollScrollableState extends ScrollableState {
   }
 
   /// 处理手势移动事件
-  void _onMoveEvent(PointerMoveEvent event, Offset delta, double primaryDelta) {
+  void _onPointerMoveEvent(PointerMoveEvent event, Offset delta, double primaryDelta) {
     // 如果已经滚动到边界并且又继续移动
     if (_overscroll && primaryDelta != 0.0) _tryDispatchResumeNotification(primaryDelta);
     if (_overscroll && primaryDelta != 0.0) _dispatchOverscrollNotification(event, delta, primaryDelta);
@@ -113,12 +113,12 @@ class _OverscrollScrollableState extends ScrollableState {
       for (final entry in value.entries) ...{
         if (entry.key == VerticalDragGestureRecognizer) ...{
           OverscrollVerticalDragGestureRecognizer: GestureRecognizerFactoryWithHandlers<OverscrollVerticalDragGestureRecognizer>(
-            () => OverscrollVerticalDragGestureRecognizer(proxyOnUpdate: _proxyOnUpdate, onPointerMoveEvent: _onMoveEvent),
+            () => OverscrollVerticalDragGestureRecognizer(proxyOnUpdate: _proxyOnUpdate, onPointerMoveEvent: _onPointerMoveEvent),
             entry.value.initializer,
           ),
         } else if (entry.key == HorizontalDragGestureRecognizer) ...{
           OverscrollHorizontalDragGestureRecognizer: GestureRecognizerFactoryWithHandlers<OverscrollHorizontalDragGestureRecognizer>(
-            () => OverscrollHorizontalDragGestureRecognizer(proxyOnUpdate: _proxyOnUpdate, onPointerMoveEvent: _onMoveEvent),
+            () => OverscrollHorizontalDragGestureRecognizer(proxyOnUpdate: _proxyOnUpdate, onPointerMoveEvent: _onPointerMoveEvent),
             entry.value.initializer,
           ),
         } else ...{
