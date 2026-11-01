@@ -65,17 +65,17 @@ class _OverscrollScrollableState extends ScrollableState {
   /// 通知边界滚动事件
   void _dispatchOverscrollNotification(PointerMoveEvent event, Offset delta, double primaryDelta) {
     final dragDetails = DragUpdateDetails(
+      globalPosition: event.position,
+      localPosition: event.localPosition,
       sourceTimeStamp: event.timeStamp,
       delta: delta,
       primaryDelta: primaryDelta,
-      globalPosition: event.position,
-      localPosition: event.localPosition,
     );
     final notification = OverscrollNotification(
       metrics: position.copyWith(),
       context: context,
-      overscroll: primaryDelta,
       dragDetails: dragDetails,
+      overscroll: primaryDelta,
     );
     notification.dispatch(context);
   }
