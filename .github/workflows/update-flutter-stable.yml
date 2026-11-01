@@ -1,0 +1,72 @@
+name: Update Flutter stable
+
+on:
+  schedule:
+    - cron: '23 1 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: update-flutter-stable
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      pull-requests: write
+      actions: write
+    env:
+      UPDATE_BRANCH: automation/flutter-stable
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+
+      - name: Fetch latest Flutter stable version
+        id: stable
+        run: |
+          node --input-type=module <<'NODE'
+          import { appendFile, writeFile } from 'node:fs/promises';
+
+          const response = await fetch(
+            'https://storage.googleapis.com/flutter_infra_release/releases/releases_linux.json',
+            { signal: AbortSignal.timeout(30_000) },
+          );
+          if (!response.ok) {
+            throw new Error(`Flutter release lookup failed: ${response.status}`);
+          }
+          const data = await response.json();
+          const release = data.releases.find(
+            ({ hash, channel }) => hash === data.current_release.stable && channel === 'stable',
+          );
+          if (!release || !/^\d+\.\d+\.\d+$/.test(release.version)) {
+            throw new Error('The Flutter release manifest has no valid current stable version.');
+          }
+          await writeFile('.github/flutter-version', `${release.version}\n`);
+          await appendFile(process.env.GITHUB_OUTPUT, `version=${release.version}\n`);
+          NODE
+
+      - name: Create or update Flutter stable pull request
+        id: pull-request
+        uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
+        with:
+          branch: ${{ env.UPDATE_BRANCH }}
+          add-paths: .github/flutter-version
+          author: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>
+          commit-message: 'ci: update Flutter stable to ${{ steps.stable.outputs.version }}'
+          title: 'ci: update Flutter stable to ${{ steps.stable.outputs.version }}'
+          body: |
+            Update the Flutter stable SDK tested by CI to `${{ steps.stable.outputs.version }}`.
+
+            CI checks analysis, tests, and the Android and Windows release examples, as well as the minimum supported SDK. Resolve any compatibility failures before merging.
+
+      - name: Run compatibility checks
+        if: steps.pull-request.outputs.pull-request-number != '' && steps.pull-request.outputs.pull-request-operation != 'closed'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run ci.yml --ref "$UPDATE_BRANCH"
