@@ -1,4 +1,4 @@
-import 'package:flutter/rendering.dart' show ScrollCacheExtent;
+import 'package:flutter/rendering.dart' show ScrollCacheExtent; // ignore: unnecessary_import
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:nested_scroll_views/material_ui.dart';
