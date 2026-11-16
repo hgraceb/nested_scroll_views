@@ -4,10 +4,6 @@ on:
   schedule:
     - cron: '23 1 * * *'
   workflow_dispatch:
-  workflow_run:
-    workflows: [CI]
-    types: [completed]
-    branches: [automation/flutter-stable]
 
 permissions:
   contents: read
@@ -18,16 +14,23 @@ concurrency:
 
 jobs:
   update:
-    if: github.event_name != 'workflow_run'
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    permissions:
-      contents: write
-      pull-requests: write
-      actions: write
     env:
       UPDATE_BRANCH: automation/flutter-stable
     steps:
+      - name: Verify update token
+        id: update-token
+        env:
+          GH_TOKEN: ${{ secrets.FLUTTER_UPDATE_TOKEN }}
+        run: |
+          if [ -z "$GH_TOKEN" ]; then
+            echo '::error::Add the FLUTTER_UPDATE_TOKEN repository secret before running this workflow.'
+            exit 1
+          fi
+          login="$(gh api user --jq .login)"
+          echo "login=$login" >> "$GITHUB_OUTPUT"
+
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
           ref: ${{ github.event.repository.default_branch }}
@@ -60,6 +63,7 @@ jobs:
         id: pull-request
         uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
         with:
+          token: ${{ secrets.FLUTTER_UPDATE_TOKEN }}
           branch: ${{ env.UPDATE_BRANCH }}
           add-paths: .github/flutter-version
           author: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>
@@ -70,66 +74,45 @@ jobs:
 
             CI checks analysis, tests, and the Android and Windows release examples, as well as the minimum supported SDK. This version-only update is merged automatically after all checks pass.
 
-      - name: Run compatibility checks
+      - name: Enable auto-merge for the Flutter stable update
         if: >-
           steps.pull-request.outputs.pull-request-number != '' &&
-          steps.pull-request.outputs.pull-request-operation != 'closed' &&
-          (github.event_name == 'workflow_dispatch' ||
-          steps.pull-request.outputs.pull-request-operation == 'created' ||
-          steps.pull-request.outputs.pull-request-operation == 'updated')
+          steps.pull-request.outputs.pull-request-operation != 'closed'
         env:
-          GH_TOKEN: ${{ github.token }}
-        run: gh workflow run ci.yml --ref "$UPDATE_BRANCH"
-
-  auto-merge:
-    if: >-
-      github.event_name == 'workflow_run' &&
-      github.event.workflow_run.conclusion == 'success' &&
-      github.event.workflow_run.event == 'workflow_dispatch' &&
-      github.event.workflow_run.head_repository.full_name == github.repository
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    permissions:
-      contents: write
-      pull-requests: write
-    steps:
-      - name: Merge the verified Flutter stable update
-        env:
-          GH_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ secrets.FLUTTER_UPDATE_TOKEN }}
           GH_REPO: ${{ github.repository }}
           DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
-          CI_HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+          UPDATE_AUTHOR: ${{ steps.update-token.outputs.login }}
+          UPDATE_PR: ${{ steps.pull-request.outputs.pull-request-number }}
+          UPDATE_HEAD_SHA: ${{ steps.pull-request.outputs.pull-request-head-sha }}
         run: |
           node --input-type=module <<'NODE'
           import { execFileSync } from 'node:child_process';
 
           const gh = (...args) => execFileSync('gh', args, { encoding: 'utf8' });
           const repository = process.env.GH_REPO;
-          const branch = 'automation/flutter-stable';
-          const pulls = JSON.parse(gh(
-            'api', '--method', 'GET', `repos/${repository}/pulls`,
-            '-f', 'state=open',
-            '-f', `base=${process.env.DEFAULT_BRANCH}`,
-            '-f', `head=${repository.split('/')[0]}:${branch}`,
+          const pull = JSON.parse(gh(
+            'api', `repos/${repository}/pulls/${process.env.UPDATE_PR}`,
           ));
-          const pull = pulls.find(pr =>
-            pr.user.login === 'github-actions[bot]' &&
-            pr.base.ref === process.env.DEFAULT_BRANCH &&
-            pr.head.ref === branch &&
-            pr.head.repo?.full_name === repository &&
-            pr.head.sha === process.env.CI_HEAD_SHA,
-          );
-          if (!pull) {
-            console.log('No open bot update matches the commit that passed CI.');
+          if (
+            pull.state !== 'open' || pull.draft ||
+            pull.user.login !== process.env.UPDATE_AUTHOR ||
+            pull.base.ref !== process.env.DEFAULT_BRANCH ||
+            pull.base.repo.full_name !== repository ||
+            pull.head.ref !== process.env.UPDATE_BRANCH ||
+            pull.head.repo?.full_name !== repository ||
+            pull.head.sha !== process.env.UPDATE_HEAD_SHA
+          ) {
+            console.log('The pull request no longer matches the generated Flutter update.');
             process.exit(0);
           }
           const files = JSON.parse(gh('api', `repos/${repository}/pulls/${pull.number}/files`));
-          if (files.length !== 1 || files[0].filename !== '.github/flutter-version' || files[0].status !== 'modified') {
+          if (pull.changed_files !== 1 || files.length !== 1 || files[0].filename !== '.github/flutter-version' || files[0].status !== 'modified') {
             console.log('The pull request needs manual review because it changes more than the Flutter version.');
             process.exit(0);
           }
           process.stdout.write(gh(
-            'pr', 'merge', String(pull.number), '--squash',
-            '--match-head-commit', process.env.CI_HEAD_SHA,
+            'pr', 'merge', String(pull.number), '--auto', '--squash',
+            '--match-head-commit', process.env.UPDATE_HEAD_SHA,
           ));
           NODE
